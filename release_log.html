@@ -1,0 +1,212 @@
+<div class="slider-revolution-update-list">
+	<h3 class="version-number">Version 6.0.7 (23th July 2019)</h3>
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>				
+		<li>Changed global option "Include libraries globally" default value to on, please set it to off manually again if wanted</li>
+		<li>Changed the second parameter of the function temporary_remove_sizes() to be optional</li>
+		<li>Added filter revslider_include_libraries again</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>				
+		<li>Fixed a bug where a custom navigation could lead to the slide editor not beeing able to be loaded for that slider</li>
+	</ul>
+	
+	<h3 class="version-number">Version 6.0.6 (20th July 2019)</h3>
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>
+		<li>Changed obsolete function getArrSliders() default value to false, so that template slider are not shown in lists of page builders that still use this obsolete function</li>
+		<li>Added 2nd Instagram crawler method for compatibility with certain servers</li>
+		<li>Added the automatic replacement of spaces to dashes in the Slider Revolution shortcode</li>
+		<li>In the WooCommerce category selection, only tags and cagetories will now be listed</li>
+		<li>Added RevSliderSlide->getParam() for compatibility with certain plugins. Please use RevSliderSlide->get_val() instead</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>				
+		<li>Fixed static slide "global layers" settings not showing the selected value in the slide editor after reloading the settings</li>
+		<li>Fixed issue where in old PHP versions an PHP error occured in the update routine</li>
+		<li>Fixed issue where in post/pages, the "Choose Slide Template" option was not saved</li>
+		<li>Fixed alt. image on mobile option not working properly</li>
+		<li>Fixed spike masks on layers not working properly</li>
+		<li>Fixed issue with add_revslider() in combination with library global inclusion not set</li>
+		<li>Fixed issue with WooCommerce slider, where in combination of "In Stock Only" and selecting more than one category created unwanted results</li>
+		<li>Fixed issue with Elementor, where the Slider Revolution Widget was not rendered in frontend</li>
+		<li>Fixed issue in editor, where the preload option for html5 videos was not visible</li>
+		<li>Fixed issue in post/page editor, where saving returned an error when in the slider settings for the added slider, output filter was set to "By Echo Output"</li>
+		<li>Fixed installation/backup complications with the TGM Plugin Activation library</li>
+	</ul>
+	
+	<h3 class="version-number">Version 6.0.5 (16th July 2019)</h3>	
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>
+		<li>Scaling layers will auto change linebreak and layer width from "auto" to a static width, in case the layer is scaled to a higher size than the layer grid itself</li>
+		<li>FontAwesome icon styling from Slider Revolution will now only influence Slider Revolution structures</li>
+		<li>Added disable FontAwesome option which will not load the FontAwesome library from Slider Revolution if needed</li>
+		<li>Added new button collection to the quickstyle library</li>
+		<li>Layer scaling will not effect the border radius any more to avoid strange changes on different screensizes</li>
+		<li>Image, Shape and Text Layers will get layer align "Scene" if they are imported from older sliders (v5.x or earlier) and they used to have 100% width to handle a Bug was existing in older Revsldier.</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>				
+		<li>Fixed import issues where padding values have been lost during the process</li>
+		<li>Fixed lazy load processes in comination with slide animations where images were poppin up delayed in the slider</li>
+		<li>Changed the slide animation precalculation to give some delay before processing to avoid frame drops</li>
+		<li>Various style fixes in editor</li>
+		<li>Default opacity values on text shadows changed from 2500 to 0.25</li>
+		<li>Fixed scroll bugs in editor when slide background changed from image to color based</li>
+		<li>Fixed global layers "overflow" option which was missing since version 6.0.1</li>
+		<li>Fixed video overlay issues, where dotted overlays were not drawn on the video even it was selected</li>
+		<li>Fixed issues where Slider Revolution widgets did not work properly in some setting constellations</li>
+		<li>Fixed file permissions in zip files for some very rare cases where current packaging was not consistent</li>
+		<li>Fixed a bug where custom css set in Sliders was stripped of slashes</li>
+		<li>Fixed a bug where sometimes layer image sources were not shown in the small preview thumbnail box</li>
+		<li>Fixed a bug with loop effects - wave animation, where start loops jumps during the animation</li>
+		<li>Fixed the quick style auto selection when new buttons, content or headlines had been selected</li>
+	</ul>
+	
+	<h3 class="version-number">Version 6.0.4 (13th July 2019)</h3>
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>
+		<li>Added an "Edit" button to the Gutenberg editor Slider Revolution block</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>		
+		<li>Fixed "Includes Libraries Globally" in combination with "List of pages to include RevSlider Libraries" not working properly</li>
+		<li>Fixed a bug where the preview in the slide editor did not work in certain constellations</li>
+		<li>Added missing hover cursor selectbox which was in some cases not available</li>
+		<li>Fixed permanent opening of the template library with 1st Gen. RevSlider Gutenberg Blocks</li>
+		<li>Fixed an issue where Carousels do fade very slow in if Transition time set to a high number</li>
+		<li>Fixed Static Layer Range Problems where Static Layers were showing up on each slide</li>
+		<li>Added protection for an update issue in case the transition list was not in the right form. (pre 5.0.0 version sources)</li>
+		<lI>WPML icon will now not show in slide editor if WPML is not activated</lI>
+		<li>Global enabled addons will show their state now inside of the Slider Revolution AddOn manager</li>
+		<li>Image lazy loading fixed</li>
+		<li>Fixed a bug where special characters in file names could not be preloaded well</li>
+		<li>Fixed different import issues where exported sliders from older versions could not be imported, or broke after import</li>
+	</ul>
+	
+	<h3 class="version-number">Version 6.0.3 (12th July 2019)</h3>
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>
+		<li>Updated carousel behavior for a better customer experience and a more precise calculation of various positions</li>
+		<li>Updated the update routine to have faster access to new updates</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>		
+		<li>Fixed color presets not being able to be saved</li>
+		<li>Fixed hide after loop option not working properly</li>
+		<li>Fixed fullwidth and fullscreen slider position calculation</li>
+		<li>Fixed "Hide Over" navigation elements</li>
+		<li>Fixed issue where the selected HTML tags for layers were not showing well after reload</li>
+		<li>Fixed issue where the selected font loading in global settings was not showing well after reload</li>
+		<li>Fixed hide slide and navigation after focus "n"</li>
+		<li>Fixed issues where the full slide link with scroll under broke the slider functions</li>
+	</ul>
+
+	<h3 class="version-number">Version 6.0.2 (11th July 2019)</h3>
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>
+		<li>Changed settings.css name to rs6.css</li>
+		<li>Added more old function names for further compatibility with themes</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>
+		<li>Fixed a bug where youtube thumbnail images were not fetched into the navigation</li>
+		<li>Fixed a bug where {{link}} and %link% didn't get replaced in slides</li>
+		<li>Fixed the global option "List of Pages to include RevSlider Libraries" to work again</li>
+		<li>Fixed a bug in the update routine that may take an old image path instead of the new one</li>
+		<li>Fixed a bug where the slider stopped to rotate after the first loop</li>
+		<li>Fixed background video loop issues</li>
+		<li>Fixed navigation under hide problems</li>	
+		<li>Fixed RTL position issues for images and videos</li>
+	</ul>
+	
+	<h3 class="version-number">Version 6.0.1 (10th July 2019)</h3>
+	<div class="newfeature"><strong style="font-weight:700">New Features</strong></div>
+	<ul>
+		<li>Reintroduced global option "Enable Google Font Download"</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>
+		<li>Added old function names for compatibility with themes, please do not use these functions in future releases
+			<ul>
+				<li>RevSliderOutput->isPutIn()</li>
+				<li>RevSliderSlider->initByMixed()</li>
+				<li>RevSliderSlider->isAliasExistsInDB()</li>
+				<li>RevSliderSlider->initByAlias()</li>
+				<li>RevSliderSlider->initByDBData()</li>
+				<li>RevSliderSlider->getArrSlidersShort()</li>
+				<li>RevSliderSlider->getArrSlideNames()</li>
+				<li>RevSliderSlider->isAliasExists()</li>
+			</ul>
+		</li>
+		<li>Removed the inclusion of the WordPress pluggable.php file to prevent wp_mail() issues with mailing plugins</li>
+		<li>Removed the inclusion of the WordPress pluggable.php file to prevent SECURE_AUTH_COOKIE and LOGGED_IN_COOKIE warnings</li>
+		<li>Fixed Greensock Sandboxing</li>
+		<li>Sandboxed select2.js to avoid conflicts with Fusion Builder</li>
+		<li>Fixed compatibility issues with ThemeFusion's Avada</li>
+		<li>Fixed compatibility issues with Goodlayers</li>
+		<li>Fixed one prototype issues in for cycles</li>
+		<li>Fixed opacity issues in some cases of navigation elements</li>
+		<li>Fixed menu imports from older templates where relative links broke the slider initialisation</li>
+		<li>Fixed fullscreen slider sizing and positioning issues</li> 
+	</ul>
+	
+	<h3 class="version-number">Version 6.0.0 (8th July 2019)</h3>
+	<div class="newfeature"><strong style="font-weight:700">A New Content Building Standard.</strong></div>
+	<ul>
+		<li>The world's most powerful WordPress builder with advanced animations</li>
+		<li>Create outstanding, professional content modules with no coding experience required</li>		
+		<li>50+ new features</li>		
+		<li>Sliders & Carousels, Hero Headers, Content Blocks and Modules, Full Websites, Dynamic Solutions, Special FX</li>
+		<li>Run any Slider Revolution module as a modal popup</li>
+	</ul>
+	<div class="newfeature"><strong style="font-weight:700">The Visual Editor you want to work with.</strong></div>
+	<ul>
+		<li>Better usability</li>
+		<li>Work faster & more efficiently</li>
+		<li>Eye friendly dark user interface</li>
+		<li>Improved loading times</li>
+	</ul>
+	<div class="newfeature"><strong style="font-weight:700">The animators dream. Now with keyframes.</strong></div>
+	<ul>
+		<li>Easy to understand structure</li>
+		<li>In-depth animation settings</li>
+		<li>New easing types</li>
+		<li>Animation presets</li>
+		<li>Loop the whole timeline or between individual keyframes</li>
+		<li>Scroll-based timeline animations</li>
+	</ul>
+	<div class="newfeature"><strong style="font-weight:700">Mighty new content. Pure inspiration.</strong></div>
+	<ul>
+		<li>Many new templates</li>
+		<li>New images, videos, icons, etc.</li>
+		<li>Animated layer groups</li>
+		<li>Quickstyle layer presets</li>
+	</ul>
+	<div class="newfeature"><strong style="font-weight:700">Live help within the editor</strong></div>
+	<ul>
+		<li>Explanation for any option</li>
+		<li>Search & highlight options</li>
+		<li>Documentation & FAQ links</li>
+	</ul>
+	<div class="newfeature"><strong style="font-weight:700">200+ ready to go templates</strong></div>
+	<ul>
+		<li>19 new templates added in 6.0</li>
+		<li>The right template for every occasion</li>
+		<li>From simple headers to full websites</li>
+		<li>Special FX templates with add-ons</li>
+	</ul>
+	<!--
+	<div class="newfeature"><strong style="font-weight:700">New Features</strong></div>
+	<ul>
+		<li>features</li>
+	</ul>
+	<div class="change"><strong style="font-weight:700">Changes</strong></div>
+	<ul>
+		<li>changes</li>
+	</ul>
+	<div class="bugfix"><strong style="font-weight:700">Bugfixes</strong></div>
+	<ul>
+		<li>bugfixes</li>
+	</ul>-->
+</div>
