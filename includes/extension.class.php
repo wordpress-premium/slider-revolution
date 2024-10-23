@@ -2,8 +2,8 @@
 /**
  * @package RevSliderExtension
  * @author    ThemePunch <info@themepunch.com>
- * @link      https://revolution.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @link      https://www.sliderrevolution.com/
+ * @copyright 2024 ThemePunch
  */
  
 if(!defined('ABSPATH')) exit();
@@ -11,9 +11,7 @@ if(!defined('ABSPATH')) exit();
 class RevSliderExtension {
 	
 	public function __construct() {
-	
 		$this->init_essential_grid_extensions();
-		
 	}
 	
 	
@@ -61,18 +59,14 @@ class RevSliderExtension {
 		$values			= get_post_custom($post['ID']);
 		
 		if(isset($values['eg_sources_revslider'])){
-			if(isset($values['eg_sources_revslider'][0]))
+			if(isset($values['eg_sources_revslider'][0])){
 				$slider_source = (isset($values['eg_sources_revslider'][0])) ? $values['eg_sources_revslider'][0] : '';
-			else
+			}else{
 				$slider_source = (isset($values['eg_sources_revslider'])) ? $values['eg_sources_revslider'] : '';
+			}
 		}
 		
-		if($slider_source === ''){
-			return false;
-		}else{
-			return ' data-ajaxtype="'.$handle.'" data-ajaxsource="'.$slider_source.'"';
-		}
-		
+		return ($slider_source === '') ? false : ' data-ajaxtype="'.$handle.'" data-ajaxsource="'.$slider_source.'"';
 	}
 	
 	
@@ -101,19 +95,15 @@ class RevSliderExtension {
 			$selected_slider[0] = '';
 		}
 		?>
-		<p>
-			<strong style="font-size:14px"><?php _e('Choose Revolution Slider', 'revslider'); ?></strong>
-		</p>
+		<p><strong style="font-size:14px"><?php _e('Choose Revolution Slider', 'revslider'); ?></strong></p>
 		<p>
 			<select name="eg_sources_revslider" id="eg_sources_revslider">
 				<option value=""<?php selected($selected_slider[0], ''); ?>><?php _e('--- Choose Slider ---', 'revslider'); ?></option>
 				<?php
-				if(!empty($shortcodes)){
-					foreach($shortcodes as $id => $name){
-						?>
-						<option value="<?php echo $id; ?>"<?php selected($selected_slider[0], $id); ?>><?php echo $name; ?></option>
-						<?php
-					}
+				foreach($shortcodes ?? [] as $id => $name){
+					?>
+					<option value="<?php echo $id; ?>"<?php selected($selected_slider[0], $id); ?>><?php echo $name; ?></option>
+					<?php
 				}
 				?>
 			</select>
@@ -125,10 +115,7 @@ class RevSliderExtension {
 	 * Adds custom meta field into the essential grid meta box for post/pages
 	 */
 	public function save_eg_additional_meta_field($metas, $post_id){
-		
-		if(isset($metas['eg_sources_revslider']))
-			update_post_meta($post_id, 'eg_sources_revslider', $metas['eg_sources_revslider']);
-		
+		if(isset($metas['eg_sources_revslider'])) update_post_meta($post_id, 'eg_sources_revslider', $metas['eg_sources_revslider']);
 	}
 	
 	
@@ -136,13 +123,12 @@ class RevSliderExtension {
 	 * Adds needed javascript to the DOM
 	 */
 	public function add_eg_additional_inline_javascript(){
-		?>
-		<script type="text/javascript">
+		?><script>var ajaxRevslider;function rsCustomAjaxContentLoadingFunction(){ajaxRevslider=function(obj){var content='',data={action:'revslider_ajax_call_front',client_action:'get_slider_html',token:'<?php echo wp_create_nonce("RevSlider_Front");?>',type:obj.type,id:obj.id,aspectratio:obj.aspectratio};jQuery.ajax({type:'post',url:'<?php echo admin_url("admin-ajax.php");?>',dataType:'json',data:data,async:false,success:function(ret,textStatus,XMLHttpRequest){if(ret.success==true)content=ret.data;},error:function(e){console.log(e);}});return content;};var ajaxRemoveRevslider=function(obj){return jQuery(obj.selector+' .rev_slider').revkill();};if(jQuery.fn.tpessential!==undefined)if(typeof(jQuery.fn.tpessential.defaults)!=='undefined')jQuery.fn.tpessential.defaults.ajaxTypes.push({type:'revslider',func:ajaxRevslider,killfunc:ajaxRemoveRevslider,openAnimationSpeed:0.3});}var rsCustomAjaxContent_Once=false;if(document.readyState==="loading")document.addEventListener('readystatechange',function(){if((document.readyState==="interactive"||document.readyState==="complete")&&!rsCustomAjaxContent_Once){rsCustomAjaxContent_Once=true;rsCustomAjaxContentLoadingFunction();}});else{rsCustomAjaxContent_Once=true;rsCustomAjaxContentLoadingFunction();}</script><?php
+		/*
+		unminimized code:
+		<script>
 			var ajaxRevslider;
-			
-			jQuery(document).ready(function() {
-
-				
+			function rsCustomAjaxContentLoadingFunction() {
 				// CUSTOM AJAX CONTENT LOADING FUNCTION
 				ajaxRevslider = function(obj) {
 				
@@ -194,16 +180,27 @@ class RevSliderExtension {
 						// type:  Name of the Post to load via Ajax into the Essential Grid Ajax Container
 						// func: the Function Name which is Called once the Item with the Post Type has been clicked
 						// killfunc: function to kill in case the Ajax Window going to be removed (before Remove function !
-						// openAnimationSpeed: how quick the Ajax Content window should be animated (default is 0.3)
-					
-				
-				
-			});
+						// openAnimationSpeed: how quick the Ajax Content window should be animated (default is 0.3)					
+			}
+			
+			var rsCustomAjaxContent_Once = false
+			if (document.readyState === "loading") 
+				document.addEventListener('readystatechange',function(){
+					if ((document.readyState === "interactive" || document.readyState === "complete") && !rsCustomAjaxContent_Once) {
+						rsCustomAjaxContent_Once = true;
+						rsCustomAjaxContentLoadingFunction();
+					}
+				});
+			else {
+				rsCustomAjaxContent_Once = true;
+				rsCustomAjaxContentLoadingFunction();
+			}					
 		</script>
 		<?php
+		*/
 	}
 	
 }
 
+global $revext;
 $revext	= new RevSliderExtension();
-?>

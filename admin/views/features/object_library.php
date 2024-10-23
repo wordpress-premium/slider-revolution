@@ -1,198 +1,147 @@
 <?php
 if(!defined('ABSPATH')) exit();
 ?>
-	<rs-module-wrap id="rev_slider_737_1_wrapper" data-alias="rvsldr-object-library" data-source="gallery" style="background:#2a2c2f;padding:0px;margin:0px auto;margin-top:0px;margin-bottom:0px;">
-							<rs-module id="rev_slider_737_1" class="feature_slider" style="display:none;" data-version="6.0.0">
-								<rs-slides>
-									<rs-slide data-key="rs-2451" data-title="Slide" data-anim="ei:d;eo:d;s:300;r:0;t:fade;sl:d;">
-										<img src="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/dummy.png" title="kriki" data-lazyload="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/transparent.png" data-bg="p:center center;c:#2a2c2f;" class="rev-slidebg" data-no-retina>
-						<!--
-										--><rs-layer
-											id="slide-2451-layer-18" 
-											data-type="text"
-											data-color="#b7bbc0"
-											data-rsp_ch="on"
-											data-xy="x:98px;y:37px;"
-											data-text="s:30;l:30;a:center;"
-											data-dim="w:30px;h:30px;"
-											data-border="bow:0px;"
-											data-frame_0="x:-200px;"
-											data-frame_1="e:Power4.easeOut;st:400;sp:2000;sR:400;"
-											data-frame_999="y:-200px;st:a;sp:700;sR:6600;"
-											data-loop_0="yR:4px;y:-4;oX:50;oY:50;"
-											data-loop_999="xR:4px;yR:4px;y:4;sp:10000;yym:t;yys:t;yyf:t;"
-											style="z-index:5;font-family:Open Sans;"
-										><i class="fa-diamond"></i> 
-										</rs-layer><!--
+	<rs-module-wrap id="rev_slider_1029_1_wrapper" data-alias="benefit-library" data-source="gallery" style="background:transparent;padding:0;margin:0px auto;margin-top:0;margin-bottom:0;">
+				<rs-module id="rev_slider_1029_1" class="feature_slider" style="" data-version="6.2.50">
+					<rs-slides>
+						<rs-slide style="position: absolute;" data-key="rs-2090" data-title="Slide" data-in="o:0;" data-out="a:false;">
+							<img src="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/transparent.png" alt="Slide" class="rev-slidebg tp-rs-img" data-no-retina>
+<!--
+							--><rs-group
+								id="slider-1029-slide-2090-layer-6" 
+								data-type="group"
+								data-rsp_ch="on"
+								data-xy="x:c;"
+								data-text="w:normal;"
+								data-dim="w:380px;h:430px;"
+								data-clip="u:true;t:circle;o:clr;"
+								data-frame_0="o:1;cp:0%;"
+								data-frame_1="sp:1000;cp:75%;"
+								data-frame_999="o:0;st:w;sA:9000;"
+								style="z-index:15;"
+							><!--
+								--><rs-layer
+									id="slider-1029-slide-2090-layer-0" 
+									class="rs-noevents rs-nolc rs-layer-video intrinsic-ignore"
+									data-type="video"
+									data-rsp_ch="on"
+									data-xy="x:c;"
+									data-text="w:normal;"
+									data-dim="w:380px;h:214px;"
+									data-video="vfc:true;ap:false;vd:100;noint:t;l:true;ptimer:false;nse:f;sav:f;"
+									data-mp4="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/library_video.mp4"
+									data-frame_1="st:800;sR:800;"
+									data-frame_999="o:0;st:w;sR:7900;"
+									style="z-index:9;"
+								>
+								</rs-layer><!--
 
-										--><rs-layer
-											id="slide-2451-layer-20" 
-											data-type="text"
-											data-color="#b7bbc0"
-											data-rsp_ch="on"
-											data-xy="x:31px;y:109px;"
-											data-text="s:30;l:30;a:center;"
-											data-dim="w:30px;h:30px;"
-											data-border="bow:0px;"
-											data-frame_0="x:-200px;"
-											data-frame_1="e:Power4.easeOut;st:500;sp:2000;sR:500;"
-											data-frame_999="y:-200px;st:a;sp:700;sR:6500;"
-											data-loop_0="yR:1px;y:-2;oX:50;oY:50;"
-											data-loop_999="xR:1px;yR:1px;y:2;sp:10000;yym:t;yys:t;yyf:t;"
-											style="z-index:6;font-family:Open Sans;"
-										><i class="fa-comment-o"></i> 
-										</rs-layer><!--
+								--><a
+									id="slider-1029-slide-2090-layer-1" 
+									class="rs-layer"
+									href="https://www.sliderrevolution.com/pro-level-design-with-slider-revolution/?utm_source=admin&utm_medium=button&utm_campaign=srusers&utm_content=moreinfo" target="_blank" rel="nofollow noopener"
+									data-type="shape"
+									data-rsp_ch="on"
+									data-xy="x:c;"
+									data-text="w:normal;"
+									data-dim="w:100%;h:100%;"
+									data-actions='o:mouseenter;a:gotoframe;layer:slider-1029-slide-2090-layer-3;f:frame_2;ch:true;||o:mouseleave;a:gotoframe;layer:slider-1029-slide-2090-layer-3;f:frame_3;ch:true;||o:mouseenter;a:playvideo;layer:slider-1029-slide-2090-layer-0;||o:mouseleave;a:stopvideo;layer:slider-1029-slide-2090-layer-0;||o:mouseenter;a:gotoframe;layer:slider-1029-slide-2090-layer-4;f:frame_2;ch:true;||o:mouseleave;a:gotoframe;layer:slider-1029-slide-2090-layer-4;f:frame_3;ch:true;||o:mouseenter;a:gotoframe;layer:slider-1029-slide-2090-layer-5;f:frame_2;ch:true;||o:mouseleave;a:gotoframe;layer:slider-1029-slide-2090-layer-5;f:frame_3;ch:true;'
+									data-frame_1="sp:600;"
+									data-frame_999="o:0;st:w;sR:8700;"
+									data-frame_hover="bgc:#006dd2;sp:200ms;e:power1.inOut;"
+									style="z-index:8;background-color:#2a2c2f;cursor:pointer;"
+								> 
+								</a><!--
 
-										--><rs-layer
-											id="slide-2451-layer-1" 
-											data-type="image"
-											data-rsp_ch="on"
-											data-xy="x:c;xo:-119px;y:b;yo:-39px;"
-											data-text="l:22;a:inherit;"
-											data-dim="w:200px;h:200px;"
-											data-border="bow:0px;"
-											data-frame_0="x:left;o:1;"
-											data-frame_1="e:Power4.easeOut;st:160;sp:2000;sR:160;"
-											data-frame_999="st:a;sp:1000;sR:6840;auto:true"
-											style="z-index:7;"
-										><img src="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/dummy.png" data-ww="200px" data-hh="200px" width="200" height="200" data-lazyload="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/object_library_headphones.png" data-no-retina> 
-										</rs-layer><!--
+								--><rs-layer
+									id="slider-1029-slide-2090-layer-2" 
+									class="rs-noevents"
+									data-type="text"
+									data-color="#ffffff"
+									data-rsp_ch="on"
+									data-xy="x:c;y:235px;"
+									data-text="w:normal;fw:700;a:center;"
+									data-dim="w:100%;"
+									data-padding="r:20;l:20;"
+									data-frame_1="sp:600;"
+									data-frame_999="o:0;st:w;sR:8400;"
+									style="z-index:10;font-family:'Roboto';"
+								>Eye-Popping Media Assets To Bring Your Creative Vision To Life 
+								</rs-layer><!--
 
-										--><rs-layer
-											id="slide-2451-layer-15" 
-											data-type="image"
-											data-rsp_ch="on"
-											data-xy="x:c;xo:144px;y:b;yo:-38px;"
-											data-text="l:22;a:inherit;"
-											data-dim="w:200px;h:230px;"
-											data-border="bow:0px;"
-											data-frame_0="x:right;o:1;"
-											data-frame_1="e:Power4.easeOut;st:160;sp:2000;sR:160;"
-											data-frame_999="st:a;sp:1000;sR:6840;;auto:true"
-											style="z-index:8;"
-										><img src="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/dummy.png" data-ww="200px" data-hh="230px" width="200" height="230" data-lazyload="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/object_library_phone.png" data-no-retina> 
-										</rs-layer><!--
+								--><rs-layer
+									id="slider-1029-slide-2090-layer-3" 
+									class="rev-btn rs-noevents"
+									data-type="button"
+									data-color="#b7bbc0"
+									data-rsp_ch="on"
+									data-xy="x:c;y:360px;"
+									data-text="w:normal;s:15;l:32;fw:500;"
+									data-dim="minh:0px;"
+									data-padding="r:35;l:35;"
+									data-border="bor:3px,3px,3px,3px;"
+									data-ford="frame_0;frame_1;frame_2;frame_3;frame_999;"
+									data-frame_1="sp:600;"
+									data-frame_999="o:0;st:w;sR:7300;"
+									data-frame_2="oX:50%;oY:50%;oZ:0;tp:600;e:power1.inOut;st:a;sp:200;sR:400;c:#ffffff;bgc:#005db3;"
+									data-frame_3="oX:50%;oY:50%;oZ:0;tp:600;e:power1.inOut;st:a;sp:200;sR:300;"
+									style="z-index:12;background-color:#3a3e44;font-family:'Roboto';"
+								>Explore Beautiful Media Assets! 
+								</rs-layer><!--
 
-										--><rs-layer
-											id="slide-2451-layer-17" 
-											data-type="text"
-											data-color="#b7bbc0"
-											data-rsp_ch="on"
-											data-xy="x:49px;y:20px;"
-											data-text="s:30;l:30;a:center;"
-											data-dim="w:30px;h:30px;"
-											data-border="bow:0px;"
-											data-frame_0="x:-200px;"
-											data-frame_1="e:Power4.easeOut;st:300;sp:2000;sR:300;"
-											data-frame_999="y:-200px;st:a;sp:700;sR:6700;"
-											data-loop_0="yR:3px;y:-2;oX:50;oY:50;"
-											data-loop_999="xR:3px;yR:3px;y:2;sp:10000;yym:t;yys:t;yyf:t;"
-											style="z-index:9;font-family:Open Sans;"
-										><i class="fa-flash"></i> 
-										</rs-layer><!--
+								--><rs-layer
+									id="slider-1029-slide-2090-layer-4" 
+									class="rs-noevents"
+									data-type="shape"
+									data-rsp_ch="on"
+									data-xy="x:c;y:2px;"
+									data-text="w:normal;"
+									data-dim="w:380px;h:214px;"
+									data-ford="frame_0;frame_1;frame_2;frame_3;frame_999;"
+									data-frame_1="sp:600;"
+									data-frame_999="o:0;st:w;sR:7300;"
+									data-frame_2="o:0;oX:50%;oY:50%;oZ:0;tp:600;e:power1.inOut;st:a;sp:200;sR:400;"
+									data-frame_3="o:1;oX:50%;oY:50%;oZ:0;tp:600;e:power1.inOut;st:a;sp:200;sR:300;"
+									style="z-index:14;background:linear-gradient(rgba(32,34,36,0) 0%, rgba(32,34,36,0.01) 6.67%, rgba(32,34,36,0.04) 13.34%, rgba(32,34,36,0.1) 20.01%, rgba(32,34,36,0.17) 26.68%, rgba(32,34,36,0.25) 33.35%, rgba(32,34,36,0.35) 40.02%, rgba(32,34,36,0.45) 46.69%, rgba(32,34,36,0.55) 53.36%, rgba(32,34,36,0.65) 60.03%, rgba(32,34,36,0.75) 66.70%, rgba(32,34,36,0.83) 73.37%, rgba(32,34,36,0.9) 80.04%, rgba(32,34,36,0.96) 86.71%, rgba(32,34,36,0.99) 93.38%, rgba(32,34,36,1) 100%);"
+								> 
+								</rs-layer><!--
 
-										--><rs-layer
-											id="slide-2451-layer-19" 
-											data-type="text"
-											data-color="#b7bbc0"
-											data-rsp_ch="on"
-											data-xy="x:19px;y:59px;"
-											data-text="s:30;l:30;a:center;"
-											data-dim="w:30px;h:30px;"
-											data-border="bow:0px;"
-											data-frame_0="x:-200px;"
-											data-frame_1="e:Power4.easeOut;st:200;sp:2000;sR:200;"
-											data-frame_999="y:-200px;st:a;sp:700;sR:6800;"
-											data-loop_0="yR:2px;y:-3;oX:50;oY:50;"
-											data-loop_999="xR:2px;yR:2px;y:3;sp:10000;yym:t;yys:t;yyf:t;"
-											style="z-index:10;font-family:Open Sans;"
-										><i class="fa-cloud-download"></i> 
-										</rs-layer><!--
+								--><rs-layer
+									id="slider-1029-slide-2090-layer-5" 
+									class="rs-noevents"
+									data-type="image"
+									data-rsp_ch="on"
+									data-xy="x:c;"
+									data-text="w:normal;"
+									data-dim="w:380px;h:214px;"
+									data-ford="frame_0;frame_1;frame_2;frame_3;frame_999;"
+									data-frame_0="sX:0.6;sY:0.6;"
+									data-frame_0_mask="u:t;"
+									data-frame_1="st:200;sp:600;sR:200;"
+									data-frame_999="o:0;st:w;sR:7100;"
+									data-frame_2="y:top;oX:50%;oY:50%;oZ:0;tp:600;e:power1.inOut;st:a;sp:400;sR:200;"
+									data-frame_3="y:0px;oX:50%;oY:50%;oZ:0;tp:600;e:power1.inOut;st:a;sp:400;sR:100;"
+									style="z-index:13;"
+								><img src="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/coverlibrary.jpg" alt="" class="tp-rs-img" width="760" height="428" data-no-retina> 
+								</rs-layer><!--
 
-										--><rs-layer
-											id="slide-2451-layer-11" 
-											data-type="image"
-											data-rsp_ch="on"
-											data-xy="x:c;y:c;"
-											data-text="l:22;a:inherit;"
-											data-dim="w:100%;h:100%;"
-											data-border="bow:0px;"
-											data-frame_0="y:bottom;sX:2;sY:2;"
-											data-frame_1="st:a;sp:1000;sR:160;"
-											data-frame_999="auto:true;st:a;sp:700;sR:7840;"
-											style="z-index:11;"
-										><img src="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/dummy.png" data-ww="full-proportional" data-hh="full-proportional" width="640" height="427" data-lazyload="<?php echo RS_PLUGIN_URL;?>admin/views/features/assets/object_library_bg-1.jpg" data-no-retina> 
-										</rs-layer><!--
-
-										--><rs-layer
-											id="slide-2451-layer-2" 
-											data-type="text"
-											data-color="#ffffff"
-											data-rsp_ch="on"
-											data-xy="x:c;y:c;yo:-20px;"
-											data-text="s:25;l:30;fw:700;a:center;"
-											data-border="bow:0px;"
-											data-frame_0="y:-50;"
-											data-frame_1="e:Power4.easeOut;st:160;sp:1000;sR:160;"
-											data-frame_999="y:50;o:0;e:Power4.easeOut;st:a;sp:600;sR:7840;"
-											style="z-index:12;font-family:Roboto;"
-										>2500+<br/>
-						Images, Videos & Icons 
-										</rs-layer><!--
-
-										--><rs-layer
-											id="slide-2451-layer-12" 
-											data-type="text"
-											data-color="#ffffff"
-											data-rsp_ch="on"
-											data-xy="x:c;y:c;yo:-20px;"
-											data-text="s:25;l:30;fw:700;a:center;"
-											data-border="bow:0px;"
-											data-frame_0="y:-50;"
-											data-frame_1="e:Power4.easeOut;st:a;sp:1000;sR:100;"
-											data-frame_999="y:50px;o:0;e:Power4.easeOut;st:a;sp:600;sR:7900;"
-											style="z-index:13;font-family:Roboto;"
-										>Powerful GFX<br/>
-						At Your Fingertips 
-										</rs-layer><!--
-
-										--><rs-layer
-											id="slide-2451-layer-4" 
-											class="rev-btn"
-											data-type="button"
-											data-color="rgba(255,255,255,1)"
-											data-xy="x:c;y:c;yo:40px;"
-											data-text="s:15;l:34;fw:500;a:inherit;"
-											data-rsp_bd="off"
-											data-padding="r:35;l:35;"
-											data-border="bos:solid;boc:rgba(0,0,0,1);bow:0px;bor:3px,3px,3px,3px;"
-											data-frame_0="y:50;"
-											data-frame_1="e:Power4.easeOut;st:500;sp:1000;sR:500;"
-											data-frame_999="o:0;e:Power4.easeInOut;st:w;sp:1000;sR:7500;"
-											data-frame_hover="c:rgba(255,255,255,1);bgc:#0a447a;boc:rgba(0,0,0,1);bor:3px,3px,3px,3px;bos:solid;oX:50;oY:50;sp:300;"
-											style="z-index:14;background-color:#006dd2;font-family:Roboto;"
-										>Object Library 
-										</rs-layer><!--
-
-										--><a
-											href="//revolution.themepunch.com/direct-customer-benefits/"
-											target="_blank"
-											class="tp-shape tp-shapewrapper rs-layer"
-											data-type="shape"
-											data-rsp_ch="on"
-											data-xy="x:c;y:c;"
-											data-text="fw:700;a:inherit;"
-											data-dim="w:100%;h:100%;"
-											data-actions='o:mouseenter;a:stoplayer;layer:slide-2451-layer-2;||o:mouseenter;a:stoplayer;layer:slide-2451-layer-1;||o:mouseenter;a:stoplayer;layer:slide-2451-layer-15;||o:mouseenter;a:stoplayer;layer:slide-2451-layer-17;d:150;||o:mouseenter;a:stoplayer;layer:slide-2451-layer-18;d:200;||o:mouseenter;a:stoplayer;layer:slide-2451-layer-19;d:50;||o:mouseenter;a:stoplayer;layer:slide-2451-layer-20;d:100;||o:mouseenter;a:startlayer;layer:slide-2451-layer-12;||o:mouseenter;a:startlayer;layer:slide-2451-layer-11;||o:mouseleave;a:stoplayer;layer:slide-2451-layer-12;||o:mouseleave;a:stoplayer;layer:slide-2451-layer-11;||o:mouseleave;a:startlayer;layer:slide-2451-layer-2;||o:mouseleave;a:startlayer;layer:slide-2451-layer-1;||o:mouseleave;a:startlayer;layer:slide-2451-layer-15;||o:mouseleave;a:startlayer;layer:slide-2451-layer-17;d:100;||o:mouseleave;a:startlayer;layer:slide-2451-layer-18;d:50;||o:mouseleave;a:startlayer;layer:slide-2451-layer-19;d:200;||o:mouseleave;a:startlayer;layer:slide-2451-layer-20;d:150;'
-											data-basealign="slide"
-											data-border="bos:solid;boc:rgba(0,0,0,0.5);bow:0px;"
-											data-frame_1="st:160;sR:160;"
-											data-frame_999="o:0;st:w;sR:8540;"
-											style="z-index:15;"
-										> 
-										</a><!--
-									--></rs-slide>
-								</rs-slides>
-								<rs-progress class="rs-bottom" style="visibility: hidden !important;"></rs-progress>
-							</rs-module>
-						</rs-module-wrap>
+								--><rs-layer
+									id="slider-1029-slide-2090-layer-7" 
+									class="rs-noevents"
+									data-type="text"
+									data-color="rgba(255, 255, 255, 0.5)"
+									data-rsp_ch="on"
+									data-xy="x:c;y:300px;"
+									data-text="w:normal;s:15;l:20;a:center;"
+									data-dim="w:100%;"
+									data-padding="r:20;l:20;"
+									data-frame_1="sp:600;"
+									data-frame_999="o:0;st:w;sR:8400;"
+									style="z-index:11;font-family:'Roboto';"
+								>Utilize 2000+ media assets to convert boring elements into impressive visuals 
+								</rs-layer><!--
+							--></rs-group><!--
+-->						</rs-slide>
+					</rs-slides>
+				</rs-module>		
+			</rs-module-wrap>

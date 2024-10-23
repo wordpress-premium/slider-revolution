@@ -1,0 +1,10 @@
+sr7-prl.prlt1 {
+	width: 40px;
+	height: 40px;
+	background-color: #fff;
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.15);
+	margin-top:-20px;
+	margin-left:-20px;
+	animation: tp-rotateplane 1.2s infinite ease-in-out;
+	border-radius: 3px;
+}

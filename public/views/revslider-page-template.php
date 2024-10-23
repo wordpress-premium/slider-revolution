@@ -6,7 +6,8 @@
  */
  
 if(!defined('ABSPATH')) exit();
-
+$page_bg = get_post_meta(get_the_ID(), 'rs_page_bg_color', true);
+$page_bg = ($page_bg == '' || $page_bg == 'transparent') ? 'transparent' : $page_bg.";";
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?> class="no-js">
@@ -17,26 +18,32 @@ if(!defined('ABSPATH')) exit();
 		<link rel="profile" href="http://gmpg.org/xfn/11">
 		<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>">
 		<?php wp_head(); ?>
-		<style type="text/css">
+		<style>
 			body:before { display:none !important}
 			body:after { display:none !important}
-			body { background:transparent}
+			body, body.page-template-revslider-page-template, body.page-template---publicviewsrevslider-page-template-php { background:<?php echo $page_bg;?>}
 		</style>
 	</head>
 
 	<body <?php body_class(); ?>>
+		<?php do_action('rs_page_template_pre_content'); ?>
 		<div>
 			<?php
 			// Start the loop.
 			while(have_posts()) : the_post();
 
 				// Include the page content template.
-				echo do_shortcode(get_the_content());
+				if(!isset($SR_GLOBALS['preview_mode']) || $SR_GLOBALS['preview_mode'] === false){
+					the_content();
+				}else{
+					echo do_shortcode(get_the_content());
+				}
 
 			// End the loop.
 			endwhile;
 			?>
 		</div>
+		<?php do_action('rs_page_template_post_content'); ?>
 		<?php wp_footer(); ?>
 		
 	</body>

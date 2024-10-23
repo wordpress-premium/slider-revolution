@@ -1,0 +1,14 @@
+sr7-prl.prlt2 {
+	width: 40px;
+	height: 40px;
+	margin-top:-20px;margin-left:-20px;
+	background-color: #ff0000;
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.15);
+	border-radius: 100%;
+	animation: tp-scaleout 1.0s infinite ease-in-out;
+}
+
+@keyframes tp-scaleout {
+	0% {transform: scale(0.0);}
+	100% {transform: scale(1.0);opacity: 0;}
+}

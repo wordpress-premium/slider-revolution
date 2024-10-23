@@ -511,14 +511,8 @@
 
 
 
-
-
-
-
-
-
-
-
+body.rtl .rs-tooltip-btn i { margin-left: 10px; margin-right: 0px }
+body.rtl .rs-tooltip-check { margin-left: 10px; margin-right: 0px }
 
 
 

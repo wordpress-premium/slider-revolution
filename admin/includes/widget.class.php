@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
  
 if(!defined('ABSPATH')) exit();
@@ -88,13 +88,18 @@ class RevSliderWidget extends WP_Widget {
      */
     public function widget($args, $instance){
 		try {
+			global $SR_GLOBALS;
+			
 			$_slider = new RevSliderSlider();
 			
 			$sid = $_slider->get_val($instance, 'rev_slider');
 			
 			if(empty($sid)) return(false);
-			
-			$output = new RevSliderOutput();
+			if($SR_GLOBALS['front_version'] === 6){
+				$output = new RevSliderOutput();
+			}else{
+				$output = new RevSlider7Output();
+			}
 			
 			$title		= $_slider->get_val($instance, 'rev_slider_title');
 			$homepage	= ($_slider->get_val($instance, 'rev_slider_homepage') == 'on') ? 'homepage' : '';
@@ -141,4 +146,3 @@ class RevSliderWidget extends WP_Widget {
  * @since: 5.0
  **/
 class RevSlider_Widget extends RevSliderWidget {}
-?>

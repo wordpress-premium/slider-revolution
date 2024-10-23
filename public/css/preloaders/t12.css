@@ -1,0 +1,33 @@
+sr7-prl.prlt12 {
+	width: 35px;
+	height: 35px;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%)
+}
+
+sr7-prl.prlt12 .sr7-prl-inner {
+	width: 100%;
+	height: 100%;
+	-webkit-animation: rs-revealer-12 1s infinite linear;
+	animation: rs-revealer-12 1s infinite linear
+}
+
+@-webkit-keyframes rs-revealer-12 {
+	0% {
+		-webkit-transform: rotate(0)
+	}
+
+	100% {
+		-webkit-transform: rotate(360deg)
+	}
+}
+
+@keyframes rs-revealer-12 {
+	0% {
+		transform: rotate(0)
+	}
+
+	100% {
+		transform: rotate(360deg)
+	}
+}

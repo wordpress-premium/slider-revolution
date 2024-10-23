@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  * @since	  6.0
  */
 
@@ -72,14 +72,14 @@ class RevSliderFolder extends RevSliderSlider {
 	/**
 	 * Create a new Slider as a Folder
 	 **/
-	public function create_folder($alias = 'New Folder'){
+	public function create_folder($alias = 'New Folder', $parent = 0){
 		global $wpdb;
 		
-		$title  	= esc_html($alias);
-		$alias  	= sanitize_title($title);
-		$temp		= $title;
-		$folder 	= false;
-		$ti			= 1;
+		$title  = esc_html($alias);
+		$alias  = sanitize_title($title);
+		$temp	= $title;
+		$folder = false;
+		$ti		= 1;
 		while($this->alias_exists($alias)){ //set a new alias and title if its existing in database
 			$title = $temp . ' ' . $ti;
 			$alias = sanitize_title($title);
@@ -91,6 +91,14 @@ class RevSliderFolder extends RevSliderSlider {
 		if($done !== false){
 			$this->init_folder_by_id($wpdb->insert_id);
 			$folder = $this;
+			if(intval($parent) > 0){
+				$slider		= new RevSliderFolder();
+				$slider->init_folder_by_id($parent);
+				$children	= $slider->get_children();
+				$children	= (!is_array($children)) ? array() : $children;
+				$children[] = $this->get_id();
+				$slider->add_slider_to_folder($children, $parent);
+			}
 		}
 		
 		return $folder;
@@ -124,6 +132,7 @@ class RevSliderFolder extends RevSliderSlider {
 				}
 			}
 			$response = $wpdb->update($wpdb->prefix . RevSliderFront::TABLE_SLIDER, array('settings' => json_encode($settings)), array('id' => $folder_id));
+			$response = ($response == false && empty($wpdb->last_error)) ? true : $response;
 		}
 		
 		return $response;
@@ -136,5 +145,12 @@ class RevSliderFolder extends RevSliderSlider {
 	public function get_children(){
 		return $this->get_val($this->settings, 'children', array());
 	}
+	
+	/**
+	 * Get the Children of the folder (if any exist)
+	 * @since: 6.1.4
+	 **/
+	public function set_children($children){
+		return $this->set_val($this->settings, 'children', $children);
+	}
 }
-?>

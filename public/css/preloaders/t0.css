@@ -1,0 +1,13 @@
+sr7-prl.prlt0 {
+	width: 40px;
+	height: 40px;
+	background-color: #fff;
+	background-image:url(./loader.gif);
+	background-repeat:no-repeat;
+	background-position: center center;
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.15);
+	margin-top:-20px;
+	margin-left:-20px;
+	animation: tp-rotateplane 1.2s infinite ease-in-out;
+	border-radius: 3px;
+}

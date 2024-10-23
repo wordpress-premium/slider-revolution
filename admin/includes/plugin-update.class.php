@@ -2,85 +2,41 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
 
 if(!defined('ABSPATH')) exit();
 
 class RevSliderPluginUpdate extends RevSliderFunctions {
 
-	public $_respsizesold = array('desktop', 'notebook', 'tablet', 'mobile');
-	public $_respsizes = array('d', 'n', 't', 'm');
-	public $_corners = array(
-		'cornerLeft' => array(
-			'nothing' => 'none',
-			'curved' => 'rs-fcr',
-			'reverced' => 'rs-fcrt'
-		),
-		'cornerRight' => array(
-			'nothing' => 'none',
-			'curved' => 'rs-bcr',
-			'reverced' => 'rs-bcrt'
-		)
-	);
-	public $add_to_transition_speed = array(
-		'slotslide-horizontal'	=> 200,
-		'slotslide-vertical'	=> 200,
-		'slotzoom-horizontal'	=> 400,
-		'slotfade-horizontal'	=> 1000,
-		'slotfade-vertical'		=> 1000,
-		'fade'					=> 300,
-		'crossfade'				=> 300,
-		'fadethroughdark'		=> 300,
-		'fadethroughlight'		=> 300,
-		'fadethroughtransparent' => 300,
-		'papercut'				=> 600,
-		'3dcurtain-horizontal'	=> 100,
-		'3dcurtain-vertical'	=> 100,
-		'cubic'					=> 600,
-		'cube'					=> 600,
-		'flyin'					=> 600,
-		'turnoff'				=> 500,
-		'incube'				=> 200,
-		'cubic-horizontal'		=> 500,
-		'cube-horizontal'		=> 500,
-		'incube-horizontal'		=> 500,
-		'turnoff-vertical'		=> 200,
-		'grayscale'				=> 300,
-		'grayscalecross'		=> 300,
-		'brightness'			=> 300,
-		'brightnesscross'		=> 300,
-		'blurlight'				=> 300,
-		'blurlightcross'		=> 300,
-		'blurstrong'			=> 300,
-		'blurstrongcross'		=> 300
-	);
-	public $_metas = array('home_url', 'current_page_link', 'link', 'title', 'excerpt', 'alias', 'content', 'link', 'date', 'date_modified', 'author_name', 'author_posts', 'author_website', 'num_comments', 'catlist', 'catlist_raw', 'taglist', 'id', 'wc_full_price', 'wc_price', 'wc_price_no_cur', 'wc_stock', 'wc_rating', 'wc_star_rating', 'wc_categories', 'wc_add_to_cart', 'wc_add_to_cart_button', 'wc_sku', 'wc_stock_quantity', 'wc_rating_count', 'wc_review_count', 'wc_tags', 'link', 'title', 'excerpt', 'description', 'alias', 'content', 'link', 'date_published', 'date_modified', 'author_name', 'num_comments', 'catlist', 'catlist_raw', 'taglist', 'likes', 'retweet_count', 'favorite_count', 'views', 't_days', 't_hours', 't_minutes', 't_seconds', 'event_start_date', 'event_end_date', 'event_start_tim', 'event_end_time', 'event_event_id', 'event_location_name', 'event_location_slug', 'event_location_address', 'event_location_town', 'event_location_state', 'event_location_postcode', 'event_location_region', 'event_location_country', 'param1', 'param2', 'param3', 'param4', 'param5', 'param6', 'param7', 'param8', 'param9', 'param10', '/%meta:\w+%/', '/%content:\w+[\:]\w+%/', '/%author_avatar:\w+%/', '/%image_url_\w+%/', '/%image_\w+%/', '/%featured_image_url_\w+%/', '/%featured_image_\w+%/');
-	public $z_index = 5;
-	public $navtypes = array('arrows', 'thumbs', 'bullets', 'tabs');
 	public $revision;
-	public $blank_slide = false; //holds a blank slide to remove unneeded values in slides as a compare
-	public $blank_layer = array(); //holds a blank layer to remove unneeded values in layers as a compare, as more than one type of layer exists, it fills with keys as the type
-	
-	public $upgrade_layer_type = false; //holds the type of the layer, for the _compare function to 
-	public $current_parent = false; //holds the parent key for the compare function, which allows for deeper checks to remove/not remove keys depending on where in the tree we are
-
-	public $css_navigations = array(); //holds css navigations
-	public $googlefonts = array(); //holds googlefonts
-	public $upd_animations = array(); //holds animations
+	public $upgrade_layer_type = false; //holds the type of the layer, for the _compare function to
+	public $add_to_transition_speed = array('slotslide-horizontal' => 200, 'slotslide-vertical' => 200, 'slotzoom-horizontal' => 400, 'slotfade-horizontal' => 1000, 'slotfade-vertical' => 1000, 'fade' => 300, 'crossfade' => 300, 'fadethroughdark' => 300, 'fadethroughlight' => 300, 'fadethroughtransparent' => 300, 'papercut' => 600, '3dcurtain-horizontal' => 100, '3dcurtain-vertical' => 100, 'cubic' => 600, 'cube' => 600, 'flyin' => 600, 'turnoff' => 500, 'incube' => 200, 'cubic-horizontal' => 500, 'cube-horizontal' => 500, 'incube-horizontal' => 500, 'turnoff-vertical' => 200, 'grayscale' => 300, 'grayscalecross' => 300, 'brightness' => 300, 'brightnesscross' => 300, 'blurlight' => 300, 'blurlightcross' => 300, 'blurstrong' => 300, 'blurstrongcross' => 300);
+	public $_respsizesold	= array('desktop', 'notebook', 'tablet', 'mobile');
+	public $_respsizes		= array('d', 'n', 't', 'm');
+	public $_corners		= array('cornerLeft' => array('nothing' => 'none', 'curved' => 'rs-fcr', 'reverced' => 'rs-fcrt'), 'cornerRight' => array('nothing' => 'none', 'curved' => 'rs-bcr', 'reverced' => 'rs-bcrt'));
+	public $_metas			= array('home_url', 'current_page_link', 'link', 'title', 'excerpt', 'alias', 'content', 'link', 'date', 'date_modified', 'author_name', 'author_posts', 'author_website', 'num_comments', 'catlist', 'catlist_raw', 'taglist', 'id', 'wc_full_price', 'wc_price', 'wc_price_no_cur', 'wc_stock', 'wc_rating', 'wc_star_rating', 'wc_categories', 'wc_add_to_cart', 'wc_add_to_cart_button', 'wc_sku', 'wc_stock_quantity', 'wc_rating_count', 'wc_review_count', 'wc_tags', 'link', 'title', 'excerpt', 'description', 'alias', 'content', 'link', 'date_published', 'date_modified', 'author_name', 'num_comments', 'catlist', 'catlist_raw', 'taglist', 'likes', 'retweet_count', 'favorite_count', 'views', 't_days', 't_hours', 't_minutes', 't_seconds', 'event_start_date', 'event_end_date', 'event_start_tim', 'event_end_time', 'event_event_id', 'event_location_name', 'event_location_slug', 'event_location_address', 'event_location_town', 'event_location_state', 'event_location_postcode', 'event_location_region', 'event_location_country', 'param1', 'param2', 'param3', 'param4', 'param5', 'param6', 'param7', 'param8', 'param9', 'param10', '/%meta:\w+%/', '/%content:\w+[\:]\w+%/', '/%author_avatar:\w+%/', '/%image_url_\w+%/', '/%image_\w+%/', '/%featured_image_url_\w+%/', '/%featured_image_\w+%/');
+	public $z_index			= 5;
+	public $navtypes		= array('arrows', 'thumbs', 'bullets', 'tabs', 'scrubber');
+	public $blank_slide		= false; //holds a blank slide to remove unneeded values in slides as a compare
+	public $blank_layer		= array(); //holds a blank layer to remove unneeded values in layers as a compare, as more than one type of layer exists, it fills with keys as the type
+	public $current_parent	= false; //holds the parent key for the compare function, which allows for deeper checks to remove/not remove keys depending on where in the tree we are
+	public $css_navigations	= array(); //holds css navigations
+	public $googlefonts		= array(); //holds googlefonts
+	public $upd_animations	= array(); //holds animations
 	
 	/**
 	 * for update to 6.0 added.
 	 * These 4 are set by each Slider and depending on their setting.
 	 * the layer effects are set to true/false
 	 **/
-	public $on_layers = false;
-	public $on_static_layers = false;
-	public $on_parallax_layers = false;
+	public $on_layers			= false;
+	public $on_static_layers	= false;
+	public $on_parallax_layers	= false;
 	public $on_parallax_static_layers = false;
-	public $on_counter = 0;
-	public $static_slide = false;
-	public $parallax_slider = false;
+	public $on_counter			= 0;
+	public $static_slide		= false;
+	public $parallax_slider		= false;
 	
 	/**
 	 * for update to 6.0
@@ -89,61 +45,86 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	public $slide_action_map = array();
 	
 	/**
+	 * holds variables needed for certain updates
+	 * @since: 6.2.0
+	 **/
+	public $update = array(
+		/**
+		 * for update to 6.2.0
+		 * it holds all easing names that need to be replaced whereever easings are used
+		 **/
+		'620' => array(
+			'ease_replace_adv'	=> array('Power0' => 'power0', 'Power1' => 'power1', 'Power2' => 'power2', 'Power3' => 'power3', 'Power4' => 'power4', 'Back' => 'back', 'Bounce' => 'bounce', 'Circ' => 'circ', 'Elastic' => 'elastic', 'Expo' => 'expo', 'Sine' => 'sine'),
+			'ease_adv_modifier' => array('easeIn' => 'in', 'easeOut' => 'out', 'easeInOut' => 'inOut'),
+			'ease_adv_from' => array('Linear.easeNone', 'SlowMo.ease'),
+			'ease_adv_to' => array('none', 'slow')
+		),
+		/**
+		 * for update to 6.6.10
+		 * it holds all file path that need to be changed inside the sliders
+		 **/
+		'6101' => array(
+			'url_from' => array(
+				'\/public\/assets\/assets\/dummy.png',
+				'\/public\/assets\/assets\/coloredbg-old.png',
+				'\/public\/assets\/assets\/coloredbg.png',
+				'\/public\/assets\/assets\/gridtile_3x3_white.png',
+				'\/public\/assets\/assets\/gridtile_3x3.png',
+				'\/public\/assets\/assets\/gridtile_white.png',
+				'\/public\/assets\/assets\/gridtile.png',
+				'\/public\/assets\/assets\/loader.gif',
+				'\/public\/assets\/assets\/transparent.png',
+				'\/public\/assets\/assets\/svg/',
+				'\/public\/assets\/assets\/sources/'
+			),
+			'url_to' => array(
+				'\/sr6\/assets\/assets\/dummy.png',
+				'\/sr6\/assets\/assets\/coloredbg-old.png',
+				'\/sr6\/assets\/assets\/coloredbg.png',
+				'\/sr6\/assets\/assets\/gridtile_3x3_white.png',
+				'\/sr6\/assets\/assets\/gridtile_3x3.png',
+				'\/sr6\/assets\/assets\/gridtile_white.png',
+				'\/sr6\/assets\/assets\/gridtile.png',
+				'\/sr6\/assets\/assets\/loader.gif',
+				'\/sr6\/assets\/assets\/transparent.png',
+				'\/public\/assets\/svg\/',
+				'\/public\/assets\/sources\/'
+			)
+		)
+	);
+	
+	/**
+	 * holds wheter we are importing an Slider or if we are updating existing Sliders
+	 * this is needed for update routines that should either be done on one of the two Slider types
+	 * like in the introduction of it in 6.5.30, where we changed the default of the adpr only for new Sliders!
+	 **/
+	public $import = false;
+	
+	/**
 	 * @since 5.0
 	 */
 	public function __construct(){
-		$this->revision = get_option('revslider_update_revision', '6.0.0');
-		
+		$this->revision = get_option('revslider_update_version', '6.0.0');
+
+		foreach($this->update['620']['ease_replace_adv'] as $a_f => $a_t){
+			foreach($this->update['620']['ease_adv_modifier'] as $a_m_f => $a_m_t){
+				$this->update['620']['ease_adv_from'][] = $a_f.'.'.$a_m_f;
+				$this->update['620']['ease_adv_to'][]	= $a_t.'.'.$a_m_t;
+			}
+		}
+	}
+
+	public function init_animations(){
+		if(empty($this->upd_animations)){
+			$this->upd_animations = $this->get_layer_animations();
+		}
+	}
+
+	public function init_googlefonts(){
 		if(empty($this->googlefonts)){
 			//direct inclusion for direct searching of google font
 			include(RS_PLUGIN_PATH.'includes/googlefonts.php');
 			$this->googlefonts = $googlefonts;
-		}
-		if(empty($this->upd_animations)){
-			$this->upd_animations = $this->get_layer_animations();
-			/**
-			 * this will push defaults into the missing values
-			 * was tested for the layer frame update, and seems not to be needed
-			$da = array(
-				'x'			=> 0,
-				'y'			=> 0,
-				'z'			=> 0,
-				'scaleX'	=> 1,
-				'scaleY'	=> 1,
-				'rotationX' => 0,
-				'rotationY' => 0,
-				'rotationZ' => 0,
-				'skewX' 	=> 0,
-				'skewY' 	=> 0
-			);
-			$fr = array('frame_0', 'frame_1', 'frame_999');
-			$ft = array('transform', 'chars', 'words', 'lines');
-			
-			if(!empty($this->upd_animations)){
-				foreach($this->upd_animations['in'] as $k => $v){
-					if(!empty($v)){
-						foreach($v as $vk => $vv){
-							if(isset($vv['transitions'])){
-								foreach($vv['transitions'] as $tk => $tv){
-									foreach($fr as $fv){
-										if(!isset($tv[$fv])) continue;
-										foreach($ft as $ftv){
-											if(!isset($tv[$fv][$ftv])) continue;
-											
-											foreach($da as $dak => $dav){
-												if(isset($tv[$fv][$ftv][$dak])) continue;
-												
-												$this->upd_animations['in'][$k][$vk]['transitions'][$tk][$tv][$fv][$ftv][$dak] = $dav;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			*/
 		}
 	}
 
@@ -153,7 +134,8 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	 */
 	public function get_version(){
 		$real_version = get_option('revslider_update_version', 1.0);
-
+		if(in_array($real_version, array('6.10.0', '6.10.1'), true)) $real_version = '6.6.20'; //this were dev versions
+		
 		return $real_version;
 	}
 
@@ -162,9 +144,15 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	 * @since 5.0
 	 */
 	public function set_version($set_to){
-
 		update_option('revslider_update_version', $set_to);
+	}
 
+	/**
+	 * set import value
+	 * @since 6.5.30
+	 */
+	public function set_import($import){
+		$this->import = $import;
 	}
 
 	/**
@@ -179,7 +167,6 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			$upd->update_css_styles(); //update styles to the new 5.0 way
 			$upd->add_v5_styles(); //add the version 5 styles that are new!
 			$upd->check_settings_table(); //remove the usage of the settings table
-			$upd->move_template_slider(); //move template sliders slides to the post based sliders and delete them/move them if not used
 			$upd->add_animation_settings_to_layer(); //set missing animation fields to the slides layers
 			$upd->add_style_settings_to_layer(); //set missing styling fields to the slides layers
 			$upd->change_settings_on_layers(); //change settings on layers, for example, add the new structure of actions
@@ -222,28 +209,140 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			
 			// new addition for global addons
 			$upd->change_global_addon_settings_to_6_0();
-			
 			$upd->set_version($version);
 		}
+		
+		//with 6.1.4, we check the animations again for custom animations
+		if(version_compare($version, '6.1.4', '<')){
+			$version = '6.1.4';
+			
+			$upd->change_animations_settings_to_6_0();
+			$upd->set_version($version);
+		}
+		
+		//with 6.1.6, we only set the version and upgrade_slider_to_latest() will do the rest
+		if(version_compare($version, '6.1.6', '<')){
+			$version = '6.1.6';
+			$upd->set_version($version);
+		}
+		
+		//with 6.2.0, we check the animations handles again and change them to a new format
+		if(version_compare($version, '6.2.0', '<')){
+			$version = '6.2.0';
+			
+			$upd->change_animations_settings_to_6_2_0();
+			$upd->change_global_settings_to_6_2_0();
+			$upd->set_version($version);
+		}
+		
+		//add this so that sliders will be updated if under 6.4.0
+		if(version_compare($version, '6.4.0', '<')){
+			$upd->set_version('6.4.0');
+		}
 
+		//add this so that sliders will be updated if under 6.4.10
+		if(version_compare($version, '6.4.10', '<')){
+			$upd->change_navigation_settings_to_6_4_10();
+			$upd->set_version('6.4.10');
+		}
+
+		if(version_compare($version, '6.5.12', '<')){
+			//$upd->set_version('6.5.12');
+		}
+
+		if(version_compare($version, '6.5.20', '<')){
+			$upd->set_version('6.5.20');
+		}
+		
+		if(version_compare($version, '6.5.26', '<')){
+			$upd->set_version('6.5.26');
+		}
+
+		if(version_compare($version, '6.6.0', '<')){
+			$upd->set_version('6.6.0');
+		}
+
+		if(version_compare($version, '6.6.10', '<')){
+			//remove templates from the database
+			$upd->remove_template_sliders();
+			$upd->set_version('6.6.10');
+		}
+
+		if(version_compare($version, '6.6.20', '<')){
+			$upd->set_version('6.6.20');
+		}
+
+		if(version_compare($version, '6.6.21', '<')){
+			$upd->set_version('6.6.21');
+		}
 	}
 	
 	/**
 	 * check to convert the given Slider to latest versions
 	 * @since: 6.0
 	 **/
-	public static function upgrade_slider_to_latest($slider){
-		if(version_compare($slider->get_setting('version', '1.0.0'), '6.0.0', '<')){
-			$upd = new RevSliderPluginUpdate();
-			//$upd->update_css_styles(); //set to version 5
-			$upd->add_animation_settings_to_layer($slider); //set to version 5
-			$upd->add_style_settings_to_layer($slider); //set to version 5
-			$upd->change_settings_on_layers($slider); //set to version 5
-			$upd->add_general_settings($slider); //set to version 5
-			$upd->change_general_settings_5_0_7($slider); //set to version 5.0.7
-			$upd->change_layers_svg_5_2_5_5($slider); //set to version 5.2.5.5
-			$upd->change_animations_settings_to_6_0(); //check if new navigations are added through import
-			$upd->upgrade_slider_to_6_0($slider);
+	public function upgrade_slider_to_latest($slider){
+		$version = $slider->get_setting('version', '1.0.0');
+		if(in_array($version, array('6.10.0', '6.10.1'), true)) $version = '6.6.20'; //this were dev versions
+		
+		if(version_compare($version, '6.0.0', '<')){
+			//$this->update_css_styles(); //set to version 5
+			$this->add_animation_settings_to_layer($slider); //set to version 5
+			$this->add_style_settings_to_layer($slider); //set to version 5
+			$this->change_settings_on_layers($slider); //set to version 5
+			$this->add_general_settings($slider); //set to version 5
+			$this->change_general_settings_5_0_7($slider); //set to version 5.0.7
+			$this->change_layers_svg_5_2_5_5($slider); //set to version 5.2.5.5
+			$this->change_animations_settings_to_6_0(); //check if new navigations are added through import
+			$this->upgrade_slider_to_6_0($slider);
+		}
+		
+		if(version_compare($version, '6.1.4', '<')){
+			$this->upgrade_slider_to_6_1_4($slider);
+		}
+		
+		if(version_compare($version, '6.1.6', '<')){
+			$this->upgrade_slider_to_6_1_6($slider);
+		}
+		
+		if(version_compare($version, '6.2.0', '<')){
+			$this->change_animations_settings_to_6_2_0(); //check if new navigations are added through import
+			$this->upgrade_slider_to_6_2_0($slider);
+		}
+		
+		if(version_compare($version, '6.4.0', '<')){
+			$this->upgrade_slider_to_6_4_0($slider);
+		}
+		
+		if(version_compare($version, '6.4.10', '<')){
+			$this->change_navigation_settings_to_6_4_10();
+			$this->upgrade_slider_to_6_4_10($slider);
+		}
+
+		if(version_compare($version, '6.5.12', '<')){
+			$this->upgrade_slider_to_6_5_12($slider);
+		}
+
+		if($this->import === false){
+			if(version_compare($version, '6.5.26', '<')){
+				$this->upgrade_slider_to_6_5_26($slider);
+			}
+		}
+		
+		if(version_compare($version, '6.6.0', '<')){
+			$this->upgrade_slider_to_6_6_0($slider);
+		}
+		
+		if(version_compare($version, '6.6.10', '<')){
+			$this->upgrade_slider_to_6_6_10($slider);
+		}
+		
+		if(version_compare($version, '6.6.20', '<')){
+			$this->upgrade_slider_to_6_6_20($slider);
+		}
+		
+		if(version_compare($version, '6.6.21', '<')){
+			$this->upgrade_slider_to_6_6_21($slider);
 		}
 	}
 	
@@ -253,7 +352,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	 **/
 	public function get_css_navigations(){
 		if(empty($this->css_navigations)){
-			$css_parser = new RevSliderCssParser();
+			$css_parser = RevSliderGlobals::instance()->get('RevSliderCssParser');
 			$this->css_navigations = $css_parser->get_database_classes(true);
 		}
 		return $this->css_navigations;
@@ -265,6 +364,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	 **/
 	public function slider_need_update_checks(){
 		$finished = get_option('revslider_update_revision_current', '1.0.0');
+		if(in_array($finished, array('6.10.0', '6.10.1'), true)) $finished = '6.6.20'; //this were dev versions
 
 		return (version_compare($finished, $this->revision, '<')) ? true : false;
 	}
@@ -272,6 +372,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	/**
 	 * get the next slider that is not on the latest version and update it to the latest
 	 * @since: 6.0.0
+	 * @since: 6.2.0: added template sliders to the update routine
 	 **/
 	public function upgrade_next_slider(){
 		$slr = new RevSliderSlider();
@@ -279,7 +380,10 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		$sliders = $slr->get_sliders();
 		if(!empty($sliders)){
 			foreach($sliders as $slider){
-				if(version_compare($this->get_val($slider, array('settings', 'version')), $this->revision, '<')){
+				$version = $this->get_val($slider, array('settings', 'version'));
+				if(in_array($version, array('6.10.0', '6.10.1'), true)) $version = '6.6.20'; //this were dev versions
+
+				if(version_compare($version, $this->revision, '<')){
 					$this->upgrade_slider_to_latest($slider);
 					return array('status' => 'next');
 				}
@@ -307,7 +411,743 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		
 		$upd->remove_unneeded_slider_settings($slider);
 	}
+	
+	/**
+	 * check to convert the given Slider to latest versions
+	 * @since: 6.1.4
+	 * reverse the carousel.scaleDown value. If it was 85, change it to 15 and vice versa
+	 **/
+	public function upgrade_slider_to_6_1_4($sliders = false){
+		$sr = new RevSliderSlider();
+		
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
 
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				$carousel = $slider->get_param('carousel', array());
+				$scale_down = $this->get_val($carousel, 'scaleDown');
+				
+				if($scale_down !== false){
+					$carousel['scaleDown'] = 100 - intval($scale_down);
+					$slider->update_params(array('carousel' => $carousel));
+				}
+				
+				$slider->update_settings(array('version' => '6.1.4'));
+			}
+		}
+	}
+	
+	/**
+	 * check to convert the given Slider to latest versions
+	 * @since: 6.1.6
+	 * check in the slide transitions, if we have a transition with a ","
+	 * if this is the case, split it up
+	 **/
+	public function upgrade_slider_to_6_1_6($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+		
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id; //$slider->get_id();
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+				
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.1.6', '<')){
+							$params = $slide->get_params();
+							$transitions = $this->get_val($params, array('timeline', 'transition'), array());
+							$new_transitions = array();
+							$save = false;
+							if(!empty($transitions) && is_array($transitions)){
+								foreach($transitions as $t => $v){
+									if(strpos($v, ',') !== false){
+										$save = true;
+										$_v = explode(',', $v);
+										if(!empty($_v)){
+											foreach($_v as $k => $__v){
+												$new_transitions[] = $__v;
+											}
+										}
+									}else{
+										$new_transitions[] = $v;
+									}
+								}
+								if($save){
+									$this->set_val($params, array('timeline', 'transition'), $new_transitions);
+									$slide->set_params($params);
+									$slide->save_params();
+								}
+							}
+							
+							$slide->settings['version'] = '6.1.6';
+							$slide->save_settings();
+						}
+					}
+				}
+				
+				$slider->update_settings(array('version' => '6.1.6'));
+			}
+		}
+	}
+	
+	
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.2.0
+	 * check in all layers, if we have a ease in it and convert it
+	 **/
+	public function upgrade_slider_to_6_2_0($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+		
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			
+			foreach($sliders as $slider){
+				//on slider params
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.2.0', '<')){
+					$params = $slider->get_params();
+					$json_params	= $_json_params = json_encode($params);
+					$_json_params	= str_replace($this->update['620']['ease_adv_from'], $this->update['620']['ease_adv_to'], $_json_params);
+					
+					if($_json_params !== $json_params){
+						$params = (array)json_decode($_json_params, true);
+						$params['version'] = '6.2.0';
+						$slider->update_params($params, true);
+					}
+				}
+				
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id;
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+				
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						//on slides
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.2.0', '<')){
+							$params			= $slide->get_params();
+							$json_params	= $_json_params = json_encode($params);
+							$_json_params	= str_replace($this->update['620']['ease_adv_from'], $this->update['620']['ease_adv_to'], $_json_params);
+							$params			= ($_json_params !== $json_params) ? (array)json_decode($_json_params, true) : $params;
+							$params['version'] = '6.2.0';
+							
+							$slide->set_params($params);
+							$slide->save_params();
+							
+							$slide->settings['version'] = '6.2.0';
+							$slide->save_settings();
+						}
+						
+						//on layers
+						$layers = $slide->get_layers();
+						
+						if(!empty($layers) && is_array($layers)){
+							$save = false;
+							foreach($layers as $lk => $layer){
+								$version = $this->get_val($layer, 'version', '1.0.0');
+								
+								if(version_compare($version, '6.2.0', '<')){
+									$save		 = true;
+									$json_layer	 = $_json_layer = json_encode($layer);
+									$_json_layer = str_replace($this->update['620']['ease_adv_from'], $this->update['620']['ease_adv_to'], $_json_layer);
+									if($_json_layer !== $json_layer){
+										$layers[$lk] = (array)json_decode($_json_layer, true);
+									}
+									$layers[$lk]['version'] = '6.2.0';
+								}
+							}
+							
+							if($save){
+								$slide->set_layers_raw($layers);
+								$slide->save_layers();
+							}
+						}
+					}
+				}
+				
+				$slider->update_settings(array('version' => '6.2.0'));
+			}
+		}
+	}
+	
+	
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.4.0
+	 * check in all layers, if we have an gradient in idle and if we need to push it to the hover animation
+	 **/
+	public function upgrade_slider_to_6_4_0($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+		
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.4.0', '<')){
+					$params = $slider->get_params();
+					$params['version'] = '6.4.0';
+					
+					if($this->get_val($params, array('layout', 'bg'), false) !== false){
+						$do = strtolower($this->get_val($params, array('layout', 'bg', 'dottedOverlay'), ''));
+						if(strpos($do, 'white') !== false)		 $this->set_val($params, array('layout', 'bg', 'dottedColorB'), '#FFFFFF');
+						if(strpos($do, 'twoxtwo') !== false)	 $this->set_val($params, array('layout', 'bg', 'dottedOverlay'), '1');
+						if(strpos($do, 'threexthree') !== false) $this->set_val($params, array('layout', 'bg', 'dottedOverlay'), '2');
+					}
+					
+					$slider->update_params($params, true);
+				}
+				
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id;
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+				
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						//on slides
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.4.0', '<')){
+							$params			= $slide->get_params();
+							$params['version'] = '6.4.0';
+							
+							$do	= $this->get_val($params, array('bg', 'video', 'dottedOverlay'), 'none');
+							if(strpos($do, 'white') !== false)		 $this->set_val($params, array('bg', 'video', 'dottedColorB'), '#FFFFFF');
+							if(strpos($do, 'twoxtwo') !== false)	 $this->set_val($params, array('bg', 'video', 'dottedOverlay'), '1');
+							if(strpos($do, 'threexthree') !== false) $this->set_val($params, array('bg', 'video', 'dottedOverlay'), '2');
+							
+							$slide->set_params($params);
+							$slide->save_params();
+							
+							$slide->settings['version'] = '6.4.0';
+							$slide->save_settings();
+						}
+						
+						//on layers
+						$layers = $slide->get_layers();
+						
+						if(!empty($layers) && is_array($layers)){
+							$save = false;
+							foreach($layers as $lk => $layer){
+								$version = $this->get_val($layer, 'version', '1.0.0');
+								
+								if(version_compare($version, '6.4.0', '<')){
+									$save		 = true;
+									$layers[$lk]['version'] = '6.4.0';
+									
+									if($this->get_val($layer, 'type', 'text') === 'video'){
+										$do = $this->get_val($layer, array('media', 'dotted'));
+										if(strpos($do, 'white') !== false)		 $this->set_val($layers, array($lk, 'media', 'dottedColorB'), '#FFFFFF');
+										if(strpos($do, 'twoxtwo') !== false)	 $this->set_val($layers, array($lk, 'media', 'dotted'), '1');
+										if(strpos($do, 'threexthree') !== false) $this->set_val($layers, array($lk, 'media', 'dotted'), '2');
+									}
+									
+									if($this->get_val($layer, 'type', 'text') === 'shape') continue;
+									$idle_bg = $this->get_val($layer, array('idle', 'backgroundColor'), '');
+									if(
+										strpos($idle_bg, 'gradient') === false &&
+										strpos($idle_bg, 'radial') === false && 
+										strpos($idle_bg, 'linear') === false && 
+										strpos($idle_bg, '&type') === false
+									) continue;
+									if($this->get_val($layer, array('hover', 'usehover'), false) === false) continue;
+									
+									$hover_bg = $this->get_val($layer, array('hover', 'backgroundColor'), '');
+									if(
+										strpos($hover_bg, 'gradient') !== false ||
+										strpos($hover_bg, 'radial') !== false || 
+										strpos($hover_bg, 'linear') !== false || 
+										strpos($hover_bg, '&type') !== false
+									) continue;
+									
+									$layers[$lk]['hover']['backgroundColor'] = $idle_bg;
+								}
+							}
+							
+							if($save){
+								$slide->set_layers_raw($layers);
+								$slide->save_layers();
+							}
+						}
+					}
+				}
+				
+				$slider->update_settings(array('version' => '6.4.0'));
+			}
+		}
+	}
+	
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.4.10
+	 **/
+	public function upgrade_slider_to_6_4_10($sliders = false){
+		$sr = new RevSliderSlider();
+		
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.4.10', '<')){
+					$params = $slider->get_params();
+					$params['version'] = '6.4.10';
+					
+					$slider->update_params($params, true);
+					
+					$slider->update_settings(array('version' => '6.4.10'));
+				}
+			}
+		}
+	}
+
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.4.10
+	 **/
+	public function upgrade_slider_to_6_5_26($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.5.26', '<')){
+					$params = $slider->get_params();
+					$params['version'] = '6.5.26';
+					
+					$slider->update_params($params, true);
+					
+					$slider->update_settings(array('version' => '6.5.26'));
+				}
+
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id;
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+				
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						//on slides
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.5.26', '<')){
+							$params = $slide->get_params();
+							$params['version'] = '6.5.26';
+							
+							if($this->get_val($params, array('slideChange', 'adpr'), false) === false){
+								$this->set_val($params, array('slideChange', 'adpr'), false);
+							}
+
+							$slide->set_params($params);
+							$slide->save_params();
+							
+							$slide->settings['version'] = '6.5.26';
+							$slide->save_settings();
+						}
+						
+						//on layers
+						$layers = $slide->get_layers();
+						
+						if(!empty($layers) && is_array($layers)){
+							$save = false;
+							foreach($layers as $lk => $layer){
+								$version = $this->get_val($layer, 'version', '1.0.0');
+								if(version_compare($version, '6.5.26', '<')){
+									$save = true;
+									$layers[$lk]['version'] = '6.5.26';
+								}
+							}
+							
+							if($save){
+								$slide->set_layers_raw($layers);
+								$slide->save_layers();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.5.12
+	 **/
+	public function upgrade_slider_to_6_5_12($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.5.12', '<')){
+					$params = $slider->get_params();
+					$params['version'] = '6.5.12';
+					$slider->update_params($params, true);
+					$slider->update_settings(array('version' => '6.5.12'));
+				}
+
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id;
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+				
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						//on slides
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.5.12', '<')){
+							$params			= $slide->get_params();
+							$params['version'] = '6.5.12';
+
+							$slide->set_params($params);
+							$slide->save_params();
+							
+							$slide->settings['version'] = '6.5.12';
+							$slide->save_settings();
+						}
+						
+						//on layers
+						$layers = $slide->get_layers();
+						
+						if(!empty($layers) && is_array($layers)){
+							$save = false;
+							foreach($layers as $lk => $layer){
+								$version = $this->get_val($layer, 'version', '1.0.0');
+								
+								if(version_compare($version, '6.5.12', '<')){
+									$save		 = true;
+									$layers[$lk]['version'] = '6.5.12';
+									
+									//check if parent layer is from type column 
+									$puid = $this->get_val($layer, array('group', 'puid'), -1);
+									if($puid !== -1 && $this->get_val($layers, array($puid, 'type')) === 'column'){
+										$this->set_val($layers, array($lk, 'position', 'position'), 'relative');
+									}
+								}
+							}
+							
+							if($save){
+								$slide->set_layers_raw($layers);
+								$slide->save_layers();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/** check to convert the given Slider to latest versions
+	 * changing the position.position attribute
+	 * set it to absolute as default
+	 * if layer is in column, default is relative
+	 * @since: 6.6.0
+	 **/
+	public function upgrade_slider_to_6_6_0($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.6.0', '<')){
+					$params = $slider->get_params();
+					$params['version'] = '6.6.0';
+					$slider->update_params($params, true);
+					$slider->update_settings(array('version' => '6.6.0'));
+				}
+
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id;
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+				
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						//on slides
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.6.0', '<')){
+							$params			= $slide->get_params();
+							$params['version'] = '6.6.0';
+
+							$slide->set_params($params);
+							$slide->save_params();
+							
+							$slide->settings['version'] = '6.6.0';
+							$slide->save_settings();
+						}
+						
+						//on layers
+						$layers = $slide->get_layers();
+						
+						if(!empty($layers) && is_array($layers)){
+							$save = false;
+							$group_uids = array();
+							foreach($layers as $lk => $layer){
+								if($this->get_val($layer, 'type', 'text') === 'column') $group_uids[] = (string)$this->get_val($layer, 'uid', -1);
+							}
+
+							foreach($layers as $lk => $layer){
+								$version = $this->get_val($layer, 'version', '1.0.0');
+								
+								if(version_compare($version, '6.6.0', '<')){
+									$save		 = true;
+									$layers[$lk]['version'] = '6.6.0';
+
+									if(in_array($this->get_val($layer, 'type', 'text'), array('column', 'row'), true)) continue; //column and row do not have these values
+
+									$puid	= (string)$this->get_val($layer, array('group', 'puid'), -1);
+									
+									$pos_default = 'absolute';
+									//if layer is in a row/column, default is relative
+									if($puid !== '-1' && in_array($this->get_val($layers, array($puid, 'type')), array('column', 'row'))){
+										$pos_default = 'relative';
+									}
+									
+									$this->set_val($layers, array($lk, 'position', 'position'), $pos_default);
+								}
+							}
+
+							if($save){
+								$slide->set_layers_raw($layers);
+								$slide->save_layers();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.6.10
+	 **/
+	public function upgrade_slider_to_6_6_10($sliders = false){
+		$sr = new RevSliderSlider();
+		
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.6.10', '<')){
+					$params = $slider->get_params();
+					$params['version'] = '6.6.10';
+					
+					$slider->update_params($params, true);
+					
+					$slider->update_settings(array('version' => '6.6.10'));
+				}
+			}
+		}
+	}
+
+	
+	/** check to convert the given Slider to latest versions
+	 * @since: 6.6.10
+	 **/
+	public function upgrade_slider_to_6_6_20($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+
+		$sliders = ($sliders === false) ? $sr->get_sliders() : array($sliders); //do it on all Sliders if false
+		
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				if(version_compare($slider->get_setting('version', '1.0.0'), '6.6.20', '<')){
+					$params			= $slider->get_params();
+					$json_params	= $_json_params = json_encode($params);
+					$_json_params	= str_replace($this->update['6101']['url_from'], $this->update['6101']['url_to'], $_json_params);
+					
+					if($_json_params !== $json_params){
+						$params = (array)json_decode($_json_params, true);
+						$params['version'] = '6.6.20';
+						$slider->update_params($params, true);
+					}
+				}
+
+				$slides = $slider->get_slides(false, true);
+				$static_id = $sl->get_static_slide_id($slider->get_id());
+				if($static_id !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($static_id, 'static_') === false){
+						$static_id = 'static_'. $static_id;
+					}
+					$msl->init_by_id($static_id);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$settings = $slide->get_settings();
+						//on slides
+						if(version_compare($this->get_val($settings, 'version', '1.0.0'), '6.6.20', '<')){
+							$params			= $slide->get_params();
+							$json_params	= $_json_params = json_encode($params);
+							$_json_params	= str_replace($this->update['6101']['url_from'], $this->update['6101']['url_from'], $_json_params);
+							$params			= ($_json_params !== $json_params) ? (array)json_decode($_json_params, true) : $params;
+							$params['version'] = '6.6.20';
+							
+							$slide->set_params($params);
+							$slide->save_params();
+							
+							$slide->settings['version'] = '6.6.20';
+							$slide->save_settings();
+						}
+						
+						//on layers
+						$layers = $slide->get_layers();
+						
+						if(!empty($layers) && is_array($layers)){
+							$save = false;
+							foreach($layers as $lk => $layer){
+								$version = $this->get_val($layer, 'version', '1.0.0');
+								
+								if(version_compare($version, '6.6.20', '<')){
+									$save		 = true;
+									$json_layer	 = $_json_layer = json_encode($layer);
+									$_json_layer = str_replace($this->update['6101']['url_from'], $this->update['6101']['url_from'], $_json_layer);
+									if($_json_layer !== $json_layer){
+										$layers[$lk] = (array)json_decode($_json_layer, true);
+									}
+									$layers[$lk]['version'] = '6.6.20';
+								}
+							}
+							
+							if($save){
+								$slide->set_layers_raw($layers);
+								$slide->save_layers();
+							}
+						}
+					}
+				}
+
+				$slider->update_settings(array('version' => '6.6.20'));
+			}
+		}
+	}
+
+	/**
+	 * change svg path of all layers from the upload folder if 5.2.5.3+ was installed
+	 * @since 5.2.5.5
+	 */
+	public function upgrade_slider_to_6_6_21($sliders = false){
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+		$upload_dir = wp_upload_dir();
+		$path = $this->remove_http(RS_PLUGIN_URL.'public/assets/assets/svg/');
+		$new_path = $this->remove_http(RS_PLUGIN_URL .'public/assets/svg/');
+
+		if($sliders === false){
+			//do it on all Sliders
+			$sliders = $sr->get_sliders();
+		}else{
+			$sliders = array($sliders);
+		}
+
+		if(!empty($sliders) && is_array($sliders)){
+			foreach($sliders as $slider){
+				$slides = $slider->get_slides(false, true);
+
+				$staticID = $sl->get_static_slide_id($slider->get_id());
+				if($staticID !== false){
+					$msl = new RevSliderSlide();
+					if(strpos($staticID, 'static_') === false){
+						$staticID = 'static_'. $staticID; //$slider->get_id();
+					}
+					$msl->init_by_id($staticID);
+					if($msl->get_id() !== ''){
+						$slides = array_merge($slides, array($msl));
+					}
+				}
+
+				if(!empty($slides) && is_array($slides)){
+					foreach($slides as $slide){
+						$layers = $slide->get_layers();
+						if(!empty($layers) && is_array($layers)){
+							foreach($layers as $lk => $layer){
+								if(isset($layer['type']) && $layer['type'] == 'svg'){
+									if(isset($layer['svg']) && isset($layer['svg']['source'])){
+										//change newer path to older path
+										if(strpos($layers[$lk]['svg']['source'], $path) !== false){
+											$layers[$lk]['svg']['source'] = str_replace($path, $new_path, $layers[$lk]['svg']['source']);
+										}
+									}
+								}
+								
+								$layers[$lk]['version'] = '6.6.21';
+							}
+							
+							$slide->set_layers_raw($layers);
+							$slide->save_layers();
+						}
+
+						$slide->settings['version'] = '6.6.21';
+						$slide->save_settings();
+					}
+				}
+				
+				$slider->update_settings(array('version' => '6.6.21'));
+			}
+		}
+	}
+	
+	
 	/**
 	 * translates removed settings from Slider Settings from version <= 4.x to 5.0
 	 * before: RevSliderBase::translate_settings_to_v5()
@@ -429,62 +1269,62 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			array('handle' => '.tp-caption.Restaurant-ScrollDownText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0"}', 'params' => '{"color":"#ffffff","font-size":"17px","line-height":"17px","font-weight":"400","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
 			array('handle' => '.tp-caption.Restaurant-Description', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0"}', 'params' => '{"color":"#ffffff","font-size":"20px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
 			array('handle' => '.tp-caption.Restaurant-Price', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0"}', 'params' => '{"color":"#ffffff","font-size":"30px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Restaurant-Menuitem', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#000000","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"500","easing":"Power2.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"400","font-style":"normal","font-family":"Roboto","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Furniture-LogoText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#e6cfa3","color-transparency":"1","font-size":"160px","line-height":"150px","font-weight":"300","font-style":"normal","font-family":"\\"Raleway\\"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
-			array('handle' => '.tp-caption.Furniture-Plus', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0.5","easing":"Linear.easeNone"}', 'params' => '{"color":"#e6cfa3","color-transparency":"1","font-size":"20","line-height":"20px","font-weight":"400","font-style":"normal","font-family":"\\"Raleway\\"","padding":["6px","7px","4px","7px"],"text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none","box-shadow":"rgba(0,0,0,0.1) 0 1px 3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Furniture-Title', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"700","font-style":"normal","font-family":"\\"Raleway\\"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none","letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Furniture-Subtitle', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"17px","line-height":"20px","font-weight":"300","font-style":"normal","font-family":"\\"Raleway\\"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
-			array('handle' => '.tp-caption.Gym-Display', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"80px","line-height":"70px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Gym-Subline', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"5px"},"hover":""}'),
-			array('handle' => '.tp-caption.Gym-SmallText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"22","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
-			array('handle' => '.tp-caption.Fashion-SmallText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"12px","line-height":"20px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Fashion-BigDisplay', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"60px","line-height":"60px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Fashion-TextBlock', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"20px","line-height":"40px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Sports-Display', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"130px","line-height":"130px","font-weight":"100","font-style":"normal","font-family":"\\"Raleway\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"13px"},"hover":""}'),
-			array('handle' => '.tp-caption.Sports-DisplayFat', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"130px","line-height":"130px","font-weight":"900","font-style":"normal","font-family":"\\"Raleway\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":[""],"hover":""}'),
-			array('handle' => '.tp-caption.Sports-Subline', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"32px","line-height":"32px","font-weight":"400","font-style":"normal","font-family":"\\"Raleway\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"4px"},"hover":""}'),
-			array('handle' => '.tp-caption.Instagram-Caption', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"900","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.News-Title', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"70px","line-height":"60px","font-weight":"400","font-style":"normal","font-family":"Roboto Slab","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.News-Subtitle', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"0.65","text-decoration":"none","background-color":"#ffffff","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"solid","border-width":"0px","border-radius":["0","0","0px","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"300","easing":"Power3.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"24px","font-weight":"300","font-style":"normal","font-family":"Roboto Slab","padding":["0","0","0","0"],"text-decoration":"none","background-color":"#ffffff","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Photography-Display', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"80px","line-height":"70px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"5px"},"hover":""}'),
-			array('handle' => '.tp-caption.Photography-Subline', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#777777","color-transparency":"1","font-size":"20px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Photography-ImageHover', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"0.5","scalex":"0.8","scaley":"0.8","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"1000","easing":"Power3.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20","line-height":"22","font-weight":"400","font-style":"normal","font-family":"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"#ffffff","border-transparency":"0","border-style":"none","border-width":"0px","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Photography-Menuitem', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#00ffde","background-transparency":"0.65","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"200","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["3px","5px","3px","8px"],"text-decoration":"none","background-color":"#000000","background-transparency":"0.65","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Photography-Textblock', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"17px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Photography-Subline-2', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"0.35","font-size":"20px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Photography-ImageHover2', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"0.5","scalex":"0.8","scaley":"0.8","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"500","easing":"Back.easeOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20","line-height":"22","font-weight":"400","font-style":"normal","font-family":"Arial","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"#ffffff","border-transparency":"0","border-style":"none","border-width":"0px","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-Title', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#333333","color-transparency":"1","font-size":"90px","line-height":"90px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-SubTitle', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#999999","color-transparency":"1","font-size":"15px","line-height":"20px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-Content', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#999999","color-transparency":"1","font-size":"16px","line-height":"24px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-Menuitem', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#999999","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"200","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"20px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["3px","5px","3px","8px"],"text-decoration":"none","text-align":"left","background-color":"#333333","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-Title-Light', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"90px","line-height":"90px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-SubTitle-Light', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"0.35","font-size":"15px","line-height":"20px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-Content-Light', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"0.65","font-size":"16px","line-height":"24px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.FatRounded', 'settings' => '{"hover":"true","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#fff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"#d3d3d3","border-transparency":"1","border-style":"none","border-width":"0px","border-radius":["50px","50px","50px","50px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Linear.easeNone"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["20px","22px","20px","25px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0.5","border-color":"#d3d3d3","border-transparency":"1","border-style":"none","border-width":"0px","border-radius":["50px","50px","50px","50px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-Title', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"70px","line-height":"70px","font-weight":"800","font-style":"normal","font-family":"Raleway","padding":"10px 0px 10px 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"[object Object]","hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-SubTitle', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"13px","line-height":"20px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"4px","text-align":"left"},"hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-CallToAction', 'settings' => '{"hover":"true","translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":"0px 0px 0px 0px","opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power3.easeOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":"10px 30px 10px 30px","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"1","border-radius":"0px 0px 0px 0px","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-Icon', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"default","speed":"300","easing":"Power3.easeOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":"0px 0px 0px 0px","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0","border-style":"solid","border-width":"0px","border-radius":"0px 0px 0px 0px","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-Menuitem', 'settings' => '{"hover":"true","translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":"0px 0px 0px 0px","opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power1.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":"27px 30px 27px 30px","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.15","border-style":"solid","border-width":"1px","border-radius":"0px 0px 0px 0px","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
-			array('handle' => '.tp-caption.MarkerStyle', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"30px","font-weight":"100","font-style":"normal","font-family":"\\"Permanent Marker\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"text-align":"left","0":""},"hover":""}'),
-			array('handle' => '.tp-caption.Gym-Menuitem', 'settings' => '{"hover":"true","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"2px","border-radius":["3px","3px","3px","3px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"200","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["3px","5px","3px","8px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"1","border-color":"#ffffff","border-transparency":"0","border-style":"solid","border-width":"2px","border-radius":["3px","3px","3px","3px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Newspaper-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#000000","color-transparency":"1","text-decoration":"none","background-color":"#FFFFFF","background-transparency":"1","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power1.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"13px","line-height":"17px","font-weight":"700","font-style":"normal","font-family":"Roboto","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#ffffff","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Newspaper-Subtitle', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#a8d8ee","color-transparency":"1","font-size":"15px","line-height":"20px","font-weight":"900","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Newspaper-Title', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"50px","line-height":"55px","font-weight":"400","font-style":"normal","font-family":"\\"Roboto Slab\\"","padding":["0","0","10px","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Newspaper-Title-Centered', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"50px","line-height":"55px","font-weight":"400","font-style":"normal","font-family":"\\"Roboto Slab\\"","padding":["0","0","10px","0"],"text-decoration":"none","text-align":"center","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Hero-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#000000","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power1.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Video-Title', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["5px","5px","5px","5px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"-20%","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Video-SubTitle', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"12px","line-height":"12px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["5px","5px","5px","5px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0.35","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"-20%","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power1.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
-			array('handle' => '.tp-caption.NotGeneric-BigButton', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power1.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["27px","30px","27px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.15","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.WebProduct-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#333333","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"#000000","border-transparency":"1","border-style":"none","border-width":"2","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"300","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"16px","line-height":"48px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0px","40px","0px","40px"],"text-decoration":"none","text-align":"left","background-color":"#333333","background-transparency":"1","border-color":"#000000","border-transparency":"1","border-style":"none","border-width":"2","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"1px"},"hover":""}'),
-			array('handle' => '.tp-caption.Restaurant-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffe081","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"300","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"500","font-style":"normal","font-family":"Roboto","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#0a0a0a","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
-			array('handle' => '.tp-caption.Gym-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#72a800","background-transparency":"1","border-color":"#000000","border-transparency":"0","border-style":"solid","border-width":"0","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power1.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["13px","35px","13px","35px"],"text-decoration":"none","text-align":"left","background-color":"#8bc027","background-transparency":"1","border-color":"#000000","border-transparency":"0","border-style":"solid","border-width":"0","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"1px"},"hover":""}'),
-			array('handle' => '.tp-caption.Gym-Button-Light', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#72a800","background-transparency":"0","border-color":"#8bc027","border-transparency":"1","border-style":"solid","border-width":"2px","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Power2.easeInOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"2px","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
-			array('handle' => '.tp-caption.Sports-Button-Light', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"500","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Sports-Button-Red', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"#000000","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"500","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#db1c22","background-transparency":"1","border-color":"#db1c22","border-transparency":"0","border-style":"solid","border-width":"2px","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
-			array('handle' => '.tp-caption.Photography-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"300","easing":"Power3.easeOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["13px","35px","13px","35px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"1px","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"1px"},"hover":""}'),
-			array('handle' => '.tp-caption.Newspaper-Button-2', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["3px","3px","3px","3px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"Linear.easeNone"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"900","font-style":"normal","font-family":"Roboto","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"2","border-radius":["3px","3px","3px","3px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Restaurant-Menuitem', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#000000","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"500","easing":"power2.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"400","font-style":"normal","font-family":"Roboto","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Furniture-LogoText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#e6cfa3","color-transparency":"1","font-size":"160px","line-height":"150px","font-weight":"300","font-style":"normal","font-family":"\\"Raleway\\"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
+			array('handle' => '.tp-caption.Furniture-Plus', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0.5","easing":"none"}', 'params' => '{"color":"#e6cfa3","color-transparency":"1","font-size":"20","line-height":"20px","font-weight":"400","font-style":"normal","font-family":"\\"Raleway\\"","padding":["6px","7px","4px","7px"],"text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none","box-shadow":"rgba(0,0,0,0.1) 0 1px 3px"},"hover":""}'),
+			array('handle' => '.tp-caption.Furniture-Title', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"700","font-style":"normal","font-family":"\\"Raleway\\"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none","letter-spacing":"3px"},"hover":""}'),
+			array('handle' => '.tp-caption.Furniture-Subtitle', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"17px","line-height":"20px","font-weight":"300","font-style":"normal","font-family":"\\"Raleway\\"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
+			array('handle' => '.tp-caption.Gym-Display', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"80px","line-height":"70px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Gym-Subline', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"5px"},"hover":""}'),
+			array('handle' => '.tp-caption.Gym-SmallText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"22","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
+			array('handle' => '.tp-caption.Fashion-SmallText', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"12px","line-height":"20px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Fashion-BigDisplay', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"60px","line-height":"60px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Fashion-TextBlock', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"20px","line-height":"40px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Sports-Display', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"130px","line-height":"130px","font-weight":"100","font-style":"normal","font-family":"\\"Raleway\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"13px"},"hover":""}'),
+			array('handle' => '.tp-caption.Sports-DisplayFat', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"130px","line-height":"130px","font-weight":"900","font-style":"normal","font-family":"\\"Raleway\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":[""],"hover":""}'),
+			array('handle' => '.tp-caption.Sports-Subline', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#000000","color-transparency":"1","font-size":"32px","line-height":"32px","font-weight":"400","font-style":"normal","font-family":"\\"Raleway\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"4px"},"hover":""}'),
+			array('handle' => '.tp-caption.Instagram-Caption', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"900","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.News-Title', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"70px","line-height":"60px","font-weight":"400","font-style":"normal","font-family":"Roboto Slab","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.News-Subtitle', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"0.65","text-decoration":"none","background-color":"#ffffff","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"solid","border-width":"0px","border-radius":["0","0","0px","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"300","easing":"power3.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"24px","font-weight":"300","font-style":"normal","font-family":"Roboto Slab","padding":["0","0","0","0"],"text-decoration":"none","background-color":"#ffffff","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Photography-Display', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"80px","line-height":"70px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"5px"},"hover":""}'),
+			array('handle' => '.tp-caption.Photography-Subline', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#777777","color-transparency":"1","font-size":"20px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
+			array('handle' => '.tp-caption.Photography-ImageHover', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"0.5","scalex":"0.8","scaley":"0.8","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"1000","easing":"power3.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20","line-height":"22","font-weight":"400","font-style":"normal","font-family":"","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"#ffffff","border-transparency":"0","border-style":"none","border-width":"0px","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Photography-Menuitem', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#00ffde","background-transparency":"0.65","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"200","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["3px","5px","3px","8px"],"text-decoration":"none","background-color":"#000000","background-transparency":"0.65","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Photography-Textblock', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","speed":"0","easing":"none"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"17px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Photography-Subline-2', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"0.35","font-size":"20px","line-height":"30px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
+			array('handle' => '.tp-caption.Photography-ImageHover2', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"0.5","scalex":"0.8","scaley":"0.8","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"500","easing":"back.out"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20","line-height":"22","font-weight":"400","font-style":"normal","font-family":"Arial","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"#ffffff","border-transparency":"0","border-style":"none","border-width":"0px","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-Title', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#333333","color-transparency":"1","font-size":"90px","line-height":"90px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-SubTitle', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#999999","color-transparency":"1","font-size":"15px","line-height":"20px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-Content', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#999999","color-transparency":"1","font-size":"16px","line-height":"24px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-Menuitem', 'settings' => '{"hover":"true","version":"5.0","translated":"5"}', 'hover' => '{"color":"#999999","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"200","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"20px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["3px","5px","3px","8px"],"text-decoration":"none","text-align":"left","background-color":"#333333","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-Title-Light', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"90px","line-height":"90px","font-weight":"100","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-SubTitle-Light', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"0.35","font-size":"15px","line-height":"20px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-Content-Light', 'settings' => '{"hover":"false","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"0.65","font-size":"16px","line-height":"24px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.FatRounded', 'settings' => '{"hover":"true","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#fff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"#d3d3d3","border-transparency":"1","border-style":"none","border-width":"0px","border-radius":["50px","50px","50px","50px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"none"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["20px","22px","20px","25px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0.5","border-color":"#d3d3d3","border-transparency":"1","border-style":"none","border-width":"0px","border-radius":["50px","50px","50px","50px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"text-shadow":"none"},"hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-Title', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"70px","line-height":"70px","font-weight":"800","font-style":"normal","font-family":"Raleway","padding":"10px 0px 10px 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"[object Object]","hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-SubTitle', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"13px","line-height":"20px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"4px","text-align":"left"},"hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-CallToAction', 'settings' => '{"hover":"true","translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":"0px 0px 0px 0px","opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power3.out"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":"10px 30px 10px 30px","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"1","border-radius":"0px 0px 0px 0px","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-Icon', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"default","speed":"300","easing":"power3.out"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"400","font-style":"normal","font-family":"Raleway","padding":"0px 0px 0px 0px","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0","border-style":"solid","border-width":"0px","border-radius":"0px 0px 0px 0px","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-Menuitem', 'settings' => '{"hover":"true","translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":"0px 0px 0px 0px","opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power1.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":"27px 30px 27px 30px","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.15","border-style":"solid","border-width":"1px","border-radius":"0px 0px 0px 0px","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
+			array('handle' => '.tp-caption.MarkerStyle', 'settings' => '{"translated":5,"type":"text","version":"5.0"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"30px","font-weight":"100","font-style":"normal","font-family":"\\"Permanent Marker\\"","padding":"0 0 0 0","text-decoration":"none","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":"0 0 0 0","z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"text-align":"left","0":""},"hover":""}'),
+			array('handle' => '.tp-caption.Gym-Menuitem', 'settings' => '{"hover":"true","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"2px","border-radius":["3px","3px","3px","3px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"200","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"20px","line-height":"20px","font-weight":"300","font-style":"normal","font-family":"Raleway","padding":["3px","5px","3px","8px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"1","border-color":"#ffffff","border-transparency":"0","border-style":"solid","border-width":"2px","border-radius":["3px","3px","3px","3px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Newspaper-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#000000","color-transparency":"1","text-decoration":"none","background-color":"#FFFFFF","background-transparency":"1","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power1.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"13px","line-height":"17px","font-weight":"700","font-style":"normal","font-family":"Roboto","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#ffffff","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Newspaper-Subtitle', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#a8d8ee","color-transparency":"1","font-size":"15px","line-height":"20px","font-weight":"900","font-style":"normal","font-family":"Roboto","padding":["0","0","0","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Newspaper-Title', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"50px","line-height":"55px","font-weight":"400","font-style":"normal","font-family":"\\"Roboto Slab\\"","padding":["0","0","10px","0"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Newspaper-Title-Centered', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"50px","line-height":"55px","font-weight":"400","font-style":"normal","font-family":"\\"Roboto Slab\\"","padding":["0","0","10px","0"],"text-decoration":"none","text-align":"center","background-color":"transparent","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Hero-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#000000","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power1.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
+			array('handle' => '.tp-caption.Video-Title', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#fff","color-transparency":"1","font-size":"30px","line-height":"30px","font-weight":"900","font-style":"normal","font-family":"Raleway","padding":["5px","5px","5px","5px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"1","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"-20%","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Video-SubTitle', 'settings' => '{"hover":"false","type":"text","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"0","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"12px","line-height":"12px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["5px","5px","5px","5px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0.35","border-color":"transparent","border-transparency":"1","border-style":"none","border-width":"0","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"-20%","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power1.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"1","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px","text-align":"left"},"hover":""}'),
+			array('handle' => '.tp-caption.NotGeneric-BigButton', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power1.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"14px","line-height":"14px","font-weight":"500","font-style":"normal","font-family":"Raleway","padding":["27px","30px","27px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.15","border-style":"solid","border-width":"1px","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
+			array('handle' => '.tp-caption.WebProduct-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#333333","color-transparency":"1","text-decoration":"none","background-color":"#ffffff","background-transparency":"1","border-color":"#000000","border-transparency":"1","border-style":"none","border-width":"2","border-radius":["0","0","0","0"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"300","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"16px","line-height":"48px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["0px","40px","0px","40px"],"text-decoration":"none","text-align":"left","background-color":"#333333","background-transparency":"1","border-color":"#000000","border-transparency":"1","border-style":"none","border-width":"2","border-radius":["0","0","0","0"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"1px"},"hover":""}'),
+			array('handle' => '.tp-caption.Restaurant-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffe081","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"300","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"500","font-style":"normal","font-family":"Roboto","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#0a0a0a","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"3px"},"hover":""}'),
+			array('handle' => '.tp-caption.Gym-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#72a800","background-transparency":"1","border-color":"#000000","border-transparency":"0","border-style":"solid","border-width":"0","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power1.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["13px","35px","13px","35px"],"text-decoration":"none","text-align":"left","background-color":"#8bc027","background-transparency":"1","border-color":"#000000","border-transparency":"0","border-style":"solid","border-width":"0","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"1px"},"hover":""}'),
+			array('handle' => '.tp-caption.Gym-Button-Light', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#72a800","background-transparency":"0","border-color":"#8bc027","border-transparency":"1","border-style":"solid","border-width":"2px","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"power2.inOut"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"transparent","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"2px","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
+			array('handle' => '.tp-caption.Sports-Button-Light', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"500","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Sports-Button-Red', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"1","border-color":"#000000","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["0px","0px","0px","0px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"500","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"17px","line-height":"17px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["12px","35px","12px","35px"],"text-decoration":"none","text-align":"left","background-color":"#db1c22","background-transparency":"1","border-color":"#db1c22","border-transparency":"0","border-style":"solid","border-width":"2px","border-radius":["0px","0px","0px","0px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"2px"},"hover":""}'),
+			array('handle' => '.tp-caption.Photography-Button', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"1px","border-radius":["30px","30px","30px","30px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"auto","speed":"300","easing":"power3.out"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"600","font-style":"normal","font-family":"Raleway","padding":["13px","35px","13px","35px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.25","border-style":"solid","border-width":"1px","border-radius":["30px","30px","30px","30px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":{"letter-spacing":"1px"},"hover":""}'),
+			array('handle' => '.tp-caption.Newspaper-Button-2', 'settings' => '{"hover":"true","type":"button","version":"5.0","translated":"5"}', 'hover' => '{"color":"#ffffff","color-transparency":"1","text-decoration":"none","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"1","border-style":"solid","border-width":"2","border-radius":["3px","3px","3px","3px"],"opacity":"1","scalex":"1","scaley":"1","skewx":"0","skewy":"0","xrotate":"0","yrotate":"0","2d_rotation":"0","pointer_events":"auto","css_cursor":"pointer","speed":"300","easing":"none"}', 'params' => '{"color":"#ffffff","color-transparency":"1","font-size":"15px","line-height":"15px","font-weight":"900","font-style":"normal","font-family":"Roboto","padding":["10px","30px","10px","30px"],"text-decoration":"none","text-align":"left","background-color":"#000000","background-transparency":"0","border-color":"#ffffff","border-transparency":"0.5","border-style":"solid","border-width":"2","border-radius":["3px","3px","3px","3px"],"z":"0","skewx":"0","skewy":"0","scalex":"1","scaley":"1","opacity":"1","xrotate":"0","yrotate":"0","2d_rotation":"0","2d_origin_x":"50","2d_origin_y":"50","pers":"600","corner_left":"nothing","corner_right":"nothing","parallax":"-"}', 'advanced' => '{"idle":"","hover":""}'),
 		);
 
 		foreach($v5 as $v5class){
@@ -503,7 +1343,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	public function update_css_styles(){
 		global $wpdb;
 
-		$css = new RevSliderCssParser();
+		$css = RevSliderGlobals::instance()->get('RevSliderCssParser');
 		$styles = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . RevSliderFront::TABLE_CSS, ARRAY_A);
 		$default_classes = $css->default_css_classes();
 
@@ -531,7 +1371,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			if(isset($attr['advanced'])){
 				$adv = json_decode($attr['advanced'], true); // = array('idle' => array(), 'hover' => '');
 			}else{
-				$adv = array('idle' => array(), 'hover' => '');
+				$adv = array('idle' => array(), 'hover' => array());
 			}
 
 			if(!isset($adv['idle'])){
@@ -543,6 +1383,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			}
 
 			//only do this to styles prior 5.0
+			if(empty($attr['settings'])) $attr['settings'] = ''; //PHP 8.3 fix for null
 			$settings = json_decode($attr['settings'], true);
 			if(!empty($settings) && isset($settings['translated'])){
 				if(version_compare($settings['translated'], 5.0, '>=')){
@@ -551,6 +1392,8 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 
 			}
 
+			if(empty($attr['params'])) $attr['params'] = ''; //PHP 8.3 fix for null
+			if(empty($attr['hover'])) $attr['hover'] = ''; //PHP 8.3 fix for null
 			$idle = json_decode($attr['params'], true);
 			$hover = json_decode($attr['hover'], true);
 
@@ -623,86 +1466,6 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 				update_option('revslider-global-settings', $result['general']);
 			}
 		}
-	}
-
-	/**
-	 * move the template sliders and add the slides to corresponding post based slider or simply move them and change them to post based slider if no slider is using them
-	 * @since 5.0
-	 */
-	public function move_template_slider(){
-		global $wpdb;
-
-		$used = array(); //will store all template IDs that are used by post based Sliders, these can be deleted after the progress.
-		$sr = new RevSliderSlider();
-		$sl = new RevSliderSlide();
-		$sliders = $sr->get_sliders(false);
-		$temp_sliders = $sr->get_sliders(true);
-
-		if(empty($temp_sliders) || !is_array($temp_sliders)){
-			return true;
-		}
-		//as we do not have any template sliders, we do not need to run further here
-
-		if(!empty($sliders) && is_array($sliders)){
-			foreach($sliders as $slider){
-				if($slider->get_param('source_type', 'gallery') !== 'posts'){
-					continue;
-				}
-				//only check Slider with type of posts
-
-				$slider_id = $slider->get_id();
-				$template_id = $slider->get_param('slider_template_id', 0);
-
-				if($template_id > 0){
-					//initialize slider to see if it exists. Then copy over the Template Sliders Slides to the Post Based Slider
-					foreach($temp_sliders as $t_slider){
-						if($t_slider->get_id() === $template_id){
-							//copy over the slides
-							//get all slides from template, then copy to Slider
-
-							$slides = $t_slider->get_slides(false, true);
-
-							if(!empty($slides) && is_array($slides)){
-								foreach($slides as $slide){
-									$slide_id = $slide->get_id();
-									$slider->copy_slide_to_slider(array('slider_id' => $slider_id, 'slide_id' => $slide_id));
-								}
-							}
-
-							$static_id = $sl->get_static_slide_id($template_id);
-							if($static_id !== false){
-								$record = $wpdb->get_row($wpdb->prepare("SELECT * FROM " . $wpdb->prefix . RevSliderFront::TABLE_STATIC_SLIDES . " WHERE id = %d", $static_id), ARRAY_A);
-
-								unset($record['id']);
-								$record['slider_id'] = $slider_id;
-
-								$wpdb->insert($wpdb->prefix . RevSliderFront::TABLE_STATIC_SLIDES, $record);
-							}
-
-							$used[$template_id] = $t_slider;
-							break;
-						}
-					}
-				}
-
-			}
-		}
-
-		if(!empty($used)){
-			foreach($used as $tid => $t_slider){
-				$t_slider->delete_slider();
-			}
-		}
-
-		//translate all other template Sliders to normal sliders and set them to post based
-		$temp_sliders = $sr->get_sliders(true);
-
-		if(!empty($temp_sliders) && is_array($temp_sliders)){
-			foreach($temp_sliders as $slider){
-				$slider->update_params(array('template' => 'false', 'source_type' => 'posts'));
-			}
-		}
-
 	}
 
 	/**
@@ -1620,7 +2383,6 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 								'appId' => $slider->get_param('facebook-app-id', ''),
 								'appSecret' => $slider->get_param('facebook-app-secret', ''),
 								'count' => $slider->get_param('facebook-count', ''),
-								'pageURL' => $slider->get_param('facebook-page-url', ''),
 								'transient' => $slider->get_param('facebook-transient', 1200),
 								'typeSource' => $slider->get_param('facebook-type-source', 'album'),
 							),
@@ -1685,7 +2447,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 								'blurStart' => $slider->get_param('def-kb_blur_start', 0),
 								'blurEnd' => $slider->get_param('def-kb_blur_end', 0),
 								'duration' => $slider->get_param('def-kb_duration'. 10000),
-								'ease' => $slider->get_param('def-kb_easing', 'Linear.easeNone'),
+								'ease' => $slider->get_param('def-kb_easing', 'none'),
 								'fitEnd' => $slider->get_param('def-kb_end_fit', 100),
 								'fitStart' => $slider->get_param('def-kb_start_fit', 100),
 								'xEnd' => $slider->get_param('def-kb_end_offset_x', 0),
@@ -1779,7 +2541,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 						$ms['carousel'] = array(
 							'borderRadius' => $slider->get_param('carousel_borderr', 0),
 							'borderRadiusUnit' => $slider->get_param('carousel_borderr_unit', 'px'),
-							'ease' => $slider->get_param('carousel_easing', 'Power3.easeInOut'),
+							'ease' => $slider->get_param('carousel_easing', 'power3.inOut'),
 							'fadeOut' => $this->_truefalse($slider->get_param('carousel_fadeout', true)),
 							'scale' => $this->_truefalse($slider->get_param('carousel_scale', false)),
 							'horizontal' => $slider->get_param('carousel_hposition', 'center'),
@@ -2406,8 +3168,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 				'argsVimeo'		 => $slide->get_param('video_arguments_vim', ''),
 				'dottedOverlay'	 => $slide->get_param('video_dotted_overlay', 'none'),
 				'startAt'		 => $slide->get_param('video_start_at', ''),
-				'endAt'			 => $slide->get_param('video_end_at', ''),
-				'forceCover'	 => ($streamonlyvideo == true && $streamcover == true || $streamboth == true && $streambothcover == true) ? true : $this->_truefalse($slide->get_param('video_force_cover', true)),
+				'endAt'			 => $slide->get_param('video_end_at', ''),				
 				'forceRewind'	 => $this->_truefalse($slide->get_param('video_force_rewind', true)),
 				'loop'			 => $slide->get_param('video_loop', 'none'),
 				'mute'			 => $this->_truefalse($slide->get_param('video_mute', true)),
@@ -2596,7 +3357,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			'blurStart'	 => $slide->get_param('kb_blur_start', 0),
 			'blurEnd'	 => $slide->get_param('kb_blur_end', 0),
 			'duration'	 => $slide->get_param('kb_duration', 10000),
-			'ease'		 => $slide->get_param('kb_easing', 'Linear.easeNone'),
+			'ease'		 => $slide->get_param('kb_easing', 'none'),
 			'fitEnd'	 => $slide->get_param('kb_end_fit', 100),
 			'fitStart'	 => $slide->get_param('kb_start_fit', 100),
 			'xEnd'		 => $slide->get_param('kb_end_offset_x', 0),
@@ -2616,7 +3377,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			$ms['panzoom']['blurEnd']	= $this->get_val($slicey, 'blurgend', $this->get_val($ms, array('panzoom', 'blurEnd'), 0));
 			$ms['panzoom']['fitEnd']	= $this->get_val($slicey, 'scale', $this->get_val($ms, array('panzoom', 'fitEnd')));
 			$ms['panzoom']['duration']	= $this->get_val($slicey, 'time', $this->get_val($ms, array('panzoom', 'duration')));
-			$ms['panzoom']['ease']		= $this->get_val($slicey, 'easing', $this->get_val($ms, array('panzoom', 'ease'), 'Linear.easeNone'));
+			$ms['panzoom']['ease']		= $this->get_val($slicey, 'easing', $this->get_val($ms, array('panzoom', 'ease'), 'none'));
 		}
 		
 		$target = $slide->get_param('link_open_in', '_self');
@@ -2764,7 +3525,9 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 	 * Migrates a Layer to version 6.0.0
 	 * @since: 6.0.0
 	 **/
-	public function migrate_layer_to_6_0($layer, $blank = false, $slide, $slider){
+	public function migrate_layer_to_6_0($layer, $blank, $slide, $slider){ //blank default should be false!
+
+		$this->init_googlefonts();
 		$color_picker		= new RSColorpicker();
 		
 		$video_data			= $this->get_val($layer, 'video_data', array());
@@ -3236,88 +3999,6 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		//Define an Empty Timeline Object First.
 		
 		/**
-		 * check if we are a default animation
-		 * if yes, we need to take the values and push these instead of the one set
-		 **/
-		/*
-		$_f = array(
-			'0' => array(),
-			'1' => array(),
-			'999' => array()
-		);
-		
-		if(!empty($this->upd_animations) && !empty($this->upd_animations['in'])){
-			$startanimation = $this->get_val($frame_0, 'animation', $this->get_val($layer, 'animation', $this->get_val($layer, 'animation', false)));
-			foreach($this->upd_animations['in'] as $a_k => $animations){
-				if($a_k === 'custom') continue;
-				$anim = $this->get_val($animations, array('transitions', $startanimation), array());
-				if(empty($anim)) continue;
-				
-				$_f['0'] = $this->get_val($anim, 'frame_0', array());
-				$_f['1'] = $this->get_val($anim, 'frame_1', array());
-				break;
-			}
-		}
-		if(!empty($this->upd_animations) && !empty($this->upd_animations['out'])){
-			$endanimation = $this->get_val($frame_999, 'animation', $this->get_val($layer, 'endanimation', $this->get_val($layer, 'endAnimation', false)));
-			foreach($this->upd_animations['out'] as $a_k => $animations){
-				if($a_k === 'custom') continue;
-				$anim = $this->get_val($animations, array('transitions', $endanimation), array());
-				if(empty($anim)) continue;
-				
-				$_f['999'] = $this->get_val($anim, 'frame_999', array());
-				break;
-			}
-		}
-		
-		
-		$_t = array('chars', 'lines', 'words');
-		$_s = array();
-		if($split !== 'none'){
-			$_s['0'] = $split;
-			$_s['1'] = $split;
-		}
-		if($endsplit !== 'none'){
-			$_s['999'] = $endsplit;
-		}
-		if(!empty($_s)){
-			foreach($_s as $_n => $_v){
-				//if found, we dont need to change anything
-				if(empty($this->get_val($_f, array($_n, $_v), array()))){
-					$found = false;
-					//check the other two $_t
-					foreach($_t as $_c_type){
-						$vvvv = $this->get_val($_f, array($_n, $_c_type), array());
-						if(!empty($vvvv)){
-							$found = $_c_type;
-							$nv = $this->get_val($_f, array($_n, $_c_type), array());
-							$this->set_val($_s, array($_f, $_n, $_v), $nv);
-							break;
-						}
-					}
-					
-					if($found === false){
-						//completely not found
-						//so take the transform values
-						//push them into the chars/lines/words
-						//set the transform opacity to 0
-						 
-						$transform = $this->get_val($_f, array($_n, 'transform'), array());
-						$this->set_val($_f, array($_n, $_v), $transform);
-						if(!empty($transform) || (!is_array($transform) && !is_object($transform))){
-							$this->set_val($_f, array($_n, 'transform'), array());
-						}
-						if(!isset($_f[$_n]['transform'])) $_f[$_n]['transform'] = array();
-
-						$this->set_val($_f, array($_n, 'transform', 'opacity'), '1');
-					}
-				}
-			}
-		}
-		*/
-		
-		
-		/**
 		 * old fix for slider under version 530
 		 **/
 		$end_time = trim($this->get_val($frame_999, 'time', $this->get_val($layer, 'endtime', 0)));
@@ -3418,7 +4099,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 							'use' => (empty($frame_0)) ? false : $this->get_val($frame_0, 'use_bg_c'),
 						),
 						//'delay'						=> (empty($frame_0)) ? 0 : $this->get_val($frame_0, 'delay'),
-						'ease' => (empty($frame_0)) ? $this->get_val($layer, 'easing', 'Power3.easeInOut') : $this->get_val($frame_0, 'easing', 'Power3.easeInOut'),
+						'ease' => (empty($frame_0)) ? $this->get_val($layer, 'easing', 'power3.inOut') : $this->get_val($frame_0, 'easing', 'power3.inOut'),
 						'speed' => (empty($frame_0)) ? $this->get_val($layer, 'speed', 300) : $this->get_val($frame_0, 'speed', 300),
 						'start' => (empty($frame_0)) ? $this->get_val($layer, 'time') : $this->get_val($frame_0, 'time'),
 						'startRelative' => $this->get_val($frame_0, 'time_relative', 0),
@@ -3503,7 +4184,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 						'skewX' => ($split !== 'none') ? 0 : $this->get_val($deformation, 'skewx'),
 						'skewY' => ($split !== 'none') ? 0 : $this->get_val($deformation, 'skewy'),
 						//'delay' => (empty($frame_0)) ? 0 : $this->get_val($frame_0, 'delay'),
-						'ease' => (empty($frame_0)) ? $this->get_val($layer, 'easing', 'Power3.easeInOut') : $this->get_val($frame_0, 'easing', 'Power3.easeInOut'),
+						'ease' => (empty($frame_0)) ? $this->get_val($layer, 'easing', 'power3.inOut') : $this->get_val($frame_0, 'easing', 'power3.inOut'),
 						'speed' => (empty($frame_0)) ? $this->get_val($layer, 'speed', 300) : $this->get_val($frame_0, 'speed', 300),
 						'start' => (empty($frame_0)) ? $this->get_val($layer, 'time') : $this->get_val($frame_0, 'time', 10),
 						'startRelative' => $this->get_val($frame_0, 'time_relative', 0),
@@ -3607,7 +4288,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 							'backgroundColor' => $this->get_val($frame_999, 'bg_c', 'transparent'),
 							'use' => (empty($frame_999)) ? false : ($this->get_val($frame_999, 'use_bg_c') === true),
 						),
-						'ease' => (empty($frame_999)) ? $this->get_val($layer, 'endeasing', 'Power3.easeInOut') : $this->get_val($frame_999, 'easing', 'Power3.easeInOut'),
+						'ease' => (empty($frame_999)) ? $this->get_val($layer, 'endeasing', 'power3.inOut') : $this->get_val($frame_999, 'easing', 'power3.inOut'),
 						'speed' => (empty($frame_999)) ? $this->get_val($layer, 'endspeed', 300) : $this->get_val($frame_999, 'speed', 300),
 						'start' => (empty($frame_999)) ? $end_time : $this->get_val($frame_999, 'time'), //$this->get_val($layer, 'endtime') 
 						'startRelative' => $this->get_val($frame_999, 'time_relative', 0),
@@ -3677,7 +4358,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			'loop' => $this->default_loop_frame(
 				array(
 					'use' => ($this->get_val($layer, 'loop_animation', 'none') !== 'none') ? true : false,
-					'ease' => ($this->get_val($layer, 'loop_animation') === 'rs-wave') ? 'Linear.easeNone' : $this->get_val($layer, 'loop_easing', 'Linear.easeNone'),
+					'ease' => ($this->get_val($layer, 'loop_animation') === 'rs-wave') ? 'none' : $this->get_val($layer, 'loop_easing', 'none'),
 					'speed' => ($this->get_val($layer, 'loop_animation', 'rs-wave') === 'rs-wave') ? $this->get_val($layer, 'loop_speed', 1) * 1000 : $this->get_val($layer, 'loop_speed', 1) * 2000,
 					'originX' => $this->get_val($layer, 'loop_xorigin', '50%'),
 					'originY' => $this->get_val($layer, 'loop_yorigin', '50%'),
@@ -4047,7 +4728,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			'y' => $this->get_val($deformation_hover, 'y', 0),
 			'z' => $this->get_val($deformation_hover, 'z', 0),
 			'speed' => $this->get_val($deformation_hover, 'speed', 300),
-			'ease' => $this->get_val($deformation_hover, 'easing', 'Linear.easeNone'), //Power3.easeInOut
+			'ease' => $this->get_val($deformation_hover, 'easing', 'none'), //power3.inOut
 			'zIndex' => $this->get_val($deformation_hover, 'zindex', 'auto'),
 			'pointerEvents' => $hover_pe,
 			'filter' => array(
@@ -4343,19 +5024,85 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			
 		}
 	}
+	
+	/**
+	 * change the global setting to 6.2.0
+	 **/
+	public function change_global_settings_to_6_2_0(){
+		$global = maybe_unserialize(get_option('revslider-global-settings', '')); //get the old structure as serialized
+		
+		$global = (!is_array($global)) ? json_decode($global, true) : $global;
+		
+		if(is_array($global)){ //means we are not json, so we are on 5.x
+			$version = $this->get_val($global, 'version', '1.0.0');
+			
+			if(version_compare($version, '6.2.0', '>=')) return true; //already on 6.0
+			
+			$global['version'] = '6.2.0';
+			
+			if(isset($global['customfonts'])){
+				$global['customFontList'] = array();
+				
+				$cfa = (!empty($global['customfonts'])) ? explode(',', $global['customfonts']) : ''; //pre 6.2.0
+				
+				if(!empty($cfa)){
+					foreach($cfa as $font){
+						$global['customFontList'][] = array(
+							'family'	=> $font,
+							'url'		=> '',
+							'frontend'	=> false,
+							'backend'	=> true,
+							'weights'	=> '200,300,400,500,600,700,800,900',
+						);
+					}
+				}
+				
+				unset($global['customfonts']);
+			}
+		
+			$this->set_global_settings($global);
+		}
+	}
 
+	/**
+	 * change the layer animations to version 6.2.0
+	 **/
+	public function change_animations_settings_to_6_2_0($anims = false){
+		if($anims === false){
+			$custom_in	 = $this->get_animations();
+			$custom_out	 = $this->get_end_animations();
+			$custom_loop = $this->get_loop_animations();
+			$anims = $custom_in + $custom_out + $custom_loop;
+		}
+		
+		if(!empty($anims)){
+			global $wpdb;
+			
+			foreach($anims as $_){
+				$id = $_['id'];
+				unset($_['id']);
+				unset($_['settings']);
+				$json_anim = $_json_anim = json_encode($_);
+				
+				$_json_anim = str_replace($this->update['620']['ease_adv_from'], $this->update['620']['ease_adv_to'], $_json_anim);
+				
+				
+				if($_json_anim !== $json_anim){
+					$arr['params'] = $_json_anim;
+					
+					$result = $wpdb->update($wpdb->prefix . RevSliderFront::TABLE_LAYER_ANIMATIONS, $arr, array('id' => $id));
+				}
+			}
+		}
+		
+	}
+	
 	/**
 	 * change the layer animations to version 6.0.0
 	 **/
 	public function change_animations_settings_to_6_0($anims = false){
 		//do on all navigations ?
-		if($anims === false){
-			$anims1 = $this->get_animations();
-			$anims2 = $this->get_end_animations();
-			$anims = array_merge($anims1, $anims2);
-		}else{
-			$anims = (array)$anims;
-		}
+		$anims = ($anims === false) ? $this->get_animations_v5() : (array)$anims;
 		
 		if(!empty($anims)){
 			global $wpdb;
@@ -4480,15 +5227,15 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 				//'include' => $this->_truefalse($this->get_val($global, 'includes_globally', true)),
 				'includeids' => $this->get_val($global, 'pages_for_includes', ''),
 				'script' => array(
-					'footer' => $this->_truefalse($this->get_val($global, 'js_to_footer', false)),
-					'defer' => $this->_truefalse($this->get_val($global, 'js_defer', false)),
+					'footer' => $this->_truefalse($this->get_val($global, 'js_to_footer', true)),
+					'defer' => $this->_truefalse($this->get_val($global, 'js_defer', true)),
 					'full' => $this->_truefalse($this->get_val($global, 'load_all_javascript', false))
 				),
 				'fonturl' => $this->get_val($global, 'change_font_loading', ''),
 				'size' => array(
 					'desktop' => $this->get_val($global, 'width', 1240),
 					'notebook' => $this->get_val($global, 'width_notebook', 1024),
-					'tablet' => $this->get_val($global, 'width_tablet', 768),
+					'tablet' => $this->get_val($global, 'width_tablet', 778),
 					'mobile' => $this->get_val($global, 'width_mobile', 480)
 				)
 			);
@@ -4506,7 +5253,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 
 		$rs_nav = new RevSliderNavigation();
 		//do on all navigations ?
-		$navs = ($navs === false) ? $rs_nav->get_all_navigations(false) : (array) $navs;
+		$navs = ($navs === false) ? $rs_nav->get_all_navigations(false, false, true) : (array) $navs;
 
 		$new_navs = array();
 		if(!empty($navs)){
@@ -4515,12 +5262,14 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 
 			//now push all again back in with new IDs
 			foreach($navs as $nav){
+				$nav['css'] = (!is_array($nav['css'])) ? json_decode($nav['css'], true) : $nav['css'];
+				$nav['markup'] = (!is_array($nav['markup'])) ? json_decode($nav['markup'], true) : $nav['markup'];
+				
 				foreach($this->navtypes as $navtype){
 					if(isset($nav['css'][$navtype]) && !empty($nav['css'][$navtype])){
 						//otherwise we are already on 6.0
 						$new_nav = $this->create_new_navigation_6_0($nav, $navtype);
-
-						$wpdb->update($wpdb->prefix . RevSliderFront::TABLE_NAVIGATIONS,
+						$wpdb->insert($wpdb->prefix . RevSliderFront::TABLE_NAVIGATIONS,
 							array(
 								'name' => $this->get_val($new_nav, 'name'),
 								'handle' => $this->get_val($new_nav, 'handle'),
@@ -4540,6 +5289,73 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		return $new_navs;
 	}
 
+	/**
+	 * Change navigation css that needs to be used since 6.4.9
+	 * @since: 6.4.9
+	 **/
+	public function change_navigation_settings_to_6_4_10($navs = false, $return = false){
+		global $wpdb;
+		
+		/**
+		 * some customers had an version inbetween, where $find was wrongly translated into this here
+		 * so we need to replace $find2 also with $replace and this has to happen first!
+		 **/
+		$find2 = array(
+			'.tp-bullets:hover.rs.touchhover',
+			'.tp-bullet.rs.touchhover',
+			'.tp-tab.rs.touchhover',
+			'.tp-tabs.rs.touchhover',
+			'.tp-thumb.rs.touchhover',
+			'.tp-thumbs.rs.touchhover',
+			'.tparrows.rs-touchhover',
+			'.tp-rightarrow.rs.touchhover',
+			'.tp-leftarrow.rs.touchhover'
+		);
+		$find = array(
+			'.tp-bullets:hover',
+			'.tp-bullet:hover',
+			'.tp-tab:hover',
+			'.tp-tabs:hover',
+			'.tp-thumb:hover',
+			'.tp-thumbs:hover',
+			'.tparrows:hover',
+			'.tp-rightarrow:hover',
+			'.tp-leftarrow:hover'
+		);
+		$replace = array(
+			'.tp-bullets.rs-touchhover',
+			'.tp-bullet.rs-touchhover',
+			'.tp-tab.rs-touchhover',
+			'.tp-tabs.rs-touchhover',
+			'.tp-thumb.rs-touchhover',
+			'.tp-thumbs.rs-touchhover',
+			'.tparrows.rs-touchhover',
+			'.tp-rightarrow.rs-touchhover',
+			'.tp-leftarrow.rs-touchhover'
+		);
+		
+		$rs_nav = new RevSliderNavigation();
+		//do on all navigations ?
+		$navs = ($navs === false) ? $rs_nav->get_all_navigations(false, false, true) : (array) $navs;
+		
+		if(!empty($navs)){
+			//now push all again back in with new IDs
+			foreach($navs as $id => $nav){
+				$css = $this->get_val($nav, 'css');
+				$css = str_replace($find2, $replace, $css);
+				$css = str_replace($find, $replace, $css);
+				if($css !== $this->get_val($nav, 'css')){
+					//update the css
+					$response = $wpdb->update(
+						$wpdb->prefix.RevSliderFront::TABLE_NAVIGATIONS,
+						array('css' => $css),
+						array('id' => $this->get_val($nav, 'id'))
+					);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Go through all Slider and change the navigations handle to id
 	 **/
@@ -4807,7 +5623,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 				'onclick' => array(
 					'set' => $this->_truefalse($_->get_param('beforeafter_onclick', true)),
 					'time' => $_->get_param('beforeafter_click_time', 500),
-					'easing' => $_->get_param('beforeafter_click_easing', 'Power2.easeOut'),
+					'easing' => $_->get_param('beforeafter_click_easing', 'power2.out'),
 					'cursor' => $_->get_param('beforeafter_cursor', 'pointer'),
 				),
 			);
@@ -4862,13 +5678,13 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 				'enable' => $this->_truefalse($_->get_param('revealer_enabled', false)),
 				'direction' => $_->get_param('revealer_direction', 'open_horizontal'),
 				'color' => $_->get_param('revealer_color', '#000000'),
-				'easing' => $_->get_param('revealer_easing', 'Power2.easeOut'),
+				'easing' => $_->get_param('revealer_easing', 'power2.out'),
 				'duration' => $_->get_param('revealer_duration', 500),
 				'delay' => $_->get_param('revealer_delay', 10),
 				'overlay' => array(
 					'enable' => $this->_truefalse($_->get_param('revealer_overlay_enabled', false)),
 					'color' => $_->get_param('revealer_overlay_color', '#000000'),
-					'easing' => $_->get_param('revealer_overlay_easing', 'Power2.easeOut'),
+					'easing' => $_->get_param('revealer_overlay_easing', 'power2.out'),
 					'duration' => $_->get_param('revealer_overlay_duration', 500),
 					'delay' => $_->get_param('revealer_overlay_delay', 10),
 				),
@@ -5227,7 +6043,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 					'enable' => $this->_truefalse($_->get_param('liquideffect_transition', true)),
 					'cross' => $this->_truefalse($_->get_param('liquideffect_transcross', true)),
 					'duration' => $_->get_param('liquideffect_transtime', 1000),
-					'easing' => $_->get_param('liquideffect_easing', 'Power3.easeOut'),
+					'easing' => $_->get_param('liquideffect_easing', 'power3.out'),
 					'speedx' => $_->get_param('liquideffect_transpeedx', 2),
 					'speedy' => $_->get_param('liquideffect_transpeedy', 100),
 					'rotation' => $_->get_param('liquideffect_transrot', 0),
@@ -5241,7 +6057,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 					'enable' => $this->_truefalse($_->get_param('liquideffect_interactive', false)),
 					'event' => $_->get_param('liquideffect_event', 'mousemove'),
 					'duration' => $_->get_param('liquideffect_intertime', 500),
-					'easing' => $_->get_param('liquideffect_intereasing', 'Power2.easeOut'),
+					'easing' => $_->get_param('liquideffect_intereasing', 'power2.out'),
 					'speedx' => $_->get_param('liquideffect_interspeedx', 0),
 					'speedy' => $_->get_param('liquideffect_interspeedy', 0),
 					'rotation' => $_->get_param('liquideffect_interotation', 0),
@@ -5267,7 +6083,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 				'direction' => $_->get_param('beforeafter_direction', 'horizontal'),
 				'delay' => $_->get_param('beforeafter_delay', 500),
 				'time' => $_->get_param('beforeafter_time', 750),
-				'easing' => $_->get_param('beforeafter_easing', 'Power2.easeInOut'),
+				'easing' => $_->get_param('beforeafter_easing', 'power2.inOut'),
 				'animateOut' => $_->get_param('beforeafter_animateout', 'fade'),
 				'moveTo' => $this->c_to_resp(array('default' => 50, 'val' => array('desktop' => $this->get_val($movetos, 0), 'notebook' => $this->get_val($movetos, 1), 'tablet' => $this->get_val($movetos, 2), 'mobile' => $this->get_val($movetos, 3)))),
 				'teaser' => array(
@@ -5309,8 +6125,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 						'argsVimeo' => $_->get_param('video_arguments_vim_beforeafter', 'title=0&byline=0&portrait=0&api=1'),
 						'dottedOverlay' => $_->get_param('video_dotted_overlay_beforeafter', 'none'),
 						'startAt' => $_->get_param('video_start_at_beforeafter', ''),
-						'endAt' => $_->get_param('video_end_at_beforeafter', ''),
-						'forceCover' => $this->_truefalse($_->get_param('video_force_cover_beforeafter', true)),
+						'endAt' => $_->get_param('video_end_at_beforeafter', ''),						
 						'forceRewind' => $this->_truefalse($_->get_param('video_force_rewind_beforeafter', true)),
 						'loop' => $_->get_param('video_loop_beforeafter', 'none'),
 						'mute' => $this->_truefalse($_->get_param('video_mute_beforeafter', true)),
@@ -5774,7 +6589,7 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 			'originZ'	=> array('frame_0' => 0, 'frame_1' => 0, 'frame_999' => 'inherit'), //'0'
 
 			//timeline
-			'ease' => array('frame_0' => false, 'frame_999' => 'Power3.easeInOut'), //'Power3.easeInOut'
+			'ease' => array('frame_0' => false, 'frame_999' => 'power3.inOut'), //'power3.inOut'
 			'start' => array('frame_0' => false, 'frame_1' => 10, 'frame_999' => true), //0
 			'speed' => array('frame_0' => false, 'frame_999' => 300) //300
 		);
@@ -6128,21 +6943,21 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		switch($this->get_val($o, 'loop_animation')){
 			case 'rs-pendulum':
 			case 'rs-rotate':
-				$loop['ease'] = $this->get_val($o, 'ease', 'Linear.easeNone');
+				$loop['ease'] = $this->get_val($o, 'ease', 'none');
 				$loop['frame_0']['rotationZ'] = $this->get_val($o, array('frame_0', 'rotationZ'), 0);
 				$loop['frame_999']['rotationZ'] = $this->get_val($o, array('frame_999', 'rotationZ'), 0);
 				$loop['originX'] = $this->get_val($o, 'originX', '50%');
 				$loop['originY'] = $this->get_val($o, 'originY', '50%');
 			break;
 			case 'rs-slideloop':
-				$loop['ease'] = $this->get_val($o, 'ease', 'Linear.easeNone');
+				$loop['ease'] = $this->get_val($o, 'ease', 'none');
 				$loop['frame_0']['x'] = $this->get_val($o, array('frame_0', 'x'), 0);
 				$loop['frame_999']['x'] = $this->get_val($o, array('frame_999', 'x'), 0);
 				$loop['frame_0']['y'] = $this->get_val($o, array('frame_0', 'y'), 0);
 				$loop['frame_999']['y'] = $this->get_val($o, array('frame_999', 'y'), 0);
 			break;
 			case 'rs-pulse':
-				$loop['ease'] = $this->get_val($o, 'ease', 'Linear.easeNone');
+				$loop['ease'] = $this->get_val($o, 'ease', 'none');
 				$loop['frame_0']['scaleX'] = $this->get_val($o, array('frame_0', 'scaleX'), 1);
 				$loop['frame_0']['scaleY'] = $this->get_val($o, array('frame_0', 'scaleX'), 1);
 				$loop['frame_999']['scaleX'] = $this->get_val($o, array('frame_999', 'scaleX'), 1);
@@ -6160,7 +6975,42 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		
 		return $loop;
 	}
+
+	/**
+	 * remove all sliders that have type => template
+	 **/
+	public function remove_template_sliders(){
+		global $wpdb;
+		$slider_data = $wpdb->get_results("SELECT id FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDER ." WHERE `type` = 'template' ORDER BY id ASC", ARRAY_A);
+		if(empty($slider_data)) return true;
+		
+		$ids = array();
+		foreach($slider_data as $data){
+			$ids[] = $data['id'];
+		}
+
+		$wpdb->query("DELETE FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDER ." WHERE `type` = 'template'");
+		$wpdb->query("DELETE FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDES ." WHERE `slider_id` IN ('". implode("', '", $ids) ."')");
+		$wpdb->query("DELETE FROM ". $wpdb->prefix . RevSliderFront::TABLE_STATIC_SLIDES ." WHERE `slider_id` IN ('". implode("', '", $ids) ."')");
+	}
 	
+	/**
+	 * check all folders, and move them to the v7 tables once
+	 */
+	public function move_folder(){
+		global $wpdb;
+		$folders = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDER ." WHERE `type` = 'folder' ORDER BY id ASC", ARRAY_A);
+		foreach($folders ?? [] as $folder){
+			$add = [
+				'id'	=> $this->get_val($folder, 'id'),
+				'title'	=> $this->get_val($folder, 'title'),
+				'alias'	=> $this->get_val($folder, 'alias'),
+				'settings'	=> $this->get_val($folder, 'settings'),
+				'type'	=> $this->get_val($folder, 'type'),
+			];
+			$wpdb->insert($wpdb->prefix . RevSliderFront::TABLE_SLIDER . "7", $add);
+		}
+	}
 	
 	/**
 	 * compare and remove unneeded defaults
@@ -6175,17 +7025,10 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 					/**
 					 * Little hacks to modify if/if not things need to be deleted
 					 **/
-					if($key === 'frameOrder' || $key === 'alias' || $key === 'intelligentInherit'){ //with in_array we receive unexpected results
-						continue;
-					}
-					if($this->upgrade_layer_type === 'shape'){
-						if($this->current_parent === 'idle'){
-							if($key === 'backgroundColor'){ //leave it as it is
-								continue;
-							}
-						}
-						
-					}
+					if($key === 'frameOrder' || $key === 'alias' || $key === 'intelligentInherit') continue; //with in_array we receive unexpected results
+
+					if($this->upgrade_layer_type === 'shape' && $this->current_parent === 'idle' && $key === 'backgroundColor') continue; //leave it as it is
+
 					/**
 					 * END OF
 					 * Little hacks to modify if/if not things need to be deleted
@@ -6202,23 +7045,15 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 						}
 					}elseif($this->get_val($emp, $key, '######') !== '######'){
 						if(in_array($key, array('v', 'borderWidth'), true) && is_array($o[$key])){
-							if(json_encode($emp[$key]) == json_encode($o[$key])){
-								unset($o[$key]);
-							}
+							if(json_encode($emp[$key]) == json_encode($o[$key])) unset($o[$key]);
 						}else{
-							if($key === 'idle'){ //we check for idle, as we want to leave backgroundColor within idle 
-								$this->current_parent = $key;
-							}
+							if($key === 'idle') $this->current_parent = $key; //we check for idle, as we want to leave backgroundColor within idle 
 							$o[$key] = $this->_compare($emp[$key], $o[$key]); //, $d
-							if($key === 'idle'){ //we check for idle, as we want to leave backgroundColor within idle and we can set it only back to false if we are out of the idle tree
-								$this->current_parent = false;
-							}
+							if($key === 'idle') $this->current_parent = false; //we check for idle, as we want to leave backgroundColor within idle and we can set it only back to false if we are out of the idle tree
 						}
 						
 						//CHECK IF OBJECT IS EMPTY ?
-						if($this->isEmptyObject($this->get_val($o, $key, ''))){
-							unset($o[$key]);
-						}
+						if($this->isEmptyObject($this->get_val($o, $key, ''))) unset($o[$key]);
 					}
 				}
 			}
@@ -6274,6 +7109,62 @@ class RevSliderPluginUpdate extends RevSliderFunctions {
 		return $slide;
 	}
 	
+	
+	/**
+	 * Check if it is an empty array or object
+	 * @since: 6.0.0
+	 **/
+	public function isEmptyObject($vars){ //object	
+		//$vars = get_object_vars($object);
+		if(empty($vars) && $vars !== 0){ // && $vars !== false
+		//if(!is_array($vars) && !is_object($vars) && trim($vars) === '' && $vars !== 0){
+			return true;
+		}else{
+			$vars = (array)$vars;
+			foreach($vars as $var){
+				if(!is_array($var)){ //!is_object($var) && 
+					return false;
+				}else{
+					return $this->isEmptyObject($var);
+				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * get transparency from rgba
+	 * @since: 5.0
+	 */
+	public function get_trans_from_rgba($rgba, $in_percent = false){
+		if(strtolower($rgba) == 'transparent') return 100;
+		
+		$temp = explode(',', $rgba);
+		if(count($temp) == 4){
+			return ($in_percent) ? preg_replace('/[^\d.]/', '', $temp[3]) : preg_replace('/[^\d.]/', "", $temp[3]) * 100;
+		}
+		
+		return 100;
+	}
+	
+	
+	/**
+	 * change rgba to hex
+	 * @since: 5.0
+	 * @moved: 6.1.3
+	 */
+	public function rgba2hex($rgba){
+		if(strtolower($rgba) == 'transparent') return $rgba;
+		
+		$temp = explode(',', $rgba);
+		$rgb = array();
+		if(count($temp) == 4) unset($temp[3]);
+		foreach($temp as $val){
+			$t = dechex(preg_replace('/[^\d.]/', '', $val));
+			if(strlen($t) < 2) $t = '0'.$t;
+			$rgb[] = $t;
+		}
+		
+		return '#'.implode('', $rgb);
+	}
 }
-
-?>

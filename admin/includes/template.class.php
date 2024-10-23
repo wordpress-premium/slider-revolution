@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
 
 if(!defined('ABSPATH')) exit();
@@ -12,7 +12,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 	private $templates_list			= 'revslider/get-list.php';
 	private $templates_download		= 'revslider/download.php';
 	
-	private $templates_server_path	= '/revslider/images/';
+	public $templates_server_path	= '/revslider/images/';
 	private $templates_path			= '/revslider/templates/';
 	
 	private $curl_check				= null;
@@ -24,11 +24,11 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * @since: 5.0.5
 	 */
 	public function _download_template($uid){
-		$rslb	= new RevSliderLoadBalancer();
+		$rslb	= RevSliderGlobals::instance()->get('RevSliderLoadBalancer');
 		$return	= false;
 		$uid	= $this->clear_uid($uid);
 		$uid	= esc_attr($uid);
-		$code	= (get_option('revslider-valid', 'false') == 'false') ? '' : get_option('revslider-code', '');
+		$code	= ($this->_truefalse(get_option('revslider-valid', 'false')) === false) ? '' : get_option('revslider-code', '');
 		
 		$upload_dir = wp_upload_dir(); // Set upload folder
 		// Check folder permission and define file location
@@ -57,7 +57,9 @@ class RevSliderTemplate extends RevSliderFunctions {
 							$return = array('error' => __('Can\'t write the file into the uploads folder of WordPress, please change permissions and try again!', 'revslider'));
 						}
 					}else{
-						$return = array('error' => __('Purchase Code is invalid', 'revslider'));
+						$error = ($this->get_addition('selling') === true) ? __('License Key is invalid', 'revslider') : __('Purchase Code is invalid', 'revslider');
+						
+						$return = array('error' => $error);
 					}
 				}
 			}else{//else, check for error and print it to customer
@@ -83,9 +85,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 		// Check folder permission and define file location
 		if(wp_mkdir_p($upload_dir['basedir'] . $this->templates_path)){
 			$file = $upload_dir['basedir'] . $this->templates_path . '/' . $uid.'.zip';
-			if(file_exists($file)){ //delete file
-				return unlink($file);
-			}
+			if(file_exists($file)) return unlink($file); //delete file
 		}
 		return false;
 	}
@@ -96,7 +96,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * @since: 5.0.5
 	 */
 	public function _get_template_list($force = false){
-		$rslb		= new RevSliderLoadBalancer();
+		$rslb		= RevSliderGlobals::instance()->get('RevSliderLoadBalancer');
 		$last_check	= get_option('revslider-templates-check');
 		
 		if($last_check == false){ //first time called
@@ -107,11 +107,11 @@ class RevSliderTemplate extends RevSliderFunctions {
 		// Get latest Templates
 		if(time() - $last_check > 345600 || $force == true){ //4 days
 			
-			update_option('revslider-templates-check',  time());
+			update_option('revslider-templates-check', time());
 
-			$hash = get_option('revslider-templates-hash', '');
-			$code	= (get_option('revslider-valid', 'false') == 'false') ? '' : get_option('revslider-code', '');
-			$data	= array(
+			$hash = ($force === true) ? '' : get_option('revslider-templates-hash', '');
+			$code = ($this->_truefalse(get_option('revslider-valid', 'false')) === false) ? '' : get_option('revslider-code', '');
+			$data = array(
 				'code'		=> urlencode($code),
 				'shop_version' => urlencode(self::SHOP_VERSION),
 				'hash'		=> urlencode($hash),
@@ -125,7 +125,8 @@ class RevSliderTemplate extends RevSliderFunctions {
 					$templates = json_decode($response, true);
 					if(is_array($templates)){
 						if(isset($templates['hash'])) update_option('revslider-templates-hash', $templates['hash']);
-						update_option('rs-templates-new', $templates, false);
+						$templates = $this->do_compress($templates);
+						$upd = update_option('rs-templates-new', $templates, false);
 					}
 				}
 			}
@@ -141,14 +142,23 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 */
 	private function update_template_list(){
 		$new = get_option('rs-templates-new', false);
-		$cur = get_option('rs-templates', array());
-		$cur = array();
-		
+		$new = $this->do_uncompress($new);
+		$cur = get_option('rs-templates', false);
+		$cur = $this->do_uncompress($cur);
+		$counter = 0;
+
 		if($new !== false && !empty($new) && is_array($new)){
 			if(empty($cur)){
 				$cur = $new;
+				$counter = (isset($cur['slider']) && is_array($cur['slider'])) ? count($cur['slider']) : $counter;
 			}else{
 				if(isset($new['slider']) && is_array($new['slider'])){
+					if(isset($cur['slider']) && is_array($cur['slider']) && isset($new['slider']) && is_array($cur['slider'])){
+						$_n = count($new['slider']);
+						$_c = count($cur['slider']);
+						$counter = ($_n > $_c) ? $_n - $_c : $counter;
+					}
+					
 					foreach($new['slider'] as $n){
 						$found = false;
 						if(isset($cur['slider']) && is_array($cur['slider'])){
@@ -179,7 +189,6 @@ class RevSliderTemplate extends RevSliderFunctions {
 							$n['new_slider'] = true;
 							$cur['slider'][] = $n;
 						}
-						
 					}
 					
 					foreach($cur['slider'] as $ck => $c){ //remove no longer available Slider
@@ -193,12 +202,15 @@ class RevSliderTemplate extends RevSliderFunctions {
 					$cur['slides'] = $new['slides']; // push always all slides
 				}
 			}
-			
+
+			$cur = $this->do_compress($cur);
 			update_option('rs-templates', $cur, false);
 			update_option('rs-templates-new', false, false);
 			
 			//$this->_update_images();
 		}
+		
+		update_option('rs-templates-counter', $counter, false);
 	}
 	
 	
@@ -207,9 +219,10 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * @since: 5.0.5
 	 */
 	public function remove_is_new($uid){
-		$cur = get_option('rs-templates', array());
+		$cur = get_option('rs-templates', false);
+		$cur = $this->do_uncompress($cur);
 		
-		if(isset($cur['slider']) && is_array($cur['slider'])){
+		if(is_array($cur) && isset($cur['slider']) && is_array($cur['slider'])){
 			foreach($cur['slider'] as $ck => $c){
 				if($c['uid'] == $uid){
 					unset($cur['slider'][$ck]['is_new']);
@@ -218,6 +231,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 			}
 		}
 		
+		$cur = $this->do_compress($cur);
 		update_option('rs-templates', $cur, false);
 	}
 	
@@ -225,10 +239,14 @@ class RevSliderTemplate extends RevSliderFunctions {
 	/**
 	 * Update the Images get them from Server and check for existance on each image
 	 * @since: 5.0.5
+	 * @param bool $img
 	 */
 	private function _update_images($img = false){
-		$rslb	= new RevSliderLoadBalancer();
-		$templates = get_option('rs-templates', array());
+		global $SR_GLOBALS;
+		$rslb	= RevSliderGlobals::instance()->get('RevSliderLoadBalancer');
+		$templates = get_option('rs-templates', false);
+		$templates = $this->do_uncompress($templates);
+
 		$chk	= $this->check_curl_connection();
 		$curl	= ($chk) ? new WP_Http_Curl() : false;
 		$url	= $rslb->get_url('templates', 0, true);
@@ -241,7 +259,11 @@ class RevSliderTemplate extends RevSliderFunctions {
 			if(!empty($templates['slider']) && is_array($templates['slider'])){
 				foreach($templates['slider'] as $key => $temp){
 					if($img !== false){ //we want to download a certain image, check for it
-						if($this->get_val($temp, 'img') !== $img) continue;
+						$temp_img = $this->get_val($temp, 'img');
+						if($temp_img !== $img) continue;
+
+						$file_type = wp_check_filetype($temp_img, $this->get_val($SR_GLOBALS, array('mime_types', 'image')));
+						if($this->get_val($file_type, 'ext', false) === false || $this->get_val($file_type, 'type', false) === false) continue;
 					}
 					
 					// Check folder permission and define file location
@@ -255,7 +277,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 								do{
 									$image_data = @$curl->request($url.'/'.$this->templates_server_path.$temp['img']); // Get image data
 									if(!is_wp_error($image_data) && isset($image_data['body']) && isset($image_data['response']) && isset($image_data['response']['code']) && $image_data['response']['code'] == '200'){
-										$image_data = $image_data['body'];
+										$image_data = $this->get_val($image_data, 'body');
 										$done = true;
 									}else{
 										$image_data = false;
@@ -263,17 +285,21 @@ class RevSliderTemplate extends RevSliderFunctions {
 										$url = $rslb->get_url('templates', 0, true);
 									}
 									$count++;
-								}while($done == false && $count < 5);
+								}while($done == false && $count < 3);
 							}else{
 								$count = 0;
 								do{
-									$image_data = @file_get_contents($url.'/'.$this->templates_server_path.$temp['img']); // Get image data
-									if($image_data == false){
+									$image_data = wp_safe_remote_get($url.'/'.$this->templates_server_path.$temp['img'], array('timeout' => 10));
+									if(!is_wp_error($image_data) && isset($image_data['body']) && isset($image_data['response']) && isset($image_data['response']['code']) && $image_data['response']['code'] == '200'){
+										$done = true;
+										$image_data = $this->get_val($image_data, 'body');
+									}else{
+										$image_data = false;
 										$rslb->move_server_list();
 										$url = $rslb->get_url('templates', 0, true);
 									}
 									$count++;
-								}while($image_data == false && $count < 5);
+								}while($done == false && $count < 3);
 							}
 							if($image_data !== false){
 								$reload[$temp['alias']] = true;
@@ -296,7 +322,11 @@ class RevSliderTemplate extends RevSliderFunctions {
 					foreach($templates['slides'] as $key => $temp){
 						foreach($temp as $k => $tvalues){
 							if($img !== false){ //we want to download a certain image, check for it
-								if($this->get_val($tvalues, 'img') !== $img) continue;
+								$temp_img = $this->get_val($tvalues, 'img');
+								if($temp_img !== $img) continue;
+								
+								$file_type = wp_check_filetype($temp_img, $this->get_val($SR_GLOBALS, array('mime_types', 'image')));
+								if($this->get_val($file_type, 'ext', false) === false || $this->get_val($file_type, 'type', false) === false) continue;
 							}
 							
 							// Check folder permission and define file location
@@ -345,86 +375,8 @@ class RevSliderTemplate extends RevSliderFunctions {
 			}
 		}
 		
+		$templates = $this->do_compress($templates);
 		update_option('rs-templates', $templates, false); //remove the push_image
-	}
-	
-	
-	/**
-	 * Copy a Slide to the Template Slide list
-	 * @since: 5.0
-	 * @before: RevSliderTemplate::copySlideToTemplates()
-	 */
-	public function copy_slide_to_templates($slide_id, $slide_title, $slide_settings = array()){
-		if(intval($slide_id) == 0) return false;
-		$slide_title = sanitize_text_field($slide_title);
-		if(strlen(trim($slide_title)) < 3) return false;
-		
-		global $wpdb;
-		
-		$duplicate = $wpdb->get_row($wpdb->prepare("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDES ." WHERE id = %s", $slide_id), ARRAY_A);
-		
-		if(empty($duplicate)) // slide not found
-			return false;
-		
-		unset($duplicate['id']);
-		
-		$duplicate['slider_id']		= -1; //-1 sets it to be a template
-		$duplicate['slide_order']	= -1;
-		
-		$params = json_decode($duplicate['params'], true);
-		$settings = json_decode($duplicate['settings'], true);
-		
-		$params['title'] = $slide_title;
-		if(!isset($params['publish'])) $params['publish'] = array();
-		$params['publish']['state'] = 'published';
-		
-		if(isset($slide_settings['width'])) $settings['width'] = intval($slide_settings['width']);
-		if(isset($slide_settings['height'])) $settings['height'] = intval($slide_settings['height']);
-		
-		$duplicate['params']	= json_encode($params);
-		$duplicate['settings']	= json_encode($settings);
-		
-		$response = $wpdb->insert($wpdb->prefix . RevSliderFront::TABLE_SLIDES, $duplicate);
-		
-		return ($response) ? true : false;
-	}
-	
-	
-	/**
-	 * Get all Template Slides
-	 * @since: 5.0
-	 * @before: RevSliderTemplate::getTemplateSlides();
-	 */
-	public function get_template_slides(){
-		global $wpdb;
-		
-		$templates	= $wpdb->get_results($wpdb->prepare("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDES ." WHERE slider_id = %s", -1), ARRAY_A);
-		//add default Template Slides here!
-		$default	= $this->get_default_template_slides();
-		$templates	= array_merge($templates, $default);
-		
-		if(!empty($templates)){
-			foreach($templates as $key => $template){
-				$templates[$key]['params']		= json_decode($template['params'], true);
-				//$templates[$key]['layers']	= json_decode($template['layers'], true);
-				$templates[$key]['settings']	= json_decode($template['settings'], true);
-			}
-		}
-		
-		return $templates;
-	}
-	
-	
-	/**
-	 * Add default Template Slides that can't be deleted for example. Authors can add their own Slides here through Filter
-	 * @since: 5.0
-	 * @before: RevSliderTemplate::getDefaultTemplateSlides();
-	 */
-	private function get_default_template_slides(){
-		$templates = array();
-		$templates = apply_filters('revslider_set_template_slides', $templates);
-		
-		return $templates;
 	}
 	
 	
@@ -432,67 +384,55 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * get default ThemePunch default Slides
 	 * @since: 5.0
 	 * @before: RevSliderTemplate::getThemePunchTemplateSlides()
+	 * @param bool $sliders
 	 */
 	public function get_tp_template_slides($sliders = false){
 		global $wpdb;
 		
-		$templates		= array();
-		$slide_defaults	= array();
-		
-		if($sliders == false){
-			$sliders = $this->get_tp_template_sliders();
-		}
-		
-		if(!empty($sliders)){
-			foreach($sliders as $slider){
-				$slides		= $this->get_tp_template_default_slides($slider['alias']);
-				$installed	= false;
-				
-				if($this->get_val($slider, 'installed', false) !== false){
-					$cur_slides = $wpdb->get_results($wpdb->prepare("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDES ." WHERE slider_id = %s", $slider['installed']), ARRAY_A);
-					$installed	= true;
-				}else{
-					$cur_slides = $slides;
-				}
-				
-				if(!empty($cur_slides)){
-					$i = 1;
-					foreach($cur_slides as $key => $tmpl){
-						if(isset($slides[$key]) && !empty($slides[$key]['img'])) $cur_slides[$key]['img']	= $this->_check_file_path($slides[$key]['img'], true, false);
-						if($this->get_val($tmpl, 'title', false) === false) $cur_slides[$key]['title']		= 'Slide '.$i;
-						$cur_slides[$key]['uid']	= $this->get_val($slider, 'uid');
-						$cur_slides[$key]['parent']	= $this->get_val($slider, 'id');
-						if($installed){
-							$cur_slides[$key]['installed'] = $this->get_val($tmpl, 'id');
-						}
-						
-						//addon requirements
-						$cur_slides[$key]['plugin_require'] = $this->get_val($slider, 'plugin_require', array());
-						
-						$i++;
+		$templates = array();
+		if($sliders == false) $sliders = $this->get_tp_template_sliders();
+	
+		foreach($sliders ?? [] as $slider){
+			$slides		= $this->get_tp_template_default_slides($slider['alias']);
+			$installed	= false;
+			
+			if($this->get_val($slider, 'installed', false) !== false){
+				$cur_slides = $wpdb->get_results($wpdb->prepare("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDES ." WHERE slider_id = %s", $slider['installed']), ARRAY_A);
+				$installed	= true;
+			}else{
+				$cur_slides = $slides;
+			}
+			
+			if(!empty($cur_slides)){
+				$i = 1;
+				foreach($cur_slides as $key => $tmpl){
+					if(isset($slides[$key]) && !empty($slides[$key]['img'])) $cur_slides[$key]['img']	= $this->_check_file_path($slides[$key]['img'], true, false);
+					if($this->get_val($tmpl, 'title', false) === false) $cur_slides[$key]['title']		= 'Slide '.$i;
+					$cur_slides[$key]['uid']	= $this->get_val($slider, 'uid');
+					$cur_slides[$key]['parent']	= $this->get_val($slider, 'id');
+					if($installed){
+						$cur_slides[$key]['installed'] = $this->get_val($tmpl, 'id');
 					}
+					
+					//addon requirements
+					$cur_slides[$key]['plugin_require'] = $this->get_val($slider, 'plugin_require', array());
+					
+					$i++;
 				}
-				
-				$templates = array_merge($templates, $cur_slides);
 			}
+			
+			$templates = array_merge($templates, $cur_slides);
 		}
-		
-		if(!empty($templates)){
-			foreach($templates as $key => $template){
-				if($this->get_val($template, 'installed', false) !== false){
-					$template['params']		= $this->get_val($template, 'params', '');
-					$template['layers']		= $this->get_val($template, 'layers', '');
-					$template['settings']	= $this->get_val($template, 'settings', '');
-					
-					$templates[$key]['params']	 = json_decode($template['params'], true);
-					//$templates[$key]['layers'] = json_decode($template['layers'], true);
-					$templates[$key]['settings'] = json_decode($template['settings'], true);
-					
-					//add missing uid and zipname
-				}
-				
-				//$templates[$key]['slider_id'] = json_decode($template['settings'], true);
-			}
+	
+		foreach($templates ?? [] as $key => $template){
+			if($this->get_val($template, 'installed', false) === false) continue;
+			$template['params']		= $this->get_val($template, 'params', '');
+			$template['layers']		= $this->get_val($template, 'layers', '');
+			$template['settings']	= $this->get_val($template, 'settings', '');
+			
+			$templates[$key]['params']	 = json_decode($template['params'], true);
+			//$templates[$key]['layers'] = json_decode($template['layers'], true);
+			$templates[$key]['settings'] = json_decode($template['settings'], true);
 		}
 		
 		return $templates;
@@ -505,78 +445,11 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * @before: RevSliderTemplate::getThemePunchTemplateDefaultSlides()
 	 */
 	public function get_tp_template_default_slides($slider_alias){
-		
-		$templates	= get_option('rs-templates', array());
-		$slides		= (isset($templates['slides']) && !empty($templates['slides'])) ? $templates['slides'] : array();
+		$templates	= get_option('rs-templates', false);
+		$templates	= $this->do_uncompress($templates);
+		$slides		= (is_array($templates) && isset($templates['slides']) && !empty($templates['slides'])) ? $templates['slides'] : array();
 		
 		return (isset($slides[$slider_alias])) ? $slides[$slider_alias] : array();
-	}
-	
-	
-	/**
-	 * Get default Template Sliders
-	 * @since: 5.0
-	 * @before: RevSliderTemplate::getDefaultTemplateSliders();
-	 */
-	public function get_default_template_sliders(){
-		global $wpdb;
-		
-		$sliders = array();
-		$check = array();
-		
-		//add themepunch default Sliders here
-		$check = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDER ." WHERE type = 'template'", ARRAY_A);
-		
-		$sliders = apply_filters('revslider_set_template_sliders', $sliders);
-		
-		/**
-		 * Example		 
-			$sliders['Slider Pack Name'] = array(
-				array('title' => 'PJ Slider 1', 'alias' => 'pjslider1', 'width' => 1400, 'height' => 868, 'zip' => 'exwebproduct.zip', 'uid' => 'bde6d50c2f73f8086708878cf227c82b', 'installed' => false, 'img' => RS_PLUGIN_URL .'admin/assets/imports/exwebproduct.jpg'),
-				array('title' => 'PJ Classic Slider', 'alias' => 'pjclassicslider', 'width' => 1240, 'height' => 600, 'zip' => 'classicslider.zip', 'uid' => 'a0d6a9248c9066b404ba0f1cdadc5cf2', 'installed' => false, 'img' => RS_PLUGIN_URL .'admin/assets/imports/classicslider.jpg')
-			);
-		 **/
-		
-		if(!empty($check) && !empty($sliders)){
-			foreach($sliders as $key => $the_sliders){
-				foreach($the_sliders as $skey => $slider){
-					foreach($check as $ikey => $installed){
-						if($installed['alias'] == $slider['alias']){ //.'-template'
-							$img = $this->get_val($slider, 'img');
-							$sliders[$key][$skey] = $installed;
-							$sliders[$key][$skey]['img'] = $this->_check_file_path($img, true, false);
-							
-							$sliders[$key]['alias']	  = $sliders[$key]['alias']; //.'-template'
-							$sliders[$key]['version'] = $this->get_val($slider, 'version', '');
-							if(isset($slider['is_new'])) $sliders[$key]['is_new'] = true;
-							
-							$preview = (isset($slider['preview'])) ? $slider['preview'] : false;
-							if($preview !== false) $sliders[$key]['preview'] = $preview;
-							
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		if(!empty($sliders)){
-			foreach($sliders as $dk => $slider){
-				$sliders[$dk]['plugin_require'] = json_decode($sliders[$dk]['plugin_require'], true);
-				
-				$tags	= $sliders[$dk]['filter'];
-				$tags[]	= $sliders[$dk]['cat'];
-				$sliders[$dk]['tags'] = $tags;
-				if(!isset($sliders[$dk]['setup_notes'])){
-					$sliders[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank">Documentation</a> for basic Slider Revolution help.</span>';
-				}
-				
-				unset($sliders[$dk]['filter']);
-				unset($sliders[$dk]['cat']);
-			}
-		}
-		
-		return $sliders;
 	}
 	
 	
@@ -584,120 +457,49 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * get default ThemePunch default Sliders
 	 * @since: 5.0
 	 * @before: RevSliderTemplate::getThemePunchTemplateSliders()
+	 *
 	 */
 	public function get_tp_template_sliders($uid = false){
 		global $wpdb;
-		
-		$sliders	 = array();
-		$plugin_list = array();
-		
-		//add themepunch default Sliders here
-		$sliders = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . RevSliderFront::TABLE_SLIDER ." WHERE type = 'template'", ARRAY_A);
-		
-		$defaults = get_option('rs-templates', array());
-		$defaults = $this->get_val($defaults, 'slider', array());
-		
-		if(!empty($sliders) && !empty($defaults)){
 
-			foreach($defaults as $key => $slider){
-				if($uid !== false && $uid !== $this->get_val($slider, 'uid')){
-					unset($defaults[$key]);
-					continue;
-				}
-				foreach($sliders as $ikey => $installed){
-					if($installed['alias'] == $slider['alias']){ //.'-template'
-						
-						//check if $sliders has slides, if not, set for redownload by deleting Template Slider in table
-						$c_slides = $this->get_tp_template_slides(array($installed));
-						if(empty($c_slides)){
-							//delete slider in table
-							$wpdb->delete($wpdb->prefix . RevSliderFront::TABLE_SLIDER, array('type' => 'template', 'id' => $installed['id']));
-							break;
-						}
-						
-						$preview = $this->get_val($slider, 'preview', false);
-						$id		 = $this->get_val($installed, 'id');
-						unset($installed['id']);
-						
-						$defaults[$key]['alias']	 = $defaults[$key]['alias']; //.'-template'
-						$defaults[$key] = array_merge($defaults[$key], $installed);
-						$defaults[$key]['installed'] = $id;
-						$defaults[$key]['img']		 = $this->_check_file_path($slider['img'], true, false);
-						$defaults[$key]['version']	 = $slider['version'];
-						$defaults[$key]['cat']		 = $slider['cat'];
-						$defaults[$key]['filter']	 = $slider['filter'];
-						
-						if(isset($slider['is_new'])){
-							$defaults[$key]['is_new']	= true;
-							$defaults[$key]['width']	= $slider['width'];
-							$defaults[$key]['height']	= $slider['height'];
-						}
-						$defaults[$key]['zip'] = $slider['zip'];
-						$defaults[$key]['uid'] = $slider['uid'];
-						
-						if(isset($slider['new_slider'])) $defaults[$key]['new_slider'] = $slider['new_slider'];
-						
-						if($preview !== false) $defaults[$key]['preview'] = $preview;
-						break;
-					}
-				}
-			}
-			
-			foreach($defaults as $dk => $di){ //check here if package parent needs to be set to installed, as all others
-				if(isset($di['package_parent']) && $di['package_parent'] == 'true'){
-					$full_installed = true;
-					foreach($defaults as $k => $ps){
-						if($dk !== $k && isset($ps['package_id']) && $ps['package_id'] === $di['package_id']){ //ignore comparing of the same, as it can never be installed
-							if($this->get_val($ps, 'installed') !== false){
-								$full_installed = false;
-								break;
-							}
-						}
-					}
-					
-					if($full_installed){
-						if($this->get_val($defaults[$dk], 'installed') !== false){
-							unset($defaults[$dk]['installed']);
-						}
-					}
-				}
-			}
-		}
+		$plugin_list = array();
+		$defaults 	= get_option('rs-templates', false);
+		$defaults 	= $this->do_uncompress($defaults);
+		$defaults 	= $this->get_val($defaults, 'slider', array());
 		
-		if(!empty($defaults)){
-			$favorite = new RevSliderFavorite();
-			
-			foreach($defaults as $dk => $default){
-				if($uid !== false && $uid !== $this->get_val($default, 'uid')){
-					unset($defaults[$dk]);
-					continue;
-				}
-				$defaults[$dk]['plugin_require'] = json_decode($defaults[$dk]['plugin_require'], true);
-				
-				if(!empty($defaults[$dk]['plugin_require'])){
-					foreach($defaults[$dk]['plugin_require'] as $pr => $plugin){
-						$path = $this->get_val($plugin, 'path');
-						if(!isset($plugin_list[$path])){
-							$plugin_list[$path] = (is_plugin_active(esc_attr($path))) ? true : false;
-						}
-						$defaults[$dk]['plugin_require'][$pr]['installed'] = ($plugin_list[$path] === true) ? true : false;
-					}
-				}
-				
-				$defaults[$dk]['img'] = $this->_check_file_path($defaults[$dk]['img'], true, false);
-				$tags	= $defaults[$dk]['filter'];
-				$tags[]	= $defaults[$dk]['cat'];
-				$defaults[$dk]['tags'] = $tags;
-				unset($defaults[$dk]['filter']);
-				unset($defaults[$dk]['cat']);
-				
-				if(!isset($defaults[$dk]['setup_notes'])){
-					$defaults[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank">Documentation</a> for basic Slider Revolution help.</span>';
-				}
-				
-				$id = $this->get_val($default, 'id', 0);
-				$defaults[$dk]['favorite'] = $favorite->is_favorite('moduletemplates', $id);
+		if(empty($defaults)) return $defaults;
+	
+		$favorite = RevSliderGlobals::instance()->get('RevSliderFavorite');
+		
+		foreach($defaults as $dk => $default){
+			if($uid !== false && $uid !== $this->get_val($default, 'uid')){
+				unset($defaults[$dk]);
+				continue;
 			}
+			$defaults[$dk]['plugin_require'] = (isset($defaults[$dk]['plugin_require']) && !empty($defaults[$dk]['plugin_require'])) ? json_decode($defaults[$dk]['plugin_require'], true) : '';
+			
+			if(!empty($defaults[$dk]['plugin_require'])){
+				foreach($defaults[$dk]['plugin_require'] as $pr => $plugin){
+					$path = $this->get_val($plugin, 'path');
+					if(!isset($plugin_list[$path])){
+						$plugin_list[$path] = (is_plugin_active(esc_attr($path))) ? true : false;
+					}
+					$defaults[$dk]['plugin_require'][$pr]['installed'] = ($plugin_list[$path] === true) ? true : false;
+				}
+			}
+
+			$tags	= $defaults[$dk]['filter'];
+			$tags[]	= $defaults[$dk]['cat'];
+			$defaults[$dk]['tags'] = $tags;
+			unset($defaults[$dk]['filter']);
+			unset($defaults[$dk]['cat']);
+			
+			if(!isset($defaults[$dk]['setup_notes'])){
+				$defaults[$dk]['setup_notes'] = '<span class="ttm_content">Checkout our <a href="https://www.themepunch.com/revslider-doc/slider-revolution-documentation/" target="_blank" rel="noopener">Documentation</a> for basic Slider Revolution help.</span>';
+			}
+			
+			$id = $this->get_val($default, 'id', 0);
+			$defaults[$dk]['favorite'] = $favorite->is_favorite('moduletemplates', $id);
 		}
 		
 		krsort($defaults);
@@ -710,15 +512,15 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * get the template sliders for the get_full_library function
 	 * @since: 6.0
 	 */
-	public function get_tp_template_sliders_for_library(){
+	public function get_tp_template_sliders_for_library($leave_counter = false){
 		$templates = $this->get_tp_template_sliders();
-		$addons = array();
-		if(!empty($templates)){
-			foreach($templates as $k => $t){
-				if(isset($templates[$k]['params'])) unset($templates[$k]['params']);
-			}
+		foreach($templates ?? [] as $k => $t){
+			if(isset($templates[$k]['params'])) unset($templates[$k]['params']);
 		}
 		
+		if(!$this->_truefalse($leave_counter)){
+			update_option('rs-templates-counter', 0, false); //reset the counter
+		}
 		return $templates;
 	}
 	
@@ -731,7 +533,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 		$tmp_slide_uid = (array)$tmp_slide_uid;
 		if(!empty($tmp_slide_uid)){
 			$templates = array();
-			foreach($tmp_slide_uid as $tmp_uid){
+			foreach($tmp_slide_uid ?? [] as $tmp_uid){
 				$templates = $this->get_tp_template_sliders($tmp_uid);
 			}
 		}else{
@@ -739,13 +541,10 @@ class RevSliderTemplate extends RevSliderFunctions {
 		}
 		
 		$templates_slides = $this->get_tp_template_slides($templates);
-		
-		if(!empty($templates_slides)){
-			foreach($templates_slides as $t_k => $t_slide){
-				if(isset($t_slide['params'])) unset($templates_slides[$t_k]['params']);
-				if(isset($t_slide['layers'])) unset($templates_slides[$t_k]['layers']);
-				if(isset($t_slide['settings'])) unset($templates_slides[$t_k]['settings']);
-			}
+		foreach($templates_slides ?? [] as $t_k => $t_slide){
+			if(isset($t_slide['params'])) unset($templates_slides[$t_k]['params']);
+			if(isset($t_slide['layers'])) unset($templates_slides[$t_k]['layers']);
+			if(isset($t_slide['settings'])) unset($templates_slides[$t_k]['settings']);
 		}
 		
 		return $templates_slides;
@@ -786,19 +585,16 @@ class RevSliderTemplate extends RevSliderFunctions {
 		$uids = array();
 		
 		$package = false;
-		foreach($sliders as $slider){
-			if($slider['uid'] == $uid){
-				if(isset($slider['package'])){
-					$package = $slider['package'];
-				}
-				break;
-			}
+		foreach($sliders ?? [] as $slider){
+		if($slider['uid'] != $uid) continue;
+			if(isset($slider['package'])) $package = $slider['package'];
+			break;
 		}
 		
 		if($package !== false){
 			$i = 0;
 			$tuids = array();
-			foreach($sliders as $slider){
+			foreach($sliders ?? [] as $slider){
 				if(isset($slider['package']) && $slider['package'] == $package){
 					if(isset($slider['package_parent']) && $slider['package_parent'] == 'true') continue; //dont install parent package
 					
@@ -817,6 +613,7 @@ class RevSliderTemplate extends RevSliderFunctions {
 				}
 			}
 		}
+
 		if(!empty($tuids)){
 			usort($tuids, array($this, 'sort_by_order'));
 			foreach($tuids as $uid){
@@ -833,22 +630,23 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 */
 	public function remove_old_template($uid){
 		//get all template sliders
-		$templates = $this->get_tp_template_sliders();
+		$templates = $this->get_tp_template_sliders($uid);
 		
-		foreach($templates as $tslider){
-			if($this->get_val($tslider, 'uid') == $uid){
-				if($this->get_val($tslider, 'installed', false) !== false){ //slider is installed
-					//delete template Slider!
-					$mSlider = new RevSliderSlider();
-					$mSlider->init_by_id($tslider['installed']);
-					
-					$mSlider->delete_slider();
-					//remove the update flag from the slider
-					
-					$this->remove_is_new($uid);
-				}
-				break;
-			}
+		foreach($templates ?? [] as $tslider){
+			if($this->get_val($tslider, 'uid') != $uid) continue;
+		
+			if($this->get_val($tslider, 'installed', false) === false) break;
+			
+			//slider is installed
+			//delete template Slider!
+			$mSlider = new RevSliderSlider();
+			$mSlider->init_by_id($tslider['installed']);
+			
+			$mSlider->delete_slider();
+
+			//remove the update flag from the slider
+			$this->remove_is_new($uid);
+			break;
 		}
 	}
 	
@@ -856,35 +654,15 @@ class RevSliderTemplate extends RevSliderFunctions {
 	public function sort_by_order($a, $b) {
 		return $a['order'] - $b['order'];
 	}
-
-	
-	/**
-	 * check if all Slider of a certain package is installed, do this with the uid of a slider
-	 * @since: 5.2.5
-	 */
-	public function check_package_all_installed($uid, $sliders = false){
-		$uids = $this->get_package_uids($uid, $sliders);
-		
-		foreach($uids as $sid => $uid){
-			if($sid < 0) return false;
-		}
-		
-		return true;
-		
-	}
 	
 	
 	/**
 	 * Check if Curl can be used
 	 */
 	public function check_curl_connection(){
-		
 		if($this->curl_check !== null) return $this->curl_check;
-		
 		$curl = new WP_Http_Curl();
-		
 		$this->curl_check = $curl->test();
-		
 		return $this->curl_check;
 	}
 	
@@ -895,22 +673,20 @@ class RevSliderTemplate extends RevSliderFunctions {
 	public function get_template_categories(){
 		$cat = array();
 		
-		$defaults = get_option('rs-templates', array());
+		$defaults = get_option('rs-templates', false);
+		$defaults = $this->do_uncompress($defaults);
 		$defaults = $this->get_val($defaults, 'slider', array());
-		
-		if(!empty($defaults)){
-			foreach($defaults as $def){
-				$d_cat		= $this->get_val($def, 'cat', '');
-				$d_filter	= $this->get_val($def, 'filter', array());
-				if(trim($d_cat) !== '' && !isset($cat[$d_cat])) $cat[$d_cat] = ucfirst($d_cat);
-				
-				if(!empty($d_filter)){
-					foreach($d_filter as $filter){
-						if(trim($filter) !== '' && !isset($cat[$filter])) $cat[$filter] = ucfirst($filter);
-					}
-				}
+	
+		foreach($defaults ?? [] as $def){
+			$d_cat		= $this->get_val($def, 'cat', '');
+			$d_filter	= $this->get_val($def, 'filter', array());
+			if(trim($d_cat) !== '' && !isset($cat[$d_cat])) $cat[$d_cat] = ucfirst($d_cat);
+			
+			foreach($d_filter ?? [] as $filter){
+				if(trim($filter) !== '' && !isset($cat[$filter])) $cat[$filter] = ucfirst($filter);
 			}
 		}
+		
 		return $cat;
 	}
 	
@@ -919,12 +695,13 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 * get the slide thumbnail
 	 **/
 	public function get_slide_image_by_uid($uid, $slidenumber){
-		$defaults	= get_option('rs-templates', array());
+		$defaults	= get_option('rs-templates', false);
+		$defaults	= (!is_array($defaults)) ? json_decode($defaults, true) : $defaults;
 		$sliders	= $this->get_val($defaults, 'slider', array());
 		$slides		= $this->get_val($defaults, 'slides', array());
 		$image		= false;
 		
-		foreach($sliders as $slider){
+		foreach($sliders ?? [] as $slider){
 			if($this->get_val($slider, 'uid') != $uid) continue;
 			
 			$alias = $this->get_val($slider, 'alias');
@@ -946,17 +723,14 @@ class RevSliderTemplate extends RevSliderFunctions {
 	 **/
 	public function get_slider_id_by_uid($uid){
 		$templates = $this->get_tp_template_sliders();
-		$slider_id = 0;
 		
-		foreach($templates as $template){
-			if($this->get_val($template, 'uid') == $uid){
-				$slider_id = $this->get_val($template, 'installed');
-				$slider_id = intval($slider_id);
-				break;
-			}
+		foreach($templates ?? [] as $template){
+			if($this->get_val($template, 'uid') != $uid) continue;
+		
+			return intval($this->get_val($template, 'installed'));
 		}
 		
-		return $slider_id;
+		return 0;
 	}
 	
 	/**
@@ -966,5 +740,3 @@ class RevSliderTemplate extends RevSliderFunctions {
 		return preg_replace("/[^a-zA-Z0-9\s]/", '', $uid);
 	}
 }
-
-?>

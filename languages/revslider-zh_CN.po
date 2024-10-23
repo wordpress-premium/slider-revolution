@@ -393,12 +393,10 @@ msgstr "选择 Slide 模板"
 
 #: admin/revslider-admin.class.php:404
 msgid ""
-"Activate Slider Revolution for <a href=\"https://revolution.themepunch."
-"com/direct-customer-benefits/\" target=\"_blank\">Premium Benefits (e.g. "
+"Activate Slider Revolution for <a href=\"https://www.sliderrevolution.com/premium-slider-revolution//\" target=\"_blank\">Premium Benefits (e.g. "
 "Live Updates)</a>."
 msgstr ""
-"启用 Slider Revolution 对于 <a href=\"https://revolution.themepunch.com/direct-"
-"customer-benefits/\" target=\"_blank\">优惠（eg. 实时更新）</a>."
+"启用 Slider Revolution 对于 <a href=\"https://www.sliderrevolution.com/premium-slider-revolution/\" target=\"_blank\">优惠（eg. 实时更新）</a>."
 
 #: admin/revslider-admin.class.php:415
 msgid "A new version of Slider Revolution is available."
@@ -1900,8 +1898,8 @@ msgid "Audio Wave Library is Loading..."
 msgstr "音频波库正在加载......"
 
 #: admin/revslider-admin.class.php:2056
-msgid "Loading CodeMirror Library..."
-msgstr "加载CodeMirror库..."
+msgid "Loading RevMirror Library..."
+msgstr "加载RevMirror库..."
 
 #: admin/revslider-admin.class.php:2057
 msgid "Lock / Unlock Selected"
@@ -2559,7 +2557,7 @@ msgid "Dribbble"
 msgstr "Dribbble"
 
 #: admin/views/overview.php:186
-msgid "Signup to our Newsletter"
+msgid "Sign up to our Newsletter"
 msgstr "注册我们的时事通讯"
 
 #: admin/views/overview.php:187
@@ -3976,7 +3974,7 @@ msgid "HTML5 Autoplay"
 msgstr "HTML5自动播放"
 
 #: admin/views/builder-slider-forms.php:961
-msgid "Option is depricated and will be removed in upcoming updates !"
+msgid "Option is deprecated and will be removed in upcoming updates !"
 msgstr "选项已被删除，将在即将发布的更新中删除！"
 
 #: admin/views/builder-slider-forms.php:970
@@ -4547,7 +4545,7 @@ msgstr "模块尺寸"
 #: admin/views/builder-nav-forms.php:291 admin/views/builder-nav-forms.php:447
 #: admin/views/builder-nav-forms.php:630
 #: admin/views/builder-layer-forms.php:442
-msgid "Aligment"
+msgid "Alignment"
 msgstr "对准"
 
 #: admin/views/builder-nav-forms.php:124 admin/views/builder-nav-forms.php:177
@@ -5238,8 +5236,8 @@ msgid "Layer as jQuery Object"
 msgstr "图层为jQuery对象"
 
 #: admin/views/modals-builder.php:520
-msgid "Meta Datas"
-msgstr "Meta Datas"
+msgid "Metadata"
+msgstr "Metadata"
 
 #: admin/views/modals-builder.php:522
 msgid "Basic"
@@ -7228,7 +7226,7 @@ msgstr "习惯 CSS"
 
 #: admin/views/builder-layer-forms.php:909
 msgid ""
-"Depricated Function !<br>Only visible by Rendering. Limited influence on "
+"Deprecated Function !<br>Only visible by Rendering. Limited influence on "
 "Styled Layers. Custom CSS Inline will be removed in Version 6.2"
 msgstr "已删除的功能！<br>仅可通过渲染查看。对样式图层的影响有限。习惯CSS 内联将在版本中删除 6.2"
 
@@ -7583,8 +7581,8 @@ msgid "Slider Revolution - Premium responsive slider"
 msgstr "Slider Revolution - Premium responsive slider"
 
 #. URI of the plugin
-msgid "https://revolution.themepunch.com/"
-msgstr "https://revolution.themepunch.com/"
+msgid "https://www.sliderrevolution.com/"
+msgstr "https://www.sliderrevolution.com/"
 
 #. Author URI of the plugin
 msgid "https://themepunch.com/"

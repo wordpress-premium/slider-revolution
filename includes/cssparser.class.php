@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
 
 if(!defined('ABSPATH')) exit();
@@ -18,7 +18,6 @@ class RevSliderCssParser extends RevSliderFunctions {
 	public function init_css($css){
 		$this->css = $css;
 	}
-	
 	
 	/**
 	 * get array of slide classes, between two sections.
@@ -36,8 +35,8 @@ class RevSliderCssParser extends RevSliderFunctions {
 		
 		//trim from bottom
 		if(!empty($end_text)){
-			$pos_end	= strpos($content, $end_text);
-			$content	= ($pos_end !== false) ? substr($content, 0, $pos_end) : $content;
+			$pos_end = strpos($content, $end_text);
+			$content = ($pos_end !== false) ? substr($content, 0, $pos_end) : $content;
 		}
 		
 		//get styles
@@ -45,7 +44,7 @@ class RevSliderCssParser extends RevSliderFunctions {
 		
 		foreach($lines as $key => $line){
 			$line = trim($line);
-			if(strpos($line, '{') === false || strpos($line, ".caption a") || strpos($line, ".tp-caption a") !== false)
+			if(strpos($line, '{') === false || strpos($line, '.caption a') || strpos($line, '.tp-caption a') !== false)
 				continue;
 			
 			//get style out of the line
@@ -144,13 +143,13 @@ class RevSliderCssParser extends RevSliderFunctions {
 		);
 		
 		foreach($css_array as $id => $attr){
-			$stripped			= (strpos($attr['handle'], '.tp-caption') !== false) ? trim(str_replace('.tp-caption', '', $attr['handle'])) : '';
-			$attr['advanced']	= json_decode($attr['advanced'], true);
-			$styles				= json_decode(str_replace("'", '"', $attr['params']), true);
-			$styles_adv			= $attr['advanced']['idle'];
-			$css				.= $attr['handle'];
-			$css				.= (!empty($stripped)) ? ', '.$stripped : '';
-			$css				.= ' {'.$nl;
+			$stripped	= (strpos($attr['handle'], '.tp-caption') !== false) ? trim(str_replace('.tp-caption', '', $attr['handle'])) : '';
+			$attr['advanced'] = json_decode($attr['advanced'], true);
+			$styles		= json_decode(str_replace("'", '"', $attr['params']), true);
+			$styles_adv	= $attr['advanced']['idle'];
+			$css		.= $attr['handle'];
+			$css		.= (!empty($stripped)) ? ', '.$stripped : '';
+			$css		.= ' {'.$nl;
 			
 			if(is_array($styles) || is_array($styles_adv)){
 				if(is_array($styles)){
@@ -532,36 +531,36 @@ class RevSliderCssParser extends RevSliderFunctions {
 	public function get_deformation_css_tags(){
 		
 		return array(
-			'x'							=> 'x',
-			'y'							=> 'y',
-			'z'							=> 'z',
-			'skewx'						=> 'skewx',
-			'skewy'						=> 'skewy',
-			'scalex'					=> 'scalex',
-			'scaley'					=> 'scaley',
-			'opacity'					=> 'opacity',
-			'xrotate'					=> 'xrotate',
-			'yrotate'					=> 'yrotate',
-			'2d_rotation'				=> '2d_rotation',
-			'layer_2d_origin_x'			=> 'layer_2d_origin_x',
-			'layer_2d_origin_y'			=> 'layer_2d_origin_y',
-			'2d_origin_x'				=> '2d_origin_x',
-			'2d_origin_y'				=> '2d_origin_y',
-			'pers'						=> 'pers',
+			'x'					 => 'x',
+			'y'					 => 'y',
+			'z'					 => 'z',
+			'skewx'				 => 'skewx',
+			'skewy'				 => 'skewy',
+			'scalex'			 => 'scalex',
+			'scaley'			 => 'scaley',
+			'opacity'			 => 'opacity',
+			'xrotate'			 => 'xrotate',
+			'yrotate'			 => 'yrotate',
+			'2d_rotation'		 => '2d_rotation',
+			'layer_2d_origin_x'	 => 'layer_2d_origin_x',
+			'layer_2d_origin_y'	 => 'layer_2d_origin_y',
+			'2d_origin_x'		 => '2d_origin_x',
+			'2d_origin_y'		 => '2d_origin_y',
+			'pers'				 => 'pers',
 			
-			'color-transparency'		=> 'color-transparency',
-			'background-transparency'	=> 'background-transparency',
-			'border-transparency'		=> 'border-transparency',
-			'cursor'					=> 'cursor',
-			'speed'						=> 'speed',
-			'easing'					=> 'easing',
-			'corner_left'				=> 'corner_left',
-			'corner_right'				=> 'corner_right',
-			'parallax'					=> 'parallax',
-			'type'						=> 'type',
-			'padding'					=> 'padding',
-			'margin'					=> 'margin',
-			'text-align'				=> 'text-align'
+			'color-transparency' => 'color-transparency',
+			'background-transparency' => 'background-transparency',
+			'border-transparency'=> 'border-transparency',
+			'cursor'			 => 'cursor',
+			'speed'				 => 'speed',
+			'easing'			 => 'easing',
+			'corner_left'		 => 'corner_left',
+			'corner_right'		 => 'corner_right',
+			'parallax'			 => 'parallax',
+			'type'				 => 'type',
+			'padding'			 => 'padding',
+			'margin'			 => 'margin',
+			'text-align'		 => 'text-align'
 		);
 		
 	}
@@ -639,9 +638,13 @@ class RevSliderCssParser extends RevSliderFunctions {
 	public function clear_media_block($css){
 		$start = 0;
 		
+		if(empty($css)) return $css;
+		
 		if(strpos($css, '@media', $start) !== false){
 			$start	= strpos($css, '@media', 0);
-			$i		= strpos($css, '{', $start) + 1;
+			$i		= strpos($css, '{', $start);
+			if($i === false) return $css;
+			$i += 1;
 			$remove	= substr($css, $start - 1, $i - $start + 1); //remove @media ... first {
 			$css	= str_replace($remove, '', $css);
 			$css	= preg_replace('/}$/', '', $css); //remove last }
@@ -722,19 +725,6 @@ class RevSliderCssParser extends RevSliderFunctions {
 	
 	
 	/**
-	 * get contents of the static css file
-	 * @before: RevSliderOperations::updateStaticCss();
-	 */
-	public function update_static_css($css){
-		$css	= str_replace(array("\'", '\"', '\\\\'),array("'", '"', '\\'), trim($css));
-		$c		= get_option('revslider-static-css', '');
-		$c		= update_option('revslider-static-css', $css);
-
-		return $css;
-	}
-	
-	
-	/**
 	 * get the css raw from the database
 	 */
 	public function get_raw_css(){
@@ -769,6 +759,69 @@ class RevSliderCssParser extends RevSliderFunctions {
 		
 		return $css;
 	}
-}
+	
+	
+	/**
+	 * add missing px/% to value, do also for object and array
+	 * @since: 5.0
+	 **/
+	public function add_missing_val($obj, $set_to = 'px'){
+		if(is_array($obj)){
+			foreach($obj as $key => $value){
+				if(strpos($value, $set_to) === false){
+					$obj[$key] = $value.$set_to;
+				}
+			}
+		}elseif(is_object($obj)){
+			foreach($obj as $key => $value){
+				if(is_object($value)){
+					if(isset($value->v)){
+						if(strpos($value->v, $set_to) === false){
+							$obj->$key->v = $value->v.$set_to;
+						}
+					}
+				}else{
+					if(strpos($value, $set_to) === false){
+						$obj->$key = $value.$set_to;
+					}
+				}
+			}
+		}else{
+			if(strpos($obj, $set_to) === false){
+				$obj .= $set_to;
+			}
+		}
+		
+		return $obj;
+	}
+	
+	
+	/**
+	 * change hex to rgba
+	 */
+    public function hex2rgba($hex, $transparency = false, $raw = false, $do_rgb = false){
+        if($transparency !== false){
+			$transparency = ($transparency > 0) ? number_format(($transparency / 100), 2, '.', '') : 0;
+        }else{
+            $transparency = 1;
+        }
 
-?>
+        $hex = str_replace('#', '', $hex);
+		
+        if(strlen($hex) == 3){
+            $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+            $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+            $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+        }elseif($this->is_rgb($hex)){
+			return $hex;
+		}else{
+            $r = hexdec(substr($hex,0,2));
+            $g = hexdec(substr($hex,2,2));
+            $b = hexdec(substr($hex,4,2));
+        }
+		
+		$ret = ($do_rgb) ? $r.', '.$g.', '.$b : $r.', '.$g.', '.$b.', '.$transparency;
+		
+		return ($raw) ? $ret : 'rgba('.$ret.')';
+    }
+}

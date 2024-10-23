@@ -2,27 +2,32 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
  
 if(!defined('ABSPATH')) exit();
 
 class RevSliderLoadBalancer {
-	
-	public $servers = array();
+
+	public $servers = [];
+	public $defaults = ['themepunch.tools', 'themepunch-ext-a.tools', 'themepunch-ext-b.tools', 'themepunch-ext-c.tools'];
 	 
-	
-	
+
 	/**
 	 * set the server list on construct
 	 **/
 	public function __construct(){
-		$this->servers = get_option('revslider_servers', array());
-		$this->servers = (empty($this->servers)) ? array('themepunch.tools') : $this->servers;
+		$this->servers = get_option('revslider_servers', []);
+		if(empty($this->servers)){
+			shuffle($this->defaults);
+			update_option('revslider_servers', $this->defaults);
+		}
+		
+		$this->servers = (empty($this->servers)) ? $this->defaults : $this->servers;
 		
 		
 	}
-	
+
 	/**
 	 * get the url depending on the purpose, here with key, you can switch do a different server
 	 **/
@@ -57,18 +62,19 @@ class RevSliderLoadBalancer {
 		
 		$rs_rsl		= (isset($_GET['rs_refresh_server'])) ? true : false;
 		$last_check	= get_option('revslider_server_refresh', false);
-		
-		if($force === true || $rs_rsl == true || $last_check === false || time() - $last_check > 60 * 60 * 24 * 14){
+		if($last_check === false || empty($last_check)) update_option('revslider_server_refresh', time());
+
+		if($force === true || $rs_rsl === true || ($last_check !== false && time() - $last_check > 60 * 60 * 24 * 30)){
 			//$url = $this->get_url('updates');
 			$url	 = 'https://updates.themepunch.tools';
-			$request = wp_remote_post($url.'/get_server_list.php', array(
+			$request = wp_safe_remote_post($url.'/get_server_list.php', [
 				'user-agent' => 'WordPress/'.$wp_version.'; '.get_bloginfo('url'),
-				'body'		 => array(
+				'body'		 => [
 					'item'		=> urlencode(RS_PLUGIN_SLUG),
 					'version'	=> urlencode(RS_REVISION)
-				),
+				],
 				'timeout'	 => 45
-			));
+			]);
 			
 			if(!is_wp_error($request)){
 				if($response = maybe_unserialize($request['body'])){
@@ -85,7 +91,6 @@ class RevSliderLoadBalancer {
 	 * move the server list, to take the next server as the one currently seems unavailable
 	 **/
 	public function move_server_list(){
-		
 		$servers	= $this->servers;
 		$a			= array_shift($servers);
 		$servers[]	= $a;
@@ -101,19 +106,24 @@ class RevSliderLoadBalancer {
 		global $wp_version;
 		
 		//add version if not passed
-		$data['version'] = urlencode(RS_REVISION);
-		
+		$data['version'] = (!isset($data['version'])) ? urlencode(RS_REVISION) : $data['version'];
 		$done	= false;
 		$count	= 0;
 		
-		do{	
-			$server	 = $this->get_url($subdomain, 0, $force_http);
-			
-			$request = wp_remote_post($server.'/'.$url, array(
+		do{
+			if(!preg_match("/^https?:\/\//i", $url)){
+				//just a filename passed, lets build an url
+				$server	 = $this->get_url($subdomain, 0, $force_http);
+				$url = $server . '/' . ltrim($url, '/');
+			}else{
+				//full URL passed, lets check if we need to force http 
+				if($force_http) $url = preg_replace("/^https:\/\//i", "http://", $url);
+			}
+			$request = wp_safe_remote_post($url, [
 				'user-agent' => 'WordPress/'.$wp_version.'; '.get_bloginfo('url'),
 				'body'		 => $data,
 				'timeout'	 => 45
-			));
+			]);
 			
 			$response_code = wp_remote_retrieve_response_code($request);
 			if($response_code == 200){
@@ -123,10 +133,8 @@ class RevSliderLoadBalancer {
 			}
 			
 			$count++;
-		}while($done == false && $count < 5);
+		}while($done == false && $count < 3);
 		
 		return $request;
 	}
 }
-
-?>

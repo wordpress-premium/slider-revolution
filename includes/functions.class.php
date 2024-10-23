@@ -2,16 +2,21 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
  
 if(!defined('ABSPATH')) exit();
+ 
+global $revslider_rev_start_size_loaded;
+
+$revslider_rev_start_size_loaded = false;
 
 class RevSliderFunctions extends RevSliderData {
-	
+
 	public function __construct(){
+		parent::__construct();
 	}
-	
+
 	/**
 	 * START: DEPRECATED FUNCTIONS THAT ARE IN HERE FOR OLD ADDONS TO WORK PROPERLY
 	 **/
@@ -21,8 +26,8 @@ class RevSliderFunctions extends RevSliderData {
 	 * added for compatibility with old AddOns
 	 **/
 	public static function getVal($arr, $key, $default = ''){
-		//echo 'Slider Revolution Notice: Please do not use RevSliderFunctions::getVal() anymore, use $f->get_val()'."\n";
-		$f = new RevSliderFunctions();
+		$f = RevSliderGlobals::instance()->get('RevSliderFunctions');
+		$f->add_deprecation_message('getVal', 'get_val');
 		return $f->get_val($arr, $key, $default);
 	}
 	
@@ -31,20 +36,28 @@ class RevSliderFunctions extends RevSliderData {
 	 * added for compatibility with old AddOns
 	 **/
 	public static function cleanStdClassToArray($arr){
-		$f = new RevSliderFunctions();
+		$f = RevSliderGlobals::instance()->get('RevSliderFunctions');
+		$f->add_deprecation_message('cleanStdClassToArray', 'class_to_array_single');
 		return $f->class_to_array_single($arr);
 	}
 	
 	/**
 	 * END: DEPRECATED FUNCTIONS THAT ARE IN HERE FOR OLD ADDONS TO WORK PROPERLY
 	 **/
-	
-	
+
+	/**
+	 * attempt to load cache for _get_global_settings
+	 * @return mixed
+	 */
+	public function get_global_settings(){
+		return $this->get_wp_cache('_get_global_settings');
+	}
+
 	/**
 	 * Get Global Settings
 	 * @before: RevSliderOperations::getGeneralSettingsValues()
 	 **/
-	public function get_global_settings(){
+	protected function _get_global_settings(){
 		$gs = get_option('revslider-global-settings', '');
 		if(!is_array($gs)){
 			$gs = json_decode($gs, true);
@@ -52,18 +65,40 @@ class RevSliderFunctions extends RevSliderData {
 		
 		return apply_filters('rs_get_global_settings', $gs);
 	}
-	
+
 	/**
 	 * update general settings
 	 * @before: RevSliderOperations::updateGeneralSettings()
 	 */
-	public function set_global_settings($global){
+	public function set_global_settings($global, $merge = false){
+		$this->delete_wp_cache('_get_global_settings');
+		if($this->_truefalse($merge) === true){
+			$_global = $this->get_global_settings();
+			if(!is_array($_global)) $_global = array();
+			if(!is_array($global)) $global = array();
+			$global = array_replace_recursive($_global, $global);
+		}
+		
 		$global = json_encode($global);
 		
-		return update_option('revslider-global-settings', $global);
+		update_option('revslider-global-settings', $global);
+		
+		return true;
 	}
-	
-	
+
+
+	/**
+	 * get all additions from the update checks
+	 * @since: 6.2.0
+	 **/
+	public function get_addition($key = ''){
+		$additions = (array)get_option('revslider-additions', array());
+		$additions = (!is_array($additions)) ? json_decode($additions, true) : $additions;
+		
+		return (empty($key)) ? $additions : $this->get_val($additions, $key);
+	}
+
+
 	/**
 	 * throw an error
 	 * @before: RevSliderFunctions::throwError()
@@ -75,45 +110,34 @@ class RevSliderFunctions extends RevSliderData {
 			throw new Exception($message);
 		}
 	}
-	
-	
-	/**
-	 * show an nice designed error
-	 **/
-	public function show_error($view, $message){
-		echo '<div class="rs-error">';
-		echo __('Slider Revolution encountered the following error: ', 'revslider');
-		echo esc_attr($view);
-		echo ' - Error: <span>';
-		echo esc_attr($message);
-		echo '</span>';
-		echo '</div>';
-		exit;
-	}
-	
-	
+
+
 	/**
 	 * get value from array. if not - return alternative
 	 * before: RevSliderFunctions::get_val();
+	 * 
+	 * @param mixed $arr  could be array | object | scalar 
+	 * @param mixed $key  could be array | string
+	 * @param mixed $default  value to return if key not found
+	 * @return mixed  
 	 */
 	public function get_val($arr, $key, $default = ''){
-		$arr = (array)$arr;	
-		
-		if(is_array($key)){
-			$a = $arr;
-			foreach($key as $k => $v){
-				$a = $this->get_val($a, $v, $default);				
+		//scalar =  int, float, string и bool
+		if(is_scalar($arr)) return $default;
+		//convert obj to array 
+		if(is_object($arr)) $arr = (array)$arr;
+		//if key is string, check immediately 
+		if(!is_array($key)) return (isset($arr[$key])) ? $arr[$key] : $default;
+		//loop thru keys
+		foreach($key as $v){
+			if(is_object($arr)) $arr = (array)$arr;
+			if(isset($arr[$v])) {
+				$arr = $arr[$v];
+			} else {
+				return $default;
 			}
-			return $a;
-			/*$val = $default;
-			foreach($key as $k => $v){
-				$val = (array)$val;
-				$val = (isset($val[$v])) ? $val[$v] : $default;
-			}*/
-		}else{						
-			$val = (isset($arr[$key])) ? $arr[$key] : $default;			 		
 		}
-		return $val;
+		return $arr;
 	}
 
 	
@@ -136,83 +160,56 @@ class RevSliderFunctions extends RevSliderData {
 		}else{
 			$base[$name] = $value;
 		}
-		//no return required, as the base is given with &$base
-		//return $base;
 	}
-	
 	
 	/**
 	 * get POST variable
 	 * before: RevSliderBase::getPostVar();
 	 */
-	public function get_post_var($key, $default = ''){
+	public function get_post_var($key, $default = '', $esc = true){
 		$val = $this->get_var($_POST, $key, $default);
-		
-		return $val;			
+		return ($esc) ? esc_html($val) : $val;
 	}
-	
 	
 	/**
 	 * get GET variable
 	 * before: RevSliderBase::getGetVar();
 	 */
-	public function get_get_var($key, $default = ''){
+	public function get_get_var($key, $default = '', $esc = true){
 		$val = $this->get_var($_GET, $key, $default);
-		
-		return $val;
+		return ($esc) ? esc_html($val) : $val;
 	}
-	
 	
 	/**
 	 * get POST or GET variable in this order
 	 * before: RevSliderBase::getPostGetVar();
 	 */
-	public function get_request_var($key, $default = ''){
+	public function get_request_var($key, $default = '', $esc = true){
 		$val = (array_key_exists($key, $_POST)) ? $this->get_var($_POST, $key, $default) : $this->get_var($_GET, $key, $default);
-		
-		return $val;
+		return ($esc) ? esc_html($val) : $val;
 	}
-	
 	
 	/**
 	 * get a variable from an array,
 	 * before: RevSliderBase::getVar()
 	 */
 	public function get_var($arr, $key, $default = ''){
-		$val = (isset($arr[$key])) ? $arr[$key] : $default;
-		
-		return $val;
+		return (isset($arr[$key])) ? $arr[$key] : $default;
 	}
-	
 	
 	/**
 	 * check for true and false in all possible ways
 	 * @since: 6.0
 	 **/
 	public function _truefalse($v){
-		if($v === 'false' || $v === false || $v === 'off' || $v ===	NULL || $v === 0 || $v === -1){
-			$v = false;
-		}elseif($v === 'true' || $v === true || $v === 'on'){
-			$v = true;
+		if(in_array($v, array('false', false, 'off', NULL, 0, -1), true)){
+			return false;
+		}elseif(in_array($v, array('true', true, 'on'), true)){
+			return true;
 		}
 		
 		return $v;
 	}
-	
-	
-	/**
-	 * validate that some file exists, if not - throw error
-	 * @before: RevSliderFunctions::validateFilepath
-	 */
-	public function validate_filepath($filepath, $prefix = null){
-		if(file_exists($filepath) == true) return true;
-		
-		$prefix	 = ($prefix == null) ? 'File' : $prefix;
-		$message = $prefix.' '.esc_attr($filepath).' not exists!';
-		
-		$this->throw_error($message);
-	}
-	
 	
 	/**
 	 * validate that some value is numeric
@@ -225,7 +222,6 @@ class RevSliderFunctions extends RevSliderData {
 			$this->throw_error($fn.__(' should be numeric', 'revslider'));
 	}
 	
-	
 	/**
 	 * validate that some variable not empty
 	 * before: RevSliderFunctions::validateNotEmpty
@@ -235,8 +231,6 @@ class RevSliderFunctions extends RevSliderData {
 			$this->throw_error($fn.__(' should not be empty', 'revslider'));
 	}
 	
-	
-	
 	/**
 	 * encode array into json for client side
 	 * @before: RevSliderFunctions::jsonEncodeForClientSide()
@@ -245,13 +239,11 @@ class RevSliderFunctions extends RevSliderData {
 		$json = '';
 		
 		if(!empty($arr)){
-			$json = json_encode($arr);
-			$json = addslashes($json);
+			$json = (defined('JSON_INVALID_UTF8_IGNORE')) ? json_encode($arr, JSON_INVALID_UTF8_IGNORE) : json_encode($arr);
+			$json = (!empty($json)) ? addslashes($json) : $json;
 		}
-
-		$json = (empty($json)) ? '{}' : "'".$json."'";
 		
-		return $json;
+		return (empty($json)) ? '{}' : "'".$json."'";
 	}
 	
 	
@@ -260,64 +252,31 @@ class RevSliderFunctions extends RevSliderData {
 	 * @since: 6.0
 	 */
 	public function json_decode_slashes($data){
-		if(gettype($data) == 'string'){
-			$data_decoded = json_decode(stripslashes($data), true);
-			if(empty($data_decoded))
-				$data_decoded = json_decode($data, true);
-			
-			$data = $data_decoded;
-		}
-		
-		return $data;
-	}
+		if(gettype($data) !== 'string') return $data;
 	
-	
-	/**
-	 * convert assoc array to array
-	 * @before: RevSliderFunctions::assocToArray();
-	 */
-	public static function assoc_to_array($assoc){
-		$arr = array();
-		foreach($assoc as $item)
-			$arr[] = $item;
+		$data_decoded = json_decode(stripslashes($data), true);
+		if(empty($data_decoded)) $data_decoded = json_decode($data, true);
 		
-		return $arr;
+		return $data_decoded;
 	}
 	
 	
 	/**
 	 * Convert std class to array, with all sons
 	 * before: RevSliderFunctions::convertStdClassToArray();
+	 * @return array|null
 	 */
 	public function class_to_array($arr){
-		$arr = (array)$arr;
-		$new = array();
-		
-		if(!empty($arr)){
-			foreach($arr as $key => $item){
-				$new[$key]	= (array)$item;
-			}
-		}else{
-			$new = $arr;
-		}
-		
-		return $new;
+		return json_decode(json_encode($arr), true);
 	}
-	
 	
 	/**
 	 * Convert std class to array, single
 	 * before: RevSliderFunctions::cleanStdClassToArray();
+	 * @return array
 	 */
 	public function class_to_array_single($arr){
-		$arr = (array)$arr;
-		$new = array();
-		
-		foreach($arr as $key => $item){
-			$new[$key] = $item;
-		}
-		
-		return $new;
+		return (array)$arr;
 	}
 	
 	/**
@@ -336,123 +295,136 @@ class RevSliderFunctions extends RevSliderData {
 	}
 	
 	/**
+	 * compress an array/object/string to a string
+	 * @since 6.6.0
+	 **/
+	public function do_compress($data, $level = 9){
+		if(is_array($data) || is_object($data)) $data = json_encode($data);
+		
+		if(!function_exists('gzcompress') || !function_exists('gzuncompress')) return $data; //gzencode / gzdecode
+
+		return base64_encode(gzcompress($data, $level));
+	}
+
+	/**
+	 * decompress an string to an array/object/string
+	 * @since 6.6.0
+	 **/
+	public function do_uncompress($data){
+		if($data === false || empty($data) || is_array($data) || is_object($data)) return $data;
+		$_data = json_decode($data, true);
+		if(is_array($_data) || is_object($_data)) return $_data;
+		if(!function_exists('gzcompress') || !function_exists('gzuncompress')) return $data; //gzencode / gzdecode
+
+		$data = gzuncompress(base64_decode($data));
+		$_data = json_decode($data, true);
+
+		return (!empty($_data)) ? $_data : $data;
+	}
+
+	/**
 	 * get attachment image url
 	 * before: RevSliderFunctionsWP::getUrlAttachmentImage();
 	 */
 	public function get_url_attachment_image($id, $size = 'full'){
 		$image	= wp_get_attachment_image_src($id, $size);
 		$url	= (empty($image)) ? false : $this->get_val($image, 0);
-		if($url === false){
-			$url = wp_get_attachment_url($id);
-		}
+		if($url === false) $url = wp_get_attachment_url($id);
 		
 		return $url;
+	}
+
+
+	/**
+	 * gets a temporary path where files can be stored
+	 **/
+	public function get_temp_path($path = 'rstemp'){
+		if(function_exists('sys_get_temp_dir')){
+			$temp = sys_get_temp_dir();
+			if(@is_dir($temp) && wp_is_writable($temp)){
+				$dir = trailingslashit($temp).$path.'/';
+				if(!is_dir($dir)) @mkdir($dir, 0777, true);
+				if(is_dir($dir) && wp_is_writable($dir)) return $dir;
+			}
+		}
+	
+		$temp = ini_get('upload_tmp_dir');
+		if(@is_dir($temp) && wp_is_writable($temp)){
+			$dir = trailingslashit($temp).$path.'/';
+			if(!is_dir($dir)) @mkdir($dir, 0777, true);
+			if(is_dir($dir) && wp_is_writable($dir)) return $dir;
+		}
+
+		$temp_dir = get_temp_dir();
+		if(wp_is_writable($temp_dir)){
+			$dir = trailingslashit($temp_dir).$path.'/';
+			if(!is_dir($dir)) @mkdir($dir, 0777, true);
+			if(is_dir($dir) && wp_is_writable($dir)) return $dir;
+		}
+		
+		$upload_dir = wp_upload_dir();
+		$dir		= $upload_dir['basedir'].'/'.$path.'/';
+		if(!is_dir($dir)) @mkdir($dir, 0777, true);
+
+		return $dir;
 	}
 	
 	
 	/**
 	 * retrieve the image id from the given image url
-	 * before: RevSliderFunctionsWP::get_image_id_by_url();
 	 */
 	public function get_image_id_by_url($image_url){
-		global $wpdb;
+		if($image_url === '') return false;
+
+		$attachment_id = attachment_url_to_postid($image_url);
 		
-		$attachment_id = false;
-		
-		if($image_url !== ''){
-			$attachment_id = (function_exists('attachment_url_to_postid')) ? attachment_url_to_postid($image_url) : 0;
-			//for WP < 4.0.0
-			if(0 == $attachment_id){ //get it the old school way
-				$upload_dir_paths = wp_upload_dir();
-				
-				// Make sure the upload path base directory exists in the attachment URL, to verify that we're working with a media library image
-				if(false !== strpos($image_url, $upload_dir_paths['baseurl'])){
-					$image_url = preg_replace('/-\d+x\d+(?=\.(jpg|jpeg|png|gif)$)/i', '', $image_url);
-					$image_url = str_replace($upload_dir_paths['baseurl'] . '/', '', $image_url);
-					$attachment_id = $wpdb->get_var($wpdb->prepare( "SELECT wposts.ID FROM $wpdb->posts wposts, $wpdb->postmeta wpostmeta WHERE wposts.ID = wpostmeta.post_id AND wpostmeta.meta_key = '_wp_attached_file' AND wpostmeta.meta_value = '%s' AND wposts.post_type = 'attachment'", $image_url));
-				}else{
-					$attachment_id = false;
-				}
-			}
-		}
-		
-		return (is_null($attachment_id)) ? false : $attachment_id;
+		return (is_null($attachment_id) || $attachment_id === 0) ? false : $attachment_id; //fix for B-5855627275
 	}
 	
+	/**
+	 * retrieve the image id from the given image filename/basename
+	 * @since: 6.1.5
+	 */
+	public function get_image_id_by_basename($basename){
+		global $wpdb;
+		
+		$var = $wpdb->get_var($wpdb->prepare("SELECT `post_id` FROM `".$wpdb->postmeta."` WHERE `meta_value` LIKE %s LIMIT 0,1", '%/'.$basename));
+		
+		return ($var) ? $var : false;
+	}
 	
 	/**
 	 * get image url from image path.
-	 * @before: RevSliderFunctionsWP::getImageUrlFromPath();
 	 */
 	public function get_image_url_from_path($path){
-		if(empty($path)) return '';
-		
-		//check if the path ends with /, if yes its not a correct image path
-		$lc = substr($path, -1);
-		if(in_array($lc, array('/', '\\'))) return '';
+		if(empty($path) || substr($path, -1) === '/' || substr($path, -1) === '\\') return ''; //check if the path ends with /, if yes its not a correct image path
 		
 		//protect from absolute url
-		$lower = strtolower($path);
-		$return = (strpos($lower, 'http://') !== false || strpos($lower, 'https://') !== false || strpos($lower, 'www.') === 0) ? $path : $this->get_base_url().$path;
+		$lower		= strtolower($path);
+		$base_url	= $this->get_base_url();
+		$return		= (strpos($lower, 'http://') !== false || strpos($lower, 'https://') !== false || strpos($lower, 'www.') === 0) ? $path : $base_url.$path;
 		
-		return ($return !== $this->get_base_url()) ? $return : '';
-	}
-	
-	
-	/**
-	 * get image relative path from image url (from upload)
-	 * before: RevSliderFunctionsWP::getImagePathFromURL()
-	 */
-	public function get_image_path_from_url($url){
-		$path = str_replace($this->get_base_url(), '', $url);
-		
-		return $path;
+		return ($return !== $base_url) ? $return : '';
 	}
 	
 	/**
-	 * Check if Path is a Valid Image File	 	
-	 **/	 
-	public function check_valid_image($url){		
-		$pos = strrpos($url, '.', -1);
-	    if($pos === false) return false;
-	    $ext = strtolower(substr($url, $pos));
-	    $img_exts = array('.gif', '.jpg', '.jpeg', '.png');
-	    if(in_array($ext, $img_exts)) return $url;
-		
-	    return false;
+	 * Check if Path is a Valid Image File
+	 **/
+	public function check_valid_image($url){
+		if(empty($url)) return false;
+
+		$ext		= strtolower(pathinfo($url, PATHINFO_EXTENSION));
+		$img_exts	= array('gif', 'jpg', 'jpeg', 'png');
+
+		return (in_array($ext, $img_exts)) ? $url : false;
 	}
 	
 	/**
 	 * get the upload URL of images
-	 * before: RevSliderFunctionsWP::getUrlUploads()
 	 */
 	public static function get_base_url(){
-		if(is_multisite() == false){ //without multisite
-			$url = content_url().'/';
-		}else{	//for multisite
-			$upload_dir	= wp_upload_dir();
-			$url = $upload_dir['baseurl'].'/';
-		}
-		
-		return $url;
+		return (is_multisite() == false) ? content_url().'/' : wp_upload_dir()['baseurl'].'/';
 	}
-	
-	
-	/**
-	 * get wp-content path
-	 * before: RevSliderFunctionsWP::getPathContent()
-	 */
-	public function get_content_path(){
-		if(is_multisite()){
-			$path = (!defined('BLOGUPLOADDIR')) ? ABSPATH.'wp-content/' : BLOGUPLOADDIR;
-		}else{
-			$path = (!defined('WP_CONTENT_DIR')) ? WP_CONTENT_DIR.'/' : ABSPATH.'wp-content/'; //FIX FOR PHP5
-			//$path = (!empty(WP_CONTENT_DIR)) ? WP_CONTENT_DIR.'/' : ABSPATH.'wp-content/';
-		}
-		
-		return $path;
-	}
-	
 	
 	/**
 	 * strip slashes recursive
@@ -460,6 +432,8 @@ class RevSliderFunctions extends RevSliderData {
 	 * before: RevSliderBase::stripslashes_deep()
 	 */
 	public static function stripslashes_deep($value){
+		if(empty($value)) return $value;
+		
 		$value = is_array($value) ? array_map(array('RevSliderFunctions', 'stripslashes_deep'), $value) : stripslashes($value);
 		
 		return $value;
@@ -475,49 +449,41 @@ class RevSliderFunctions extends RevSliderData {
 		return $value;
 	}
 	
-	/**
-	 * esc attr recursive
-	 * @since: 6.0
-	 */
-	public static function esc_js_deep($value){
-		$value = is_array($value) ? array_map(array('RevSliderFunctions', 'esc_js_deep'), $value) : esc_js($value);
-		
-		return $value;
-	}
-	
 	
 	/**
 	 * get post types with categories for client side.
-	 * before: RevSliderOperations::getPostTypesWithCatsForClient();
 	 */
 	public function get_post_types_with_categories_for_client(){
-		$post_types		= $this->get_post_types_with_categories();
-		$globalCounter	= 0;
-		$arrOutput		= array();
-		foreach($post_types as $postType => $arrTaxWithCats){
+		$c = 0;
+		$ret = array();
+		$post_types = $this->get_post_types_with_taxonomies();
+		foreach($post_types as $name => $tax){
+			$cat = array();
+			if(empty($tax)){
+				$ret[$name] = $cat;
+				continue;
+			}
+			
+			foreach($tax as $tax_name => $tax_title){
+				$cats = $this->get_categories_assoc($tax_name);
+				if(empty($cats)) continue;
 
-			$arrCats = array();
-			foreach($arrTaxWithCats as $tax){
-				$taxName	= $tax['name'];
-				$taxTitle	= $tax['title'];
-				$globalCounter++;
-				$arrCats['option_disabled_'.$globalCounter] = '---- '.$taxTitle.' ----';
-				foreach($tax['cats'] as $catID=>$catTitle){
-					$arrCats[$taxName.'_'.$catID] = $catTitle;
+				$c++;
+				$cat['option_disabled_'.$c] = '---- '. $tax_title .' ----';
+				foreach($cats as $catID => $catTitle){
+					$cat[$tax_name.'_'.$catID] = $catTitle;
 				}
-			}//loop tax
+			}
+			
+			$ret[$name] = $cat;
+		}
 
-			$arrOutput[$postType] = $arrCats;
-
-		}//loop types
-		
-		return $arrOutput;
+		return $ret;
 	}
 	
 	
 	/**
 	 * get post types array with taxomonies
-	 * before: RevSliderFunctionsWP::getPostTypesWithTaxomonies()
 	 */
 	public function get_post_types_with_taxonomies(){
 		$post_types = $this->get_post_type_assoc();
@@ -534,7 +500,6 @@ class RevSliderFunctions extends RevSliderData {
 	 * 
 	 * get array of post types with categories (the taxonomies is between).
 	 * get only those taxomonies that have some categories in it.
-	 * before: RevSliderFunctionsWP::getPostTypesWithCats()
 	 */
 	public function get_post_types_with_categories(){
 		$post_types_categories	= array();
@@ -564,7 +529,6 @@ class RevSliderFunctions extends RevSliderData {
 	/**
 	 * get all the post types including custom ones
 	 * the put to top items will be always in top (they must be in the list)
-	 * before: RevSliderFunctionsWP::getPostTypesAssoc()
 	 */
 	public function get_post_type_assoc($put_to_top = array()){
 		$build_in		= array('post' => 'post', 'page'=>'page');
@@ -592,29 +556,26 @@ class RevSliderFunctions extends RevSliderData {
 	
 	/**
 	 * return post type title from the post type
-	 * before: RevSliderFunctionsWP::getPostTypeTitle()
 	 */
 	public static function get_post_type_title($post_type){
-		$obj_type	= get_post_type_object($post_type);
-		$title		= (empty($obj_type)) ? ($post_type) : $obj_type->labels->singular_name;
+		$obj_type = get_post_type_object($post_type);
 		
-		return $title;
+		return (empty($obj_type)) ? ($post_type) : $obj_type->labels->singular_name;
 	}
 	
 	
 	/**
 	 * get post type taxomonies
-	 * before: RevSliderFunctionsWP::getPostTypeTaxomonies()
 	 */
 	public function get_post_type_taxonomies($post_type){
-		$names	= array();
-		$tax	= get_object_taxonomies(array('post_type' => $post_type), 'objects');
+		$tax = get_object_taxonomies(array('post_type' => $post_type), 'objects');
+		
+		if(empty($tax)) return array();
 
-		if(!empty($tax)){
-			foreach($tax as $obj_tax){
-				if($post_type === 'product' && !in_array($obj_tax->name, array('product_cat', 'product_tag'))) continue;
-				$names[$obj_tax->name] = $obj_tax->labels->name;
-			}
+		$names	= array();
+		foreach($tax as $obj_tax){
+			if($post_type === 'product' && !in_array($obj_tax->name, array('product_cat', 'product_tag'))) continue;
+			$names[$obj_tax->name] = $obj_tax->labels->name;
 		}
 		
 		return $names;
@@ -623,18 +584,17 @@ class RevSliderFunctions extends RevSliderData {
 	
 	/**
 	 * get post categories list assoc - id / title
-	 * before: RevSliderFunctionsWP::getCategoriesAssoc()
 	 */
 	public function get_categories_assoc($taxonomy = 'category'){
 		$categories	= array();
 		if(strpos($taxonomy, ',') !== false){
-			$taxes		= explode(',', $taxonomy);
+			$taxes = explode(',', $taxonomy);
 			foreach($taxes as $tax){
 				$cats		= $this->get_categories_assoc($tax);
 				$categories	= array_merge($categories, $cats);
 			}
 		}else{
-			$args = array('taxonomy' => $taxonomy);
+			$args = array('taxonomy' => $taxonomy, 'number' => 10000);
 			$cats = get_categories($args);
 			foreach($cats as $cat){
 				$num				= $cat->count;
@@ -659,92 +619,81 @@ class RevSliderFunctions extends RevSliderData {
 	
 	
 	/**
-	 * change rgba to hex
-	 * @since: 5.0
-	 */
-	public function rgba2hex($rgba){
-		if(strtolower($rgba) == 'transparent') return $rgba;
-		
-		$temp = explode(',', $rgba);
-		$rgb = array();
-		if(count($temp) == 4) unset($temp[3]);
-		foreach($temp as $val){
-			$t = dechex(preg_replace('/[^\d.]/', '', $val));
-			if(strlen($t) < 2) $t = '0'.$t;
-			$rgb[] = $t;
-		}
-		
-		return '#'.implode('', $rgb);
-	}
-	
-	
-	/**
-	 * get transparency from rgba
-	 * @since: 5.0
-	 */
-	public function get_trans_from_rgba($rgba, $in_percent = false){
-		if(strtolower($rgba) == 'transparent') return 100;
-		
-		$temp = explode(',', $rgba);
-		if(count($temp) == 4){
-			return ($in_percent) ? preg_replace('/[^\d.]/', '', $temp[3]) : preg_replace('/[^\d.]/', "", $temp[3]) * 100;
-		}
-		
-		return 100;
-	}
-	
-	
-	/**
 	 * check if file is in zip
 	 * @since: 5.0
 	 */
 	public function check_file_in_zip($d_path, $image, $alias, &$alreadyImported, $add_path = false){
 		global $wp_filesystem;
 		
-		if(trim($image) !== ''){
-			if(strpos($image, 'http') !== false){
-				//dont change, as it is an external image
-			}else{
-				$strip	= false;
-				$zimage	= $wp_filesystem->exists($d_path.'images/'.$image);
-				if(!$zimage){
-					$zimage	= $wp_filesystem->exists(str_replace('//', '/', $d_path.'images/'.$image));
-					$strip	= true;
+		$image = (is_array($image)) ? $this->get_val($image, 'url') : $image;
+		if(trim($image) === '' || strpos($image, 'http') !== false) return $image; //http -> externam image, do not change
+
+		$strip	= false;
+		$zimage	= $wp_filesystem->exists($d_path.'images/'.$image);
+		if(!$zimage){
+			$zimage	= $wp_filesystem->exists(str_replace('//', '/', $d_path.'images/'.$image));
+			$strip	= true;
+		}
+		
+		if($zimage !== false){
+			if(!isset($alreadyImported['images/'.$image])){
+				//check if we are object folder, if yes, do not import into media library but add it to the object folder
+				$uimg = ($strip == true) ? str_replace('//', '/', 'images/'.$image) : $image; //pclzip
+				
+				if(strpos($uimg, 'revslider/objects/') === 0){ //we are from the object library, copy the image to the objects folder if false
+					$objlib = new RevSliderObjectLibrary();
+					$importImage = $objlib->_import_object($d_path.'images/'.$uimg);
+				}else{
+					$importImage = $this->import_media($d_path.'images/'.$uimg, $alias.'/');
 				}
 				
-				if(!$zimage){
-				}else{
-					if(!isset($alreadyImported['images/'.$image])){
-						//check if we are object folder, if yes, do not import into media library but add it to the object folder
-						$uimg = ($strip == true) ? str_replace('//', '/', 'images/'.$image) : $image; //pclzip
-						
-						$object_library = (strpos($uimg, 'revslider/objects/') === 0) ? true : false;
-						
-						if($object_library === true){ //copy the image to the objects folder if false
-							$objlib = new RevSliderObjectLibrary();
-							$importImage = $objlib->_import_object($d_path.'images/'.$uimg);
-						}else{
-							$importImage = $this->import_media($d_path.'images/'.$uimg, $alias.'/');
-						}
-						
-						if($importImage !== false){
-							$alreadyImported['images/'.$image] = $importImage['path'];
-							
-							$image = $importImage['path'];
-						}
-					}else{
-						$image = $alreadyImported['images/'.$image];
-					}
+				if($importImage !== false){
+					$alreadyImported['images/'.$image] = $importImage['path'];
+					
+					$image = $importImage['path'];
 				}
-				if($add_path){
-					$upload_dir	= wp_upload_dir();
-					$cont_url	= $upload_dir['baseurl'];
-					$image		= str_replace('uploads/uploads/', 'uploads/', $cont_url . '/' . $image);
-				}
+			}else{
+				$image = $alreadyImported['images/'.$image];
 			}
+		}
+
+		if($add_path){
+			$updir = wp_upload_dir()['baseurl'];
+			if(strpos($image, $updir) === false) $image = str_replace('uploads/uploads/', 'uploads/', $updir . '/' . $image);
 		}
 		
 		return $image;
+	}
+	
+	/**
+	 * Import the Media as it is
+	 **/
+	public function import_media_raw($name, $id, $bitmap){
+		if(intval($id) === 0) return __('Invalid id given', 'revslider');
+		
+		$path = $this->get_temp_path('rstemp');
+		
+		if(preg_match('/^data:image\/(\w+);base64,/', $bitmap, $type)){
+			$data = substr($bitmap, strpos($bitmap, ',') + 1);
+			$type = strtolower($type[1]); // jpg, png, gif
+
+			if(!in_array($type, array('jpg', 'jpeg', 'gif', 'png'))) return __('Image has an invalid type', 'revslider');
+			
+			if(strpos($name, '.') !== false) $name = explode('.', $name)[0];
+
+			$name .= '_'.$id.'.'.$type;
+			$name = preg_replace("/[^a-zA-Z0-9\-\.\_]/", '', $name);
+			
+			$data = base64_decode(str_replace(' ', '+', $data));
+
+			if($data === false) return __('Image has an invalid type', 'revslider');
+		}else{
+			return __('Image has invalid data', 'revslider');
+		}
+		
+		if(file_put_contents($path.$name, $data) === false) return __('Image could not be saved', 'revslider');
+
+		return $this->import_media($path.$name , 'video-media/');
 	}
 	
 	
@@ -752,34 +701,53 @@ class RevSliderFunctions extends RevSliderData {
 	 * Import media from url
 	 * @param string $file_url URL of the existing file from the original site
 	 * @param int $folder_name The slidername will be used as folder name in import
-	 * @return boolean True on success, false on failure
+	 * @return boolean array() on success, false on failure
 	 */
 	public function import_media($file_url, $folder_name){
+		global $SR_GLOBALS;
 		require_once(ABSPATH . 'wp-admin/includes/image.php');
 		
 		$ul_dir	 = wp_upload_dir();
 		$art_dir = 'revslider/';
 		$return	 = false;
-		
+		$filename = basename($file_url); //rename the file... alternatively, you could explode on "/" and keep the original file name
+		$s_dir	= str_replace('//', '/', $art_dir.$folder_name.$filename);
+		$_s_dir	= false;
+
 		//if the directory doesn't exist, create it	
 		if(!file_exists($ul_dir['basedir'].'/'.$art_dir)) mkdir($ul_dir['basedir'].'/'.$art_dir);
 		if(!file_exists($ul_dir['basedir'].'/'.$art_dir.$folder_name)) mkdir($ul_dir['basedir'].'/'.$art_dir.$folder_name);
 		
-		//rename the file... alternatively, you could explode on "/" and keep the original file name
-		$filename = basename($file_url);
-		
-		$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
-		
 		if(@fclose(@fopen($file_url, 'r'))){ //make sure the file actually exists
+			$path_info = pathinfo($file_url);
+			if(!isset($path_info['extension'])) return $return;
+			if(in_array(strtolower($path_info['extension']), $SR_GLOBALS['bad_extensions'])) return $return;
+
 			$save_dir	= $ul_dir['basedir'].'/'.$s_dir;
-			$atc_id		= $this->get_image_id_by_url($s_dir);
+			$_atc_id	= $this->get_image_id_by_url($s_dir);
+			$atc_id		= ($_atc_id === false || $_atc_id === NULL) ? $this->get_image_id_by_basename($filename) : $_atc_id;
+			
+			if($_atc_id !== $atc_id && $atc_id !== false && $atc_id !== NULL){ //&& $_atc_id !== false && $_atc_id !== NULL
+				//the image was found through get_image_id_by_basename(), so we have to get the new save_dir for comparison of md5
+				$_save_dir = get_attached_file($atc_id);
+				
+				if($_save_dir !== false && !empty($_save_dir)){
+					if(md5_file($_save_dir) === md5_file($file_url)){
+						$save_dir = $_save_dir;
+						$atc_id	= $atc_id;
+						$s_dir	= str_replace($ul_dir['basedir'].'/', '', $save_dir);
+						$_s_dir	= $s_dir;
+					}
+				}
+			}
+			
 			
 			/**
 			 * check if the files have matching md5, if not change the filename
 			 * change save_dir so that the file is not
 			 **/
 			if($atc_id !== false && $atc_id !== NULL){
-				if(!is_file($ul_dir['basedir'].'/'.$s_dir) || md5_file($file_url) !== md5_file($ul_dir['basedir'].'/'.$s_dir)){
+				if(!is_file($save_dir) || md5_file($file_url) !== md5_file($save_dir)){
 					$file = explode('.', $filename);
 					$nr = 1;
 					while(1 === 1){
@@ -799,13 +767,20 @@ class RevSliderFunctions extends RevSliderData {
 					
 					$atc_id = $this->get_image_id_by_url($s_dir_2);
 					$filename = $file[0].$nr.'.'.$file[1];
+					
+					//we have a new $filename here, so use that one now
+					$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
+					$_s_dir = false;
 				}
+
+				//check if the file really exists in the filesystem, if not reset and redownload
+				WP_Filesystem();
+				global $wp_filesystem;
+				if(!$wp_filesystem->exists($ul_dir['basedir'].'/'.$s_dir)) $atc_id = false;
 			}
-			//we might have a new $filename here, so do again
-			$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
 			
 			if($atc_id == false || $atc_id == NULL){
-				copy($file_url, $save_dir);
+				@copy($file_url, $save_dir);
 				
 				$file_info = getimagesize($save_dir);
 				
@@ -823,7 +798,7 @@ class RevSliderFunctions extends RevSliderData {
 					'post_parent'	 => '',
 					'post_type'		 => 'attachment',
 					'guid'			 => $ul_dir['baseurl'].'/'.$s_dir,
-					'post_mime_type' => $file_info['mime'],
+					'post_mime_type' => $this->get_val($file_info, 'mime'),
 					'post_excerpt'	 => '',
 					'post_content'	 => ''
 				);
@@ -838,15 +813,20 @@ class RevSliderFunctions extends RevSliderData {
 					$rs_meta_create[$attach_id] = $save_dir;
 					update_option('rs_image_meta_todo', $rs_meta_create);
 				}
-				if($attach_data = wp_generate_attachment_metadata($attach_id, $save_dir)){
-					wp_update_attachment_metadata($attach_id, $attach_data);
+				if($attach_data = @wp_generate_attachment_metadata($attach_id, $save_dir)){
+					@wp_update_attachment_metadata($attach_id, $attach_data);
 				}
 			}else{
 				$attach_id = $atc_id;
 			}
 			
-			$art_dir = (!is_multisite()) ? 'uploads/'.$art_dir : $art_dir;
-			$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
+			if($_s_dir !== false){
+				$s_dir = (!is_multisite()) ? 'uploads/'.$_s_dir : $_s_dir;
+				$s_dir = str_replace('//', '/', $s_dir);
+			}else{
+				$art_dir = (!is_multisite()) ? 'uploads/'.$art_dir : $art_dir;
+				$s_dir = str_replace('//', '/', $art_dir.$folder_name.$filename);
+			}
 			
 			$return	 = array('id' => $attach_id, 'path' => $s_dir);
 		}
@@ -856,67 +836,19 @@ class RevSliderFunctions extends RevSliderData {
 	
 	
 	/**
-	 * generate missing attachement metadata for images
-	 * @since: 6.0
-	 **/
-	public function generate_attachment_metadata(){
-		$rs_meta_create = get_option('rs_image_meta_todo', array());
-		if(!empty($rs_meta_create)){
-			foreach($rs_meta_create as $attach_id => $save_dir){
-				if($attach_data = wp_generate_attachment_metadata($attach_id, $save_dir)){
-					wp_update_attachment_metadata($attach_id, $attach_data);
-				}
-				unset($rs_meta_create[$attach_id]);
-				
-				update_option('rs_image_meta_todo', $rs_meta_create);
-			}
-		}
-	}
-	
-	
-	/**
 	 * temporary remove image sizes so that only the needed thumb will be created
 	 * @since: 6.0
 	 **/
 	public static function temporary_remove_sizes($sizes, $meta = false){
-		foreach($sizes as $size => $values){
-			if($size == 'thumbnail'){
-				return array($size => $values);
-			}
-		}
-		return $sizes;
-	}
-	
-	
-	/**
-	 * explodes google fonts and returns the number of font weights of all fonts
-	 * before: RevSliderBase::get_font_weight_count();
-	 * @since: 5.0
-	 **/
-	public function get_font_weight_count($string){
-		$string	= explode(':', $string);
-		$nums	= 0;
-
-		if(count($string) >= 2){
-			$string = $string[1];
-			if(strpos($string, '&') !== false){
-				$string = explode('&', $string);
-				$string = $string[0];
-			}
-			
-			$nums = count(explode(',', $string));
-		}
-		
-		return $nums;
+		return (!empty($sizes) && isset($sizes['thumbnail'])) ? array('thumbnail' => $sizes['thumbnail']) : $sizes;
 	}
 	
 	
 	/**
 	 * get contents of the css table
-	 * @before: RevSliderOperations::getCaptionsContentArray();
 	 */
 	public function get_captions_content($handle = false){
-		$css = new RevSliderCssParser();
+		$css = RevSliderGlobals::instance()->get('RevSliderCssParser');
 		$this->fill_css();
 		
 		return $css->db_array_to_array($this->css, $handle);
@@ -924,116 +856,204 @@ class RevSliderFunctions extends RevSliderData {
 	
 	
 	/**
-	 * get animation params by id
-	 * @before: RevSliderOperations::getFullCustomAnimationByID()
-	 */
-	public function get_custom_animation_by_id($id){
-		$this->fill_animations();
-		
-		foreach($this->animations as $animation){
-			if($animation['id'] == $id){
-				return array(
-					'id'	 => $animation['id'],
-					'handle' => $animation['handle'],
-					'params' => json_decode(str_replace("'", '"', $this->get_val($animation, 'params', array())), true),
-					'settings' => $animation['settings']
-				);
-			}
-		}
-		
-		return false;
-	}
-	
-	
-	/**
 	 * get wp-content path
-	 * @before: RevSliderFunctionsWP::getPathUploads()
 	 */
 	public function get_upload_path(){
 		if(is_multisite()){
 			global $wpdb;
-			$path = (!defined('BLOGUPLOADDIR')) ? ABSPATH . 'wp-content/uploads/sites/' . $wpdb->blogid : BLOGUPLOADDIR;
-		}else{
-			$wp_dir = WP_CONTENT_DIR;
-			$path = (!empty($wp_dir)) ? WP_CONTENT_DIR . '/' : ABSPATH . 'wp-content/uploads/';
+			return (!defined('BLOGUPLOADDIR')) ? ABSPATH . 'wp-content/uploads/sites/' . $wpdb->blogid : BLOGUPLOADDIR;
 		}
 		
-		return $path;
+		return (!empty(WP_CONTENT_DIR)) ? WP_CONTENT_DIR . '/' : ABSPATH . 'wp-content/uploads/';
 	}
-	
 	
 	/**
 	 * get contents of the static css file
-	 * @before: RevSliderOperations::getStaticCss()
 	 */
 	public function get_static_css(){
-		if(!get_option('revslider-static-css')){
-			if(file_exists(RS_PLUGIN_PATH . 'public/assets/css/static-captions.css')){
-				$css = @file_get_contents(RS_PLUGIN_PATH . 'public/assets/css/static-captions.css');
-				$this->update_static_css($css);
-			}
-		}
-		
 		return get_option('revslider-static-css', '');
 	}
 	
-	
 	/**
 	 * get contents of the static css file
-	 * @before: RevSliderOperations::updateStaticCss()
 	 */
-	public function update_static_css($content){
-		$content = str_replace(array("\'", '\"', '\\\\'),array("'", '"', '\\'), trim($content));
-		
-		update_option('revslider-static-css', $content, 'off');
-
-		return $content;
+	public function update_static_css($css){
+		$css = str_replace(array("\'", '\"', '\\\\'),array("'", '"', '\\'), trim($css));
+		update_option('revslider-static-css', $css);
+		return $css;
 	}
 	
-	
 	/**
-	 * set the font clean for import
-	 * @before: RevSliderOperations::setCleanFontImport()
+	 * print html font import
+	 * @before: RevSliderOperations::printCleanFontImport()
 	 */
-	public function set_clean_font_import($font, $class = '', $url = '', $variants = array(), $subsets = array()){
-		global $revslider_fonts;
-		
-		if(!isset($revslider_fonts)) $revslider_fonts = array('queue' => array(), 'loaded' => array()); //if this is called without revslider.php beeing loaded
-		
-		if(!empty($variants) || !empty($subsets)){
-			if(!isset($revslider_fonts['queue'][$font])) $revslider_fonts['queue'][$font] = array();
-			if(!isset($revslider_fonts['queue'][$font]['variants'])) $revslider_fonts['queue'][$font]['variants'] = array();
-			if(!isset($revslider_fonts['queue'][$font]['subsets'])) $revslider_fonts['queue'][$font]['subsets'] = array();
-			
-			if(!empty($variants)){
-				foreach($variants as $k => $v){
-					//check if the variant is already in loaded
-					if(!in_array($v, $revslider_fonts['queue'][$font]['variants'], true)){
-						$revslider_fonts['queue'][$font]['variants'][] = $v;
-					}else{ //already included somewhere, so do not call it anymore
-						unset($variants[$k]);
-					}
+	public function print_clean_font_import_v7(){
+		global $SR_GLOBALS;
+
+		$gs		= $this->get_global_settings();
+		$fdl	= $this->get_val($gs, 'fontdownload', 'off');
+		$ret	= '';
+		$tcf	= '';
+		$tcf2	= '';
+		$font_first = true;
+		$fonts	= array();
+
+		if(!empty($SR_GLOBALS['fonts']['queue'])){
+			foreach($SR_GLOBALS['fonts']['queue'] as $f_n => $f_s){
+				if(!isset($f_s['url'])) continue; //if url is not set, continue
+				
+				if(isset($f_s['load']) && $f_s['load'] === true){ //only load if we are true
+					$ret .=  RS_T3.'<link href="' . esc_html($f_s['url']) . '" rel="stylesheet" property="stylesheet" media="all" type="text/css" />'."\n";
 				}
+				if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n])) $SR_GLOBALS['fonts']['loaded'][$f_n] = array();
+				$SR_GLOBALS['fonts']['loaded'][$f_n] = array('url' => $this->get_val($f_s, 'url'));
 			}
-			if(!empty($subsets)){
-				foreach($subsets as $k => $v){
-					if(!in_array($v, $revslider_fonts['queue'][$font]['subsets'], true)){
-						$revslider_fonts['queue'][$font]['subsets'][] = $v;
-					}else{ //already included somewhere, so do not call it anymore
-						unset($subsets[$k]);
+		}
+
+		if($fdl === 'disable') return $ret;
+
+		if(!empty($SR_GLOBALS['fonts']['queue'])){
+			foreach($SR_GLOBALS['fonts']['queue'] as $f_n => $f_s){
+				if(!is_bool($f_s)) continue;
+				$loaded = false;
+				switch($f_n){
+					case 'Materialicons';
+						$ret .= RS_T3.'<link href="' . RS_PLUGIN_URL_CLEAN . 'public/css/fonts/material/material-icons.css" rel="stylesheet" property="stylesheet" media="all" type="text/css" />'."\n";
+						$loaded = array('url' => RS_PLUGIN_URL_CLEAN . 'public/css/fonts/material/material-icons.css', 'icon' => true, 'family' => 'Materialicons');
+					break;
+					case 'FontAwesome';
+						$ret .= RS_T3.'<link href="' . RS_PLUGIN_URL_CLEAN . 'public/css/fonts/font-awesome/css/font-awesome.css" rel="stylesheet" property="stylesheet" media="all" type="text/css" />'."\n";
+						$loaded = array('url' => RS_PLUGIN_URL_CLEAN . 'public/css/fonts/font-awesome/css/font-awesome.css', 'icon' => true, 'family' => 'FontAwesome');
+					break;
+					case 'PeIcon';
+						$ret .= RS_T3.'<link href="' . RS_PLUGIN_URL_CLEAN . 'public/css/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css" rel="stylesheet" property="stylesheet" media="all" type="text/css" />'."\n";
+						$loaded = array('url' => RS_PLUGIN_URL_CLEAN . 'public/css/fonts/pe-icon-7-stroke/css/pe-icon-7-stroke.css', 'icon' => true, 'family' => 'Pe-icon-7-stroke');
+					break;
+						case 'RevIcon';
+						$ret .= RS_T3.'<link href="' . RS_PLUGIN_URL_CLEAN . 'public/css/fonts/revicons/css/revicons.css" rel="stylesheet" property="stylesheet" media="all" type="text/css" />'."\n";
+						$loaded = array('url' => RS_PLUGIN_URL_CLEAN . 'public/css/fonts/revicons/css/revicons.css', 'icon' => true, 'family' => 'revicons');
+					break;
+				}
+				if($loaded === false) continue;
+
+				if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n])) $SR_GLOBALS['fonts']['loaded'][$f_n] = $loaded;
+			}
+		}
+
+		if(!empty($SR_GLOBALS['fonts']['queue'])){
+			$font_types = array('normal', 'italic');
+			
+			foreach($SR_GLOBALS['fonts']['queue'] as $f_n => $f_s){
+				if(empty($f_n)) continue;
+				if(isset($f_s['url']) && !empty($f_s['url'])) continue; //ignore custom
+			
+				$_variants	= $this->get_val($f_s, 'variants', array('normal' => array(), 'italic' => array()));
+				$_subsets	= $this->get_val($f_s, 'subsets', array());
+				if(!empty($_variants['normal']) || !empty($_variants['italic']) || !empty($_subsets)){
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n])) $SR_GLOBALS['fonts']['loaded'][$f_n] = array();
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n]['variants'])) $SR_GLOBALS['fonts']['loaded'][$f_n]['variants'] = array();
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n]['variants']['normal'])) $SR_GLOBALS['fonts']['loaded'][$f_n]['variants']['normal'] = array();
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n]['variants']['italic'])) $SR_GLOBALS['fonts']['loaded'][$f_n]['variants']['italic'] = array();
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'])) $SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'] = array();
+					
+					if(strpos($f_n, 'href=') === false){
+						$t_tcf = '';
+						
+						if($font_first == false) $t_tcf .= '&family=';
+						$t_tcf .= preg_replace('/[^-0-9a-zA-Z+]/', '', str_replace(' ', '+', $f_n)).':';
+
+						if(!empty($_variants['normal']) || !empty($_variants['italic'])){
+							$mgfirst = true;
+							$italic = false;
+							if(!empty($f_s['variants']['italic'])){
+								$t_tcf .= 'ital,';
+								$italic = true;
+							}
+							$t_tcf .= 'wght@';
+
+							$weights = array();
+							foreach($font_types as $ft){
+								if(!isset($f_s['variants'][$ft])) continue;
+								$weights[$ft] = array();
+								foreach($f_s['variants'][$ft] as $variant){
+									if(in_array($variant, $SR_GLOBALS['fonts']['loaded'][$f_n]['variants'][$ft], true)) continue;
+									$SR_GLOBALS['fonts']['loaded'][$f_n]['variants'][$ft][] = $variant;
+									//if($variant === 'italic') continue;
+									
+									$weights[$ft][] = $variant;
+								}
+							}
+							if(empty($weights)) continue;
+							
+							$i = 0;
+							foreach($weights as $weight_values){
+								if(empty($weight_values)) continue;
+
+								asort($weight_values); //sort as we need to start from low to high
+
+								foreach($weight_values as $weight){
+									if(!$mgfirst) $t_tcf .= ';';
+
+									$t_tcf .= ($italic === true) ? $i.','.$weight : $weight;
+									$mgfirst = false;
+								}
+								$i++;
+							}
+							
+							//we did not add any variants, so dont add the font
+							if($mgfirst === true) continue;
+						}
+						
+						$fonts[$f_n] = $t_tcf; //we do not want to add the subsets
+						
+						if($fdl === 'preload'){
+							/*if(!empty($_subsets)){
+								var_dump($_subsets);
+								$mgfirst = true;
+								foreach($_subsets as $ssk => $subset){
+									var_dump($subset);
+									if(is_array($subset)) continue;
+
+									if(in_array($subset, $SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'], true)) continue;
+									
+									$SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'][] = $subset;
+									
+									if($mgfirst) $t_tcf .= urlencode('&subset=');
+									if(!$mgfirst) $t_tcf .= urlencode(',');
+									$t_tcf .= urlencode($subset);
+									$mgfirst = false;
+								}
+							}*/
+						}
+
+						$tcf .= $t_tcf;
+					}else{
+						$tcf2 .= html_entity_decode(stripslashes($f_n));
+						
+						$fonts[$f_n] = $tcf2;
 					}
+					$font_first = false;
 				}
 			}
 		}
+
+		if($fdl === 'preload'){
+			$ret .= $this->preload_fonts($fonts);
+		}else{
+			$url = $this->modify_fonts_url('https://fonts.googleapis.com/css2?family=');
+			$ret .= ($tcf !== '') ?  RS_T3.'<link href="'.$url.$tcf.'&display=swap" rel="stylesheet" property="stylesheet" media="all" type="text/css" >'."\n" : '';
+			$ret .= ($tcf2 !== '') ?  RS_T3.html_entity_decode(stripslashes($tcf2)) : '';
+		}
+
+		return apply_filters('revslider_printCleanFontImport', $ret);
 	}
-	
 	
 	/**
 	 * print html font import
 	 * @before: RevSliderOperations::printCleanFontImport()
 	 */
 	public function print_clean_font_import(){
-		global $revslider_fonts;
+		global $SR_GLOBALS;
 		
 		$font_first	= true;
 		$ret	= '';
@@ -1043,673 +1063,535 @@ class RevSliderFunctions extends RevSliderData {
 		
 		$gs = $this->get_global_settings();
 		$fdl = $this->get_val($gs, 'fontdownload', 'off');
+
+		if(!empty($SR_GLOBALS['fonts']['queue'])){
+			foreach($SR_GLOBALS['fonts']['queue'] as $f_n => $f_s){
+				if(!isset($f_s['url'])) continue; //if url is not set, continue
+				if(isset($f_s['load']) && $f_s['load'] === true){ //only load if we are true
+					$ret .= '<link href="' . esc_html($f_s['url']) . '" rel="stylesheet" property="stylesheet" media="all" type="text/css" >'."\n";
+				}
+			}
+		}
 		
 		if($fdl === 'disable') return $ret;
 		
-		if(!empty($revslider_fonts['queue'])){
-			foreach($revslider_fonts['queue'] as $f_n => $f_s){
-				if($f_n !== ''){
-					$_variants = $this->get_val($f_s, 'variants', array());
-					$_subsets = $this->get_val($f_s, 'subsets', array());
-					if(!empty($_variants) || !empty($_subsets)){
-						if(!isset($revslider_fonts['loaded'][$f_n])) $revslider_fonts['loaded'][$f_n] = array();
-						if(!isset($revslider_fonts['loaded'][$f_n]['variants'])) $revslider_fonts['loaded'][$f_n]['variants'] = array();
-						if(!isset($revslider_fonts['loaded'][$f_n]['subsets'])) $revslider_fonts['loaded'][$f_n]['subsets'] = array();
+		if(!empty($SR_GLOBALS['fonts']['queue'])){
+			foreach($SR_GLOBALS['fonts']['queue'] as $f_n => $f_s){
+				if(empty($f_n)) continue;
+				if(isset($f_s['url']) && !empty($f_s['url'])) continue; //ignore custom
+			
+				$_variants = $this->get_val($f_s, 'variants', array());
+				$_subsets = $this->get_val($f_s, 'subsets', array());
+				if(!empty($_variants) || !empty($_subsets)){
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n])) $SR_GLOBALS['fonts']['loaded'][$f_n] = array();
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n]['variants'])) $SR_GLOBALS['fonts']['loaded'][$f_n]['variants'] = array();
+					if(!isset($SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'])) $SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'] = array();
+					
+					if(strpos($f_n, 'href=') === false){
+						$t_tcf = '';
 						
-						if(strpos($f_n, 'href=') === false){
-							$t_tcf = '';
-							
-							if($font_first == false) $t_tcf .= '%7C'; //'|';
-							$t_tcf .= urlencode($f_n).':';
-							
-							if(!empty($_variants)){
-								$mgfirst = true;
-								foreach($f_s['variants'] as $mgvk => $mgvv){
-									if(in_array($mgvv, $revslider_fonts['loaded'][$f_n]['variants'], true)) continue;
-									
-									$revslider_fonts['loaded'][$f_n]['variants'][] = $mgvv;
-									
-									if(!$mgfirst) $t_tcf .= urlencode(',');
-									$t_tcf .= urlencode($mgvv);
-									$mgfirst = false;
-								}
+						if($font_first == false) $t_tcf .= '%7C'; //'|';
+						$t_tcf .= urlencode($f_n).':';
+						
+						if(!empty($_variants)){
+							$mgfirst = true;
+							foreach($f_s['variants'] as $variant){
+								if(in_array($variant, $SR_GLOBALS['fonts']['loaded'][$f_n]['variants'], true)) continue;
 								
-								//we did not add any variants, so dont add the font
-								if($mgfirst === true) continue;
-							}
+								$SR_GLOBALS['fonts']['loaded'][$f_n]['variants'][] = $variant;
+								
+								if(!$mgfirst) $t_tcf .= urlencode(',');
+								$t_tcf .= urlencode($variant);
+								$mgfirst = false;
+							} 
 							
-							$fonts[$f_n] = $t_tcf; //we do not want to add the subsets
-							
-							if(!empty($_subsets)){
-								$mgfirst = true;
-								foreach($f_s['subsets'] as $ssk => $ssv){
-									if(in_array($mgvv, $revslider_fonts['loaded'][$f_n]['subsets'], true)) continue;
-									
-									$revslider_fonts['loaded'][$f_n]['subsets'][] = $ssv;
-									
-									if($mgfirst) $t_tcf .= urlencode('&subset=');
-									if(!$mgfirst) $t_tcf .= urlencode(',');
-									$t_tcf .= urlencode($ssv);
-									$mgfirst = false;
-								}
-							}
-							
-							$tcf .= $t_tcf;
-						}else{
-							//$f_n = $this->$this->remove_http($f_n);
-							$tcf2 .= html_entity_decode(stripslashes($f_n));
-							
-							$fonts[$f_n] = $tcf2;
+							//we did not add any variants, so dont add the font
+							if($mgfirst === true) continue;
 						}
+						
+						$fonts[$f_n] = $t_tcf; //we do not want to add the subsets
+						
+						if(!empty($_subsets)){
+							$mgfirst = true;
+							foreach($f_s['subsets'] as $ssk => $ssv){
+								if(in_array($ssv, $SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'], true)) continue;
+								
+								$SR_GLOBALS['fonts']['loaded'][$f_n]['subsets'][] = $ssv;
+								
+								if($mgfirst) $t_tcf .= urlencode('&subset=');
+								if(!$mgfirst) $t_tcf .= urlencode(',');
+								$t_tcf .= urlencode($ssv);
+								$mgfirst = false;
+							}
+						}
+						
+						$tcf .= $t_tcf;
+					}else{
+						//$f_n = $this->$this->remove_http($f_n);
+						$tcf2 .= html_entity_decode(stripslashes($f_n));
+						
+						$fonts[$f_n] = $tcf2;
 					}
-					$font_first = false;
 				}
+				$font_first = false;
 			}
 		}
 		
 		if($fdl === 'preload'){
-			if(!empty($fonts)){
-				$upload_dir	= wp_upload_dir();
-				$base_dir	= $upload_dir['basedir'];
-				$base_url	= $upload_dir['baseurl'];
-				$rs_google_ts = get_option('rs_google_font', 0);
-				
-				foreach($fonts as $key => $font){
-					//check if we downloaded the font already
-					$font = str_replace('%7C', '', $font);
-					$font_name = preg_replace('/[^-a-z0-9 ]+/i', '', $key);
-					$font_name = strtolower(str_replace(' ', '-', esc_attr($font_name)));
-					
-					if(!is_file($base_dir.'/revslider/gfonts/'. $font_name . '/' . $font_name . '.woff2') || filemtime($base_dir.'/revslider/gfonts/'. $font_name . '/' . $font_name . '.woff2') < $rs_google_ts){
-						if(!is_dir($base_dir.'/revslider/gfonts/')){
-							mkdir($base_dir.'/revslider/gfonts/');
-						}
-						
-						if(!is_dir($base_dir.'/revslider/gfonts/'.$font_name)){
-							mkdir($base_dir.'/revslider/gfonts/'.$font_name);
-						}
-						
-						$regex_url	= "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-						$url		= 'https://fonts.googleapis.com/css?family='.$font;
-						$content	= wp_remote_get($url);
-						$body = $this->get_val($content, 'body', '');
-						
-						if(preg_match_all($regex_url, $body, $found_fonts)){
-							foreach($found_fonts as $found_font){
-								$found_font = $found_font[0];
-								$found_font = rtrim($found_font, ')');
-								
-								$f_c = wp_remote_get($found_font);
-								
-								$f_c_body = $this->get_val($f_c, 'body', '');
-								
-								$file = $base_dir.'/revslider/gfonts/'. $font_name . '/' . $font_name . '.woff2';
-								@mkdir(dirname($file));
-								@file_put_contents($file, $f_c_body);
-								
-								break;
-							}
-						}
-					}
-					
-					$f_raw		= explode(':', $font);
-					$weights	= (!empty($f_raw) && is_array($f_raw) && isset($f_raw[1])) ? explode(',', $f_raw[1]) : array('400');
-					$f_family	= str_replace('+', ' ', $f_raw[0]);
-					
-					if(!empty($weights) && is_array($weights)){
-						$ret .= '<style type="text/css">';
-						foreach($weights as $weight){
-							$ret .=
-"@font-face {
-  font-family: '".$f_family."';
-  font-style: normal;
-  font-weight: ".$weight.";
-  src: local('".$f_family."'), local('".$f_family."'), url(".$base_url.'/revslider/gfonts/'. $font_name . '/' . $font_name . '.woff2'.") format('woff2');
-}";
-						}
-						$ret .= '</style>';
-					}
-				}
-			}
-			
+			$ret .= $this->preload_fonts($fonts);
 		}else{
 			$url = $this->modify_fonts_url('https://fonts.googleapis.com/css?family=');
-			
-			if($tcf !== ''){
-				$ret .= '<link href="'.$url.$tcf.'" rel="stylesheet" property="stylesheet" type="text/css" media="all">'."\n"; //id="rev-google-font"
-			}
-			if($tcf2 !== ''){
-				$ret .= html_entity_decode(stripslashes($tcf2));
-			}
+			$ret .= ($tcf !== '') ? '<link href="'.$url.$tcf.'&display=swap" rel="stylesheet" property="stylesheet" media="all" type="text/css" >'."\n" : '';
+			$ret .= ($tcf2 !== '') ? html_entity_decode(stripslashes($tcf2)) : '';
 		}
 		
 		return apply_filters('revslider_printCleanFontImport', $ret);
 	}
+
+	/**
+	 * preloading fonts and return style for it
+	 **/
+	public function preload_fonts($fonts, $style = true, $all = false){
+		$ret = '';
+		
+		if(empty($fonts)) return $ret;
 	
+		if(!function_exists('download_url')) require_once ABSPATH . 'wp-admin/includes/file.php';
+		$allowed_mime_types = array('ttf'  => 'font/ttf', 'woff' => 'font/woff', 'woff2' => 'font/woff2', 'otf'  => 'font/otf');
+		$upload_dir	= wp_upload_dir();
+		$base_dir	= $upload_dir['basedir'];
+		$base_url	= $this->remove_http($upload_dir['baseurl']);
+		$tp_google_ts = get_option('tp_google_font', 0);
+		$types		= array(
+			//--- original
+			'ttf'	=> array('user-agent' => ''),
+			'woff'	=> array('accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'user-agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10240'),
+			'woff2'	=> array('accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'user-agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0'),
+			//--- original end
+			/*--- alternative
+			//'ttf'	=> array('user-agent' => 'Mozilla/5.0 (Unknown; Linux x86_64) AppleWebKit/538.1 (KHTML, like Gecko) Safari/538.1 Daum/4.1'),
+			//'woff'	=> array('user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0'),
+			//'woff2'	=> array('user-agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.0'),
+			//'eot'	=> array('user-agent' => 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)'),
+			//'svg'	=> array('user-agent' => 'Mozilla/4.0 (iPad; CPU OS 4_0_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/4.1 Mobile/9A405 Safari/7534.48.3'),
+			//--- alternative 2 end */
+		);
+		$fonts_css	= get_option('tp_font_css', array());
+		if(!is_array($fonts_css)) $fonts_css = array();
+		$load = 'ttf';
+
+		if($all === false){
+			$_browser	= $this->get_browser();
+			$version	= $this->get_val($_browser, 'version', '0');
+			$browser	= $this->get_val($_browser, 'name', '');
+			//Chrome 6+ , Firefox 3.6+ IE9+, Safari 5.1+  -> WOFF
+			//Chrome 26+, Operae23+, Firefox 39+ -> Woff2
+			switch(strtolower($browser)){
+				case 'mozilla firefox':
+					if(version_compare($version, '3.6', '>=')) $load = 'woff';
+					if(version_compare($version, '39', '>=')) $load = 'woff2';
+				break;
+				case 'edge':
+					$load = 'woff2';
+				break;
+				case 'google chrome':
+					if(version_compare($version, '6', '>=')) $load = 'woff';
+					if(version_compare($version, '26', '>=')) $load = 'woff2';
+				break;
+				case 'apple safari':
+					if(version_compare($version, '5.1', '>=')) $load = 'woff';
+				break;
+				case 'opera':
+					if(version_compare($version, '23', '>=')) $load = 'woff';
+				break;
+				case 'internet explorer':
+					if(version_compare($version, '9', '>=')) $load = 'woff';
+				break;
+			}
+		}
+
+		foreach($fonts as $key => $font){
+			//check if we downloaded the font already
+			$font		= str_replace(array('&family=', '%7C'), '', $font);
+			
+			if(strpos($key, ':') !== false){
+				$key = explode(':', $key);
+				$key = $key[0];
+			}
+			$font_name	= preg_replace('/[^-a-z0-9 ]+/i', '', $key);
+			$font_name	= strtolower(str_replace(' ', '-', esc_attr($font_name)));
+			$f_raw		= explode(':', $font);
+			$weights	= array('400');
+			$font_loaded = array();
+			if(!empty($f_raw) && is_array($f_raw) && isset($f_raw[1])){
+				//check if we are css2 or css format, if css, we need to modify $font to css2
+				if(strpos($f_raw[1], ',') !== false && strpos($f_raw[1], ';') === false || intval($f_raw[1]) > 0){
+					$f_raw[1]	= str_replace(array('%2C', 'wght', '@0,', ';0,', '@', '&family='), array(',', '', '', ',', '', ''), $f_raw[1]);
+					$font = $f_raw[0].':';
+					$weights = explode(',', $f_raw[1]);
+					$collection = array('normal' => array(), 'italic' => array());
+					foreach($weights ?? [] as $wk => $weight){
+						$weight = strtolower($weight);
+						if(strpos($weight, 'ital') !== false){
+							$weight = str_replace(array('ital', 'italic'), '', $weight);
+							if(intval($weight) === 0) $weight = 400;
+							$collection['italic'][$weight] = $weight;
+						}else{
+							$collection['normal'][$weight] = $weight;
+						}
+					}
+
+					if(!empty($collection['normal']) || !empty($collection['italic'])){
+						$mgfirst = true;
+						$italic = false;
+						if(!empty($collection['italic'])){
+							$font .= 'ital,';
+							$italic = true;
+						}
+						$font .= 'wght@';
+
+						$i = 0;
+						$cycles = array('normal', 'italic');
+						
+						foreach($cycles as $cycle){
+							$weight_values = $collection[$cycle];
+							//var_dump($weight_values);
+							if(empty($weight_values)) continue;
+
+							asort($weight_values); //sort as we need to start from low to high
+
+							foreach($weight_values as $weight){
+								if(!$mgfirst) $font .= ';';
+
+								$font .= ($italic === true) ? $i.','.$weight : $weight;
+								$mgfirst = false;
+							}
+							$i++;
+						}
+					}
+				}else{ //no /css2 process here as we seem to be /css
+					$f_raw[1]	= str_replace(array('%2C', 'wght', '@0,', ';0,', '@', ';', '&family='), array(',', '', '', ',', '', ',', ''), $f_raw[1]);
+					$weights	= explode(',', $f_raw[1]);
+					foreach($weights ?? [] as $wk => $weight){
+						if($weight === 'ital' || $weight === 'italic'){
+							$weights[$wk] = 'italic';
+							continue;
+						}
+						$weights[$wk] = intval($weight);
+						if($weights[$wk] < 100) unset($weights[$wk]);
+					}
+				}
+				if(empty($weights)) $weights = array('400');
+				$weights = array_unique($weights);
+			}
+			
+			foreach($types as $ftype => $options){
+				if($load !== $ftype && $all === false) continue;
+				$f_download = false;
+				foreach($weights as $weight){
+					$font_style = 'normal';
+					if(intval($weight) === 0){
+						$font_style	= preg_replace('/[0-9]+/', '', $weight);
+						$weight	= preg_replace('/[a-zA-Z]+/', '', $weight);
+						if(intval($weight) < 100) $weight = '400';
+					}
+
+					$_css = $this->get_val($fonts_css, array($font_name, $ftype, $weight, $font_style), false);
+					if(!empty($_css) && is_array($_css)){
+						foreach($_css as $uc => $fw){
+							if(empty($fw) || !is_array($fw)) continue;
+							
+							foreach($fw as $_fw => $font_css){
+								$start = strpos($font_css, '###BASE###');
+								if($start === false) continue;
+								$end = strpos($font_css, ')', $start + 10);
+								$file_raw = substr($font_css, $start + 10, $end - ($start + 10));
+
+								if(!is_file($base_dir.'/themepunch/gfonts/'. $file_raw) || filemtime($base_dir.'/themepunch/gfonts/'. $file_raw) < $tp_google_ts){
+									$f_download = true;
+									break;
+								}
+							}
+						}
+					}else{
+						$f_download = true;
+					}
+				}
+
+				if($f_download){
+					if(!is_dir($base_dir.'/themepunch/')) mkdir($base_dir.'/themepunch/');
+					if(!is_dir($base_dir.'/themepunch/gfonts/')) mkdir($base_dir.'/themepunch/gfonts/');
+					if(!is_dir($base_dir.'/themepunch/gfonts/'.$font_name)) mkdir($base_dir.'/themepunch/gfonts/'.$font_name);
+
+					$content = wp_safe_remote_get('https://fonts.googleapis.com/css2?family='.$font, $options);
+					$body	 = $this->get_val($content, 'body', '');
+					$body	 = explode('}', $body);
+
+					if(!empty($body)){
+						foreach($body as $b){
+							if(preg_match("/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/", $b, $found_fonts)){
+								$found_font	= rtrim($found_fonts[0], ')');
+								$filename	= basename($found_font);
+								$file_type	= wp_check_filetype($filename, $allowed_mime_types);
+								if($this->get_val($file_type, 'ext', false) === false || $this->get_val($file_type, 'type', false) === false) continue;
+								$found_fw	= (preg_match("/(?<=font-weight:)(.*)(?=;)/", $b, $found_fw)) ? trim($found_fw[0]) : '400';
+								$found_fs	= (preg_match("/(?<=font-style:)(.*)(?=;)/", $b, $found_fs)) ? trim($found_fs[0]) : 'normal';
+								$found_ur	= (preg_match("/(?<=\/\*)(.*)(?=\*\/)/", $b, $found_ur)) ? trim($found_ur[0]) : '';
+
+								$found_ur	= (empty($found_ur)) ? 'all' : $found_ur;
+								$found_fs	= ($found_fs !== 'normal') ? 'italic' : $found_fs;
+								$found_fw	= (empty($found_fw)) ? '400' : $found_fw;
+								$file		= $base_dir.'/themepunch/gfonts/'. $font_name . '/' . $filename;
+								$_file		= '###BASE###'. $font_name . '/' . $filename;
+								if(!in_array($filename, $font_loaded)){
+									$tmp = download_url($found_font, 4);
+									if(!is_wp_error($tmp)){
+										if(!is_dir(dirname($file))) @mkdir(dirname($file));
+										copy($tmp, $file);
+										@unlink($tmp);
+									}
+									
+									$font_loaded[] = $filename;
+								}
+
+								if(strpos($b, 'font-display') === false) $b .= '  font-display: swap;'."\n";
+								
+								if(!isset($fonts_css[$font_name]))									$fonts_css[$font_name] = array();
+								if(!isset($fonts_css[$font_name][$ftype]))							$fonts_css[$font_name][$ftype] = array();
+								if(!isset($fonts_css[$font_name][$ftype][$found_fw]))				$fonts_css[$font_name][$ftype][$found_fw] = array();
+								if(!isset($fonts_css[$font_name][$ftype][$found_fw][$found_fs]))	$fonts_css[$font_name][$ftype][$found_fw][$found_fs] = array();
+								$fonts_css[$font_name][$ftype][$found_fw][$found_fs][$found_ur]	= str_replace($found_font, $_file, $b . '}');
+							}
+						}
+					}
+				}
+
+				if(!empty($weights) && is_array($weights)){
+					if($style === true)	$ret .= '<style class="sr7-inline-css">';
+					$format = ($ftype !== 'ttf') ? $ftype : 'truetype';
+					foreach($weights as $weight){
+						$font_style = 'normal';
+						if(intval($weight) === 0){
+							$font_style	= preg_replace('/[0-9]+/', '', $weight);
+							$weight	= preg_replace('/[a-zA-Z]+/', '', $weight);
+							if(intval($weight) < 100) $weight = '400';
+						}
+						//$_style	 = (strpos($weight, 'italic') !== false) ? 'italic' : 'normal';
+						//$_weight = str_replace('italic', '', $weight);
+						//$_weight = (empty(trim($_weight))) ? '400' : $_weight;
+						$_css = $this->get_val($fonts_css, array($font_name, $ftype, $weight), false);
+						if(!empty($_css) && is_array($_css)){
+							foreach($_css as $uc => $fw){
+								if(empty($fw) || !is_array($fw)) continue;
+								
+								foreach($fw as $_fw => $font_css){
+									$ret .= str_replace('###BASE###', $base_url.'/themepunch/gfonts/', $font_css);
+								}
+							}
+						}else{
+							if(!isset($fonts_css[$font_name]))									$fonts_css[$font_name] = array();
+							if(!isset($fonts_css[$font_name][$ftype]))							$fonts_css[$font_name][$ftype] = array();
+							if(!isset($fonts_css[$font_name][$ftype][$weight]))					$fonts_css[$font_name][$ftype][$weight] = array();
+							if(!isset($fonts_css[$font_name][$ftype][$weight][$font_style]))	$fonts_css[$font_name][$ftype][$weight][$font_style] = array();
+							$fonts_css[$font_name][$ftype][$weight][$font_style]['all']	= '/* '.$weight.' does not exist  */';
+						}
+					}
+					if($style === true)	$ret .= '</style>';
+				}
+			}
+		}
+
+		update_option('tp_font_css', $fonts_css);
+
+		return $ret;
+	}
+
+	/**
+	 * get the client browser with version
+	 **/
+	public function get_browser(){
+		$u_agent	= $this->get_val($_SERVER, 'HTTP_USER_AGENT');
+		$bname		= 'Unknown';
+		$platform	= 'Unknown';
+		$version	= '';
+		$ub			= '';
+
+		// get platform
+		if (preg_match('/linux/i', $u_agent)) {
+			$platform = 'linux';
+		} elseif (preg_match('/macintosh|mac os x/i', $u_agent)) {
+			$platform = 'mac';
+		} elseif (preg_match('/windows|win32/i', $u_agent)) {
+			$platform = 'windows';
+		}
+
+		// get name of useragent
+		if(preg_match('/MSIE/i',$u_agent) && !preg_match('/Opera/i',$u_agent)) {
+			$bname = 'Internet Explorer';
+			$ub = 'MSIE';
+		} elseif(preg_match('/Firefox/i',$u_agent)) {
+			$bname = 'Mozilla Firefox';
+			$ub = 'Firefox';
+		} elseif(preg_match('/OPR/i',$u_agent))	{
+			$bname = 'Opera';
+			$ub = 'Opera';
+		} elseif(preg_match('/Chrome/i',$u_agent) && !preg_match('/Edg/i',$u_agent)) {
+			$bname = 'Google Chrome';
+			$ub = 'Chrome';
+		} elseif(preg_match('/Safari/i',$u_agent) && !preg_match('/Edg/i',$u_agent)) {
+			$bname = 'Apple Safari';
+			$ub = 'Safari';
+		} elseif(preg_match('/Netscape/i',$u_agent)) {
+			$bname = 'Netscape';
+			$ub = 'Netscape';
+		} elseif(preg_match('/Edg/i',$u_agent)) {
+			$bname = 'Edge';
+			$ub = 'Edg';
+		} elseif(preg_match('/Trident/i',$u_agent)) {
+			$bname = 'Internet Explorer';
+			$ub = 'MSIE';
+		}
+
+		// get version
+		$known		= array('Version', $ub, 'other');
+		$pattern	= '#(?<browser>' . join('|', $known) . ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+		if (!preg_match_all($pattern, $u_agent, $matches)){ /* */ }
+		// see how many we have
+		$i			= count($matches['browser']);
+		$version	= $this->get_val($matches, array('version', 0));
+		if ($i != 1) {
+			//we will have two since we are not using the 'other' argument yet
+			//see if the version is before or after the name
+			$version = (strripos($u_agent, 'Version') < strripos($u_agent,$ub)) ? $version : $this->get_val($matches, array('version', 1));
+		}
+
+		// check if we have a number
+		if ($version == null || $version == '') $version = '0';
+
+		return array(
+			'name'		=> $bname,
+			'version'	=> $version,
+			'platform'	=> $platform
+		);
+    }
+
+	/**
+	 * get a collection of all used fonts, either in a grid or from the whole plugin
+	 **/
+	public function collect_used_fonts($save = true, $fetch_all = true, $page = 1){
+		$used_fonts = get_option('tp-google-fonts-collect', array());
+		$global_fonts = array();
+		$more = false;
+		$sr = new RevSliderSlider();
+		$sl = new RevSliderSlide();
+
+		//get all slider, init them and get subsets and get_used_fonts
+		$page = intval($page);
+		if($page <= 0) $page = 1;
+
+		$sliders = $sr->get_sliders(false, $page);
+		if(!empty($sliders)){
+			foreach($sliders as $slider){
+				$gfsub	= $slider->get_param('subsets', array());
+				$gf		= $slider->get_used_fonts(false);
+				if(!empty($gf)){
+					foreach($gf as $handle => $data){
+						if(!isset($global_fonts[$handle])) $global_fonts[$handle] = array();
+
+						$variants = $this->get_val($data, 'variants', array());
+						if(!empty($variants) && is_array($variants)){
+							foreach($variants as $variant => $true){
+								if(!in_array($variant, $global_fonts[$handle])) $global_fonts[$handle][] = $variant;
+							}
+						}
+					}
+				}
+			}
+			if(count($sliders) >= 50) $more = true;
+		}
+
+		if(!empty($global_fonts)){
+			foreach($global_fonts as $handle => $variants){
+				$url = $handle;
+				if(!empty($variants) && is_array($variants)){
+					sort($variants);
+					$url .= ':'.implode(',', $variants);
+				}
+				if(!isset($used_fonts[$handle]))			$used_fonts[$handle] = array();
+				if(!in_array($url, $used_fonts[$handle]))	$used_fonts[$handle][] = $url;
+			}
+		}
+		
+		if($fetch_all === true){
+			if(class_exists('ThemePunch_Fonts') && method_exists('ThemePunch_Fonts', 'collect_used_fonts')){
+				$esg_fonts = new ThemePunch_Fonts();
+				$return = $esg_fonts->collect_used_fonts(false, false, $page);
+				$fonts = $this->get_val($return, 'fonts', array());
+				$_more = $this->get_val($return, 'more', false);
+				if($_more === true) $more = true;
+				//merge esg and revslider
+
+				if(!empty($fonts)){
+					foreach($fonts as $handle => $urls){
+						if(empty($urls) || !is_array($urls)) continue;
+						if (!isset($used_fonts[$handle]) ) $used_fonts[$handle] = array();
+						if (!in_array($handle, $used_fonts[$handle])) {
+							foreach($urls as $url){
+								if(!in_array($url, $used_fonts[$handle])) $used_fonts[$handle][] = $url;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$used_fonts = apply_filters('punchfonts_collect_fonts', $used_fonts);
+		if($save === true) update_option('tp-google-fonts-collect', $used_fonts);
+
+		return array('fonts' => $used_fonts, 'more' => $more);
+	}
+
+
+	public function download_collected_fonts($handle){
+		if (empty($handle)) return;
+		if (!is_array($handle)) $handle = (array)$handle;
+
+		$collected	= get_option('tp-google-fonts-collect', array());
+
+		foreach ($handle as $_handle) {
+			if (!isset($collected[$_handle])) continue;
+
+			$load = array();
+			foreach($collected[$_handle] as $h){
+				$load[$h] = $h;
+			}
+
+			$this->preload_fonts($load, false, true);
+		}
+	}
 	
+
 	/**
 	 * Change FontURL to new URL (added for chinese support since google is blocked there)
 	 * @since: 5.0
 	 * @before: RevSliderFront::modify_punch_url()
 	 */
-	public function modify_fonts_url($url){
+	public function modify_fonts_url($url, $remove = true){
 		$gs = $this->get_global_settings();
 		$df = $this->get_val($gs, 'fonturl', '');
-		
-		return ($df !== '') ? $df : $url;
-	}
-	
-	
-	/**
-	 * get post categories by post ID and taxonomies
-	 * the post ID can be post object or array too
-	 * @before: RevSliderFunctionsWP::getPostCategories()
-	 */
-	public function get_post_categories($post_id, $tax){
-		if(!is_numeric($post_id)){
-			$post_id = (array)$post_id;
-			$post_id = $post_id['ID'];
-		}
-		$cats = wp_get_post_terms($post_id, $tax);
-		
-		return $this->class_to_array($cats);
-	}
-	
-	
-	/**
-	 * get cats and taxanomies data from the category id's
-	 * @before: RevSliderFunctionsWP::getCatAndTaxData()
-	 */
-	public function get_tax_by_cat_id($cat_ids){
-		$ret	= array('tax' => '', 'cats' => '');
-		$tax	= array();
-		$cats	= '';
-		$taxs	= '';
-		
-		if(is_string($cat_ids)){
-			$cat_ids = trim($cat_ids);
-			$cat_ids = (empty($cat_ids)) ? array() : explode(',', $cat_ids);
-		}
-		
-		
-		if(!empty($cat_ids)){
-			foreach($cat_ids as $cat){
-				if(strpos($cat, 'option_disabled') === 0) continue;
-				
-				$pos = strrpos($cat, '_');
-				if($pos === false) $this->throw_error(__('Wrong category format', 'revslider'));
-				
-				$tax_name		= substr($cat, 0, $pos);
-				$tax[$tax_name]	= $tax_name;
-				$cats			.= (!empty($cats)) ? ',' : '';
-				$cats			.= substr($cat, $pos + 1, strlen($cat) - $pos - 1); //category id
-			}
-			
-			$ret['cats'] = $cats;
-		}
-		
-		if(!empty($tax)){
-			foreach($tax as $tax_name){
-				$taxs .= (!empty($taxs)) ? ','.$tax_name : $tax_name;
-			}
-		}
-		$ret['tax'] = $taxs;
-		
-		return $ret;
-	}
-	
-	
-	/**
-	 * get posts by coma saparated posts
-	 * @before: RevSliderFunctionsWP::getPostsByIDs();
-	 */
-	public function get_posts_by_id($ids, $slider_id, $is_gal, $additional = array()){
-		$arr = (is_string($ids)) ? explode(',', $ids) : $ids;
+		$df = ($df !== '') ? $df : $url;
 
-		$query = array(
-			'ignore_sticky_posts' => 1,
-			'post_type'	=> 'any',
-			'post__in'	=> $arr
-		);
-		if($is_gal){
-			$query['post_status']	= 'inherit';
-			$query['orderby']		= 'post__in';
-		}
-		
-		$query	= array_merge($query, $additional);
-		$query	= apply_filters('revslider_get_posts', $query, $slider_id);
-		
-		$object	= new WP_Query($query);
-		$posts	= $object->posts;		
-
-		foreach($posts as $key => $post){
-			$posts[$key] = (method_exists($post, 'to_array')) ? $post->to_array() : (array)$post;
-		}
-		
-		return $posts;
+		return ($remove) ? $this->remove_http($df) : $df;
 	}
-	
-	
-	/**
-	 * get recent posts
-	 * @since: 5.1.1
-	 * before: RevSliderSlider::getPostsFromRecent()
-	 */
-	public function get_latest_posts($max_posts = false){
-		$post_id	= get_the_ID();
-		$my_posts	= array();
-		$args		= array(
-			'post_type' => 'any',
-			'suppress_filters' => 0,
-			'meta_key'	=> '_thumbnail_id',
-			'orderby'	=> 'date',
-			'order'		=> 'DESC'
-		);
-		
-		if($max_posts == false){
-			$source		= $this->get_val($this->params, 'source');
-			$post		= $this->get_val($source, 'post');
-			$max_posts	= $this->get_val($post, 'maxPosts', 30);
-			$max_posts	= (empty($max_posts) || !is_numeric($max_posts)) ? -1 : $max_posts;
-		}else{
-			$max_posts = intval($max_posts);
-		}
-		
-		$args['posts_per_page']	= $max_posts;
-		$args	= apply_filters('revslider_get_latest_posts', $args, $post_id);
-		$posts	= get_posts($args);
-		
-		if(!empty($posts)){
-			foreach($posts as $post){
-				$my_posts[] = (method_exists($post, 'to_array')) ? $post->to_array() : (array)$post;
-			}
-		}
-		
-		return $my_posts;
-	}
-	
-	
-	/**
-	 * get recent posts
-	 * @since: 5.1.1
-	 * @before: RevSliderSlider::getPostsNextPrevious();
-	 */
-	public function get_next_previous_post(){
-		$my_posts = array();
-		
-		$startup_next_post = get_next_post();
-		if (!empty($startup_next_post)){
-			$my_posts[] = (method_exists($startup_next_post, 'to_array')) ? $startup_next_post->to_array() : (array)$startup_next_post;
-		}    
-		$startup_previous_post = get_previous_post();
-		if (!empty($startup_previous_post)){
-			$my_posts[] =(method_exists($startup_previous_post, "to_array")) ? $startup_previous_post->to_array() : (array)$startup_previous_post;
-		}
-		
-		return $my_posts;
-	}
-	
-	
-	/**
-	 * get posts from specific posts list
-	 * @before: RevSliderSlider::getPostsFromSpecificList();
-	 */
-	public function get_specific_posts($gal_ids = array()){
-		$is_gal		= false;
-		$additional	= array();
-		$slider_id	= $this->get_id();
-		
-		if(!empty($gal_ids) && $gal_ids[0] !== ''){
-			$posts	= $gal_ids;
-			$posts	= apply_filters('revslider_set_posts_list_gal', $posts, $this->get_id());
-			$is_gal	= true;
-		}else{
-			if(isset($gal_ids[0])){
-				unset($gal_ids[0]);
-				$posts					= implode(',', $gal_ids);
-				$additional['order']	= 'none';
-				$additional['orderby']	= 'post__in';
-			}else {
-				$posts = $this->get_param(array('source', 'post', 'list'), '');	
-				$additional['order'] = $this->get_param(array('source', 'post', 'sortDirection'), 'DESC');
-				$additional['orderby'] = $this->get_param(array('source', 'post', 'sortBy'), '');
-			}
-			$posts = apply_filters('revslider_set_posts_list', $posts, $this->get_id());
-		}
-		
-		return $this->get_posts_by_id($posts, $slider_id, $is_gal, $additional);
-	}
-	
-	
-	/**
-	 * get posts by some category
-	 * could be multiple
-	 * @before: RevSliderFunctionsWP::getPostsByCategory()
-	 */
-	public function get_posts_by_category($slider_id, $cat_id, $sort_by = 'ID', $direction = 'DESC', $max_posts = -1, $post_types = 'any', $taxonomies = 'category', $addition = array(), $type = ''){
-		$a = apply_filters('revslider_get_posts_by_category', array('slider_id' => $slider_id, 'cat_id' => $cat_id, 'sort_by' => $sort_by, 'direction' => $direction, 'max_posts' => $max_posts, 'post_types' => $post_types, 'taxonomies' => $taxonomies, 'addition' => $addition, 'type' => $type), $this);
-		$slider_id	= $this->get_val($a, 'slider_id');
-		$cat_id		= $this->get_val($a, 'cat_id');
-		$sort_by	= $this->get_val($a, 'sort_by');
-		$direction	= $this->get_val($a, 'direction');
-		$max_posts	= $this->get_val($a, 'max_posts');
-		$post_types	= $this->get_val($a, 'post_types');
-		$taxonomies	= $this->get_val($a, 'taxonomies');
-		$addition	= $this->get_val($a, 'addition');
-		$type		= $this->get_val($a, 'type');
-		$tax		= (!empty($taxonomies)) ? explode(',', $taxonomies) : array(); //get taxonomies array
-		
-		if(!is_array($post_types)){
-			if(strpos($post_types, ',') !== false){
-				$post_types = explode(',', $post_types);
-				$post_types = (array_search('any', $post_types) !== false) ? 'any' : $post_types;
-			}
-		}
-		$post_types	= (empty($post_types)) ? 'any' : $post_types;
-		$cat_id		= (strpos($cat_id, ',') !== false) ? explode(',', $cat_id) : array($cat_id);
-		
-		$query		= array(
-			'order'					=> $direction,
-			'ignore_sticky_posts'	=> 1,
-			'posts_per_page'		=> $max_posts,
-			'showposts'				=> $max_posts,
-			'post_type'				=> $post_types
-		);		
-
-		//add sort by (could be by meta)
-		if(strpos($sort_by, 'meta_num_') === 0){
-			$query['orderby']	= 'meta_value_num';
-			$query['meta_key']	= str_replace('meta_num_', '', $sort_by);
-		}elseif(strpos($sort_by, 'meta_') === 0){
-			$query['orderby']	= 'meta_value';
-			$query['meta_key']	= str_replace('meta_', '', $sort_by);
-		}else{
-			$query['orderby']	= $sort_by;
-		}
-		
-		if(!empty($taxonomies)){
-			$tax_query = array('relation' => 'OR');
-		
-			//add taxomonies to the query
-			if(strpos($taxonomies, ',' !== false)){	//multiple taxomonies
-				$taxonomies = explode(',', $taxonomies);
-				foreach($taxonomies as $taxomony){
-					$tax_query[] = array(
-						'taxonomy'	=> $taxomony,
-						'field'		=> 'id',
-						'terms'		=> $cat_id
-					);			
-				}
-			}else{		//single taxomony
-				$tax_query[] = array(
-					'taxonomy' => $taxonomies,
-					'field' => 'id',
-					'terms' => $cat_id
-				);			
-			}
-			
-			$query['tax_query'] = $tax_query;
-		}
-		
-		if(!empty($addition)){
-			$tax_query = $this->get_val($addition, 'tax_query', array());
-			if(!empty($tax_query)){
-				if(!isset($query['tax_query'])) $query['tax_query'] = array();
-				if(is_array($tax_query)){
-					foreach($tax_query as $tk => $tv){
-						if(is_numeric($tk)){
-							$query['tax_query'][] = $tv;
-						}else{
-							$query['tax_query'][$tk] = $tv;
-						}
-					}
-				}
-				unset($addition['tax_query']);
-			}
-			$query = array_merge($query, $addition);
-		}
-		
-		$query = apply_filters('revslider_get_posts', $query, $slider_id);
-		$full_posts	= new WP_Query($query);
-		$posts		= $full_posts->posts;
-		
-		foreach($posts as $key => $post){
-			$arr_post = (method_exists($post, 'to_array')) ? $post->to_array() : (array)$post;
-			$arr_post['categories'] = $this->get_post_categories($post, $tax);
-			
-			$posts[$key] = $arr_post;
-		}
-		
-		return $posts;
-	}
-	
-	
-	/**
-	 * get popular posts
-	 * @since: 5.1.1
-	 * @before: RevSliderSlider::getPostsFromPopular();
-	 */
-	public function get_popular_posts($max_posts = false){
-		$post_id	= get_the_ID();
-		$my_posts	= array();
-		
-		if($max_posts == false){
-			$source		= $this->get_param('source');
-			$post		= $this->get_val($source, 'post');
-			$max_posts	= $this->get_val($post, 'maxPosts', 30);
-			$max_posts = (empty($max_posts) || !is_numeric($max_posts)) ? -1 : $max_posts;
-		}else{
-			$max_posts = intval($max_posts);
-		}
-		
-		$args = array(
-			'suppress_filters' => 0,
-			'posts_per_page' => $max_posts,
-			'post_type'	=> 'any',
-			'meta_key'  => '_thumbnail_id',
-			'orderby'   => 'comment_count',
-			'order'     => 'DESC'
-		);
-		
-		$args	= apply_filters('revslider_get_popular_posts', $args, $post_id);
-		$posts	= get_posts($args);
-		
-		foreach($posts as $post){
-			$my_posts[] = (method_exists($post, 'to_array')) ? $post->to_array() : (array)$post;
-		}
-		
-		return $my_posts;
-	}
-	
-	
-	/**
-	 * get related posts from current one
-	 * @since: 5.1.1
-	 * @before: RevSliderSlider::getPostsFromRelated();
-	 */
-	public function get_related_posts(){
-		$my_posts	= array();
-		$tags		= '';
-		$post_id	= get_the_ID();
-		$sort_by	= $this->get_param(array('source', 'post', 'sortBy'), 'ID');
-		$source		= $this->get_param('source');
-		$post		= $this->get_val($source, 'post');
-		$max_posts	= $this->get_val($post, 'maxPosts', 30);
-		$max_posts	= (empty($max_posts) || !is_numeric($max_posts)) ? -1 :  $max_posts;
-		$post_tags	= get_the_tags();
-		
-		if($post_tags){
-			foreach($post_tags as $post_tag){
-				$tags .= $post_tag->slug . ',';
-			}
-		}
-		
-		$query = array(
-			'numberposts' => $max_posts,
-			'exclude'	=> $post_id,
-			'order'		=> $this->get_param(array('source', 'post', 'sortDirection'), 'DESC'),
-			'tag'		=> $tags
-		);
-		
-		if(strpos($sort_by, 'meta_num_') === 0){
-			$query['orderby']	= 'meta_value_num';
-			$query['meta_key']	= str_replace('meta_num_', '', $sort_by);
-		}elseif(strpos($sort_by, 'meta_') === 0){
-			$query['orderby']	= 'meta_value';
-			$query['meta_key']	= str_replace('meta_', '', $sort_by);
-		}else{
-			$query['orderby']	= $sort_by;
-		}
-		
-		$get_relateds		= apply_filters('revslider_get_related_posts', $query, $post_id);
-		$tag_related_posts	= get_posts($get_relateds);		
-		
-		if(count($tag_related_posts) < $max_posts){
-			$ignore = array();
-			foreach($tag_related_posts as $tag_related_post){
-				$ignore[] = $tag_related_post->ID;
-			}
-			$article_categories = get_the_category($post_id);
-			$category_string = '';
-			foreach($article_categories as $category) { 
-				$category_string .= $category->cat_ID . ',';
-			}
-			
-			$max	= $max_posts - count($tag_related_posts);
-			$excl	= implode(',', $ignore);
-			$query	= array(
-				'exclude'		=> $excl,
-				'numberposts'	=> $max,
-				'category'		=> $category_string
-			);
-			
-			if(strpos($sort_by, 'meta_num_') === 0){
-				$query['orderby']	= 'meta_value_num';
-				$query['meta_key']	= str_replace('meta_num_', '', $sort_by);
-			}else
-			if(strpos($sort_by, 'meta_') === 0){
-				$query['orderby']	= 'meta_value';
-				$query['meta_key']	= str_replace('meta_', '', $sort_by);
-			}else{
-				$query['orderby']	= $sort_by;
-			}
-			
-			$get_relateds		= apply_filters('revslider_get_related_posts', $query, $post_id);
-			$cat_related_posts	= get_posts($get_relateds);
-			$tag_related_posts	= $tag_related_posts + $cat_related_posts;
-		}
-		
-		foreach($tag_related_posts as $post){
-			$the_post = (method_exists($post, 'to_array')) ? $post->to_array() : (array)$post;
-			if($the_post['ID'] == $post_id) continue;
-			$my_posts[] = $the_post;
-		}
-		
-		return $my_posts;
-	}
-	
 	
 	/**
 	 * convert date to the date format that the user chose.
 	 * @before: RevSliderFunctionsWP::convertPostDate();
 	 */
 	public function convert_post_date($date, $with_time = false){
-		if(!empty($date)){
-			$date = ($with_time) ? date_i18n(get_option('date_format').' '.get_option('time_format'), strtotime($date)) : date_i18n(get_option('date_format'), strtotime($date));
-		}
-		return $date;
-	}
-	
-	
-	/**
-	 * get categories list, copy the code from default wp functions
-	 * @before: RevSliderFunctionsWP::getCategoriesHtmlList();
-	 */
-	public function get_categories_html($cat_ids, $tax = null,$post_id = ""){
-		global $wp_rewrite;
+		if(empty($date)) return $date;
 
-		if(!empty($post_id)) return get_the_category_list( ', ', null, $post_id );
-		
-		$categories	= $this->get_categories_by_id($cat_ids, $tax);
-		$errors		= $this->get_val($categories, 'errors');
-		$list		= '';
-		$rel 		= (is_object($wp_rewrite) && $wp_rewrite->using_permalinks()) ? 'rel="category tag"' : 'rel="category"';
-		
-		if(!empty($errors)){
-			foreach($errors as $error){
-				$err .= implode($error, ',');
-			}
-			$this->throw_error(__('retrieving categories error: '.esc_html($err)));
-		}
-		
-		$sep = false;
-		foreach($categories as $category){
-			if(is_object($category)){
-				$category = (array)$category;
-			}
-			
-			$link = get_category_link($category['term_id']);
-			$name = $category['name'];
-			$list.= ($sep == true) ? ',' : '';
-			$list.= (!empty($link)) ? '<a href="' . esc_url($link) . '" title="' . esc_attr(sprintf(__('View all posts in %s', 'revslider'), $category['name'])) .'" '. $rel .'>'. $name .'</a>' : $name;
-			$sep  = true;
-		}
-		
-		return $list;
-	}
-	
-	
-	/**
-	 * get categories by id's
-	 * @before: RevSliderFunctionsWP::getCategoriesByIDs();
-	 */
-	public function get_categories_by_id($ids, $tax = null){
-		if(empty($ids)) array();
-		
-		$string_ids = (is_string($ids)) ? $ids : implode(',', $ids);
-		$args		= array('include' => $string_ids);
-		if(!empty($tax)){
-			$args['taxonomy'] = (is_string($tax)) ? explode(',', $tax) : $tax;
-		}
-		$cats = get_categories($args);
-		
-		return (!empty($cats)) ? $this->class_to_array($cats) : $cats;
-	}
-	
-	
-	/**
-	 * get excerpt from post id
-	 * @before: RevSliderFunctionsWP::getExcerptById();
-	 */
-	public function get_excerpt_by_id($id, $limit = 55){
-
-		$post	 = get_post($id);
-		$excerpt = trim($post->post_excerpt);
-		$excerpt = (empty($excerpt)) ? $post->post_content : $excerpt;
-		$excerpt = strip_tags($excerpt, '<b><br><br/><i><strong><small>');
-		$excerpt = $this->get_text_intro($excerpt, $limit);
-
-		return apply_filters('revslider_getExcerptById', $excerpt, $post, $limit);
-	}
-	
-	
-	/**
-	 * get text intro, limit by number of words
-	 * @before: RevSliderFunctionsWP::getTextIntro();
-	 */
-	public function get_text_intro($text, $limit){
-		$array = explode(' ', $text, $limit);
-		
-		if(count($array) >= $limit){
-			array_pop($array);
-			$intro = implode(' ', $array);
-			$intro = trim($intro);
-			$intro = (!empty($intro)) ? '...' : '';
-		}else{
-			$intro = $text;
-		}
-		
-		return preg_replace('`\[[^\]]*\]`', '', $intro);
+		return ($with_time) ? date_i18n(get_option('date_format').' '.get_option('time_format'), strtotime($date)) : date_i18n(get_option('date_format'), strtotime($date));
 	}
 	
 	
@@ -1718,28 +1600,45 @@ class RevSliderFunctions extends RevSliderData {
 	 * @since: 5.0
 	 **/
 	public function get_biggest_device_setting($obj, $enabled_devices, $default = '########'){
-		
-		if($this->get_val($enabled_devices, 'd') === true && $this->get_val($obj, array('d', 'v')) != '') return $this->get_val($obj, array('d', 'v'));
+		$dv = $this->get_val($obj, array('d', 'v')); 
+		if($this->get_val($enabled_devices, 'd') === true && $dv != '') return $dv;
 		if($default !== '########') return $default;
-		if($this->get_val($enabled_devices, 'n') === true && $this->get_val($obj, array('n', 'v')) != '') return $this->get_val($obj, array('n', 'v'));
-		if($this->get_val($enabled_devices, 't') === true && $this->get_val($obj, array('t', 'v')) != '') return $this->get_val($obj, array('t', 'v'));
-		if($this->get_val($enabled_devices, 'm') === true && $this->get_val($obj, array('m', 'v')) != '') return $this->get_val($obj, array('m', 'v'));
+		$nv = $this->get_val($obj, array('n', 'v'));
+		if($this->get_val($enabled_devices, 'n') === true && $nv != '') return $nv;
+		$tv = $this->get_val($obj, array('t', 'v'));
+		if($this->get_val($enabled_devices, 't') === true && $tv != '') return $tv;
+		$mv = $this->get_val($obj, array('m', 'v'));
+		if($this->get_val($enabled_devices, 'm') === true && $mv != '') return $mv;
 		
 		return '';
 	}
-	
-	
+
 	/**
-	 * convert string to boolean
-	 * @before: RevSliderFunctions::strToBool();
-	 */
-	public function str_to_bool($str){
-		if(is_bool($str))	 return $str;
-		if(empty($str))		 return false;
-		if(is_numeric($str)) return $str != 0;
-		
-		$str = strtolower($str);
-		return ($str == 'true') ? true : false;
+	 * return biggest value of object depending on which devices are enabled
+	 * @since: 5.0
+	 **/
+	public function get_biggest_device_setting_v7($obj, $enabled_devices, $default = '########'){
+		$devices = array('ld', 'd', 'n', 't', 'm');
+		foreach($devices as $key => $device){
+			if($this->get_val($enabled_devices, $device) === true && !in_array($obj[$key], array('', '#a'))) return $obj[$key];
+		}
+
+		return ($default !== '########') ? $default : $obj[1];
+	}
+
+	/**
+	 * return biggest value of object depending on which devices are enabled
+	 * @since: 5.0
+	 **/
+	public function get_biggest_size_setting_v7($obj, $enabled_devices, $default = '########'){
+		$devices = array('ld', 'd', 'n', 't', 'm');
+		$biggest = false;
+
+		foreach($devices as $key => $device){
+			if($this->get_val($enabled_devices, $device) === true && !in_array($obj[$key], array('', '#a'))) if($biggest === false || intval($obj[$key]) > $biggest) $biggest = $obj[$key];
+		}
+
+		return ($biggest === false && $default !== '########') ? $default : intval($biggest);
 	}
 	
 	
@@ -1749,7 +1648,9 @@ class RevSliderFunctions extends RevSliderData {
 	 **/
 	public function normalize_device_settings($obj, $enabled_devices, $return = 'obj', $default = array(), $set_to_if = array(), $use = ','){ //array -> from -> to
 		/*d n t m*/
-		$obj = $this->fill_device_settings($obj);
+		$obj			= $this->fill_device_settings($obj);
+		$_def			= (!empty($default)) ? reset($default) : '########';
+		$inherit_size	= $this->get_biggest_device_setting($obj, $enabled_devices, $_def);
 		
 		if(!empty($set_to_if)){
 			foreach($obj as $device => $key){
@@ -1758,93 +1659,33 @@ class RevSliderFunctions extends RevSliderData {
 				}
 			}
 		}
-		
-		$_def = '########';
-		if(!empty($default)){
-			foreach($default as $_d){
-				$_def = $_d;
-				break;
-			}
-		}
-		
-		$inherit_size = $this->get_biggest_device_setting($obj, $enabled_devices, $_def);
-		if($enabled_devices['d'] === true){			
-			if($this->get_val($obj, array('d', 'v'), '') === ''){
-				$obj['d']['v'] = ($_def !== '########') ? $_def : $inherit_size;
-			}else{
-				$inherit_size = $obj['d']['v'];
-			}
-		}else{
-			$obj['d']['v'] = $inherit_size;
-		}
-		
-		if($enabled_devices['n'] === true){
-			if($this->get_val($obj, array('n', 'v'), '') === ''){
-				$obj['n']['v'] = ($_def !== '########') ? $_def : $inherit_size;
-			}else{
-				$inherit_size = $obj['n']['v'];
-			}
-		}else{
-			$obj['n']['v'] = $inherit_size;
-		}
-		
-		if($enabled_devices['t'] === true){
-			if($this->get_val($obj, array('t', 'v'), '') === ''){
-				$obj['t']['v'] = ($_def !== '########') ? $_def : $inherit_size;
-			}else{
-				$inherit_size = $obj['t']['v'];
-			}
-		}else{
-			$obj['t']['v'] = $inherit_size;
-		}
-		
-		if($enabled_devices['m'] === true){
-			if($this->get_val($obj, array('m', 'v'), '') === ''){
-				$obj['m']['v'] = ($_def !== '########') ? $_def : $inherit_size;
-			}else{
-				$inherit_size = $obj['m']['v'];
-			}
-		}else{
-			$obj['m']['v'] = $inherit_size;
-		}
-		
-		switch($return){
-			case 'obj':
-				//order according to: desktop, notebook, tablet, mobile
-				$new_obj = array();
-				$new_obj['d'] = $obj['d']['v'];
-				$new_obj['n'] = $obj['n']['v'];
-				$new_obj['t'] = $obj['t']['v'];
-				$new_obj['m'] = $obj['m']['v'];
-				
-				return $new_obj;
-			break;
-			case 'html-array':
-				$html_array = '';
-				if($obj['d']['v'] === $obj['n']['v'] && $obj['d']['v'] === $obj['m']['v'] && $obj['d']['v'] === $obj['t']['v']){
-					$html_array = $obj['d']['v'];
-				}else{
-					$html_array = @$obj['d']['v'];
-					$html_array .= $use.@$obj['n']['v'];
-					$html_array .= $use.@$obj['t']['v'];
-					$html_array .= $use.@$obj['m']['v'];
-				}
-				
-				if(!empty($default)){
 
-					//KRIKI CHANGE
-					foreach($default as $key => $value){
-						if((is_string($html_array) && $html_array == "".$value) || (!(is_string($html_array)) && $html_array == $value)){
-							$html_array = '';	
-							break;
-						}
-					}
-					/* ALTE ZEUG if(in_array($html_array, $default)){
-						$html_array = '';
-					}*/
+		$device_types = array('d', 'n', 't', 'm');
+		foreach($device_types as $device){
+			if($enabled_devices[$device] === true){
+				$value = $this->get_val($obj, [$device, 'v'], '');
+				if($value === ''){
+					$obj[$device]['v'] = ($_def !== '########') ? $_def : $inherit_size;
+				}else{
+					$inherit_size = $value;
 				}
-				return $html_array;
-			break;
+			}else{
+				$obj[$device]['v'] = $inherit_size;
+			}
+		}
+	
+		switch ($return) {
+			case 'obj':
+				return array(
+					'd' => $obj['d']['v'],
+					'n' => $obj['n']['v'],
+					't' => $obj['t']['v'],
+					'm' => $obj['m']['v']
+				);
+			case 'html-array':
+				$html_array = ($obj['d']['v'] === $obj['n']['v'] && $obj['d']['v'] === $obj['m']['v'] && $obj['d']['v'] === $obj['t']['v']) ? $obj['d']['v'] : implode($use, array_column($obj, 'v'));
+
+				return (!empty($default) && in_array($html_array, $default)) ? '' : $html_array;
 			case 'array':
 				$array = array();
 				if($obj['d']['v'] === $obj['n']['v'] && $obj['d']['v'] === $obj['m']['v'] && $obj['d']['v'] === $obj['t']['v']){
@@ -1864,12 +1705,10 @@ class RevSliderFunctions extends RevSliderData {
 				}
 				
 				return $array;
-			break;
 		}
-		
+	
 		return $obj;
 	}
-	
 	
 	/**
 	 * fill object with default values
@@ -1884,209 +1723,234 @@ class RevSliderFunctions extends RevSliderData {
 			foreach($push as $p){
 				$obj[$p] = array('v' => $t);
 			}
+			return $obj;
 		}
 		
+		$_obj = array();
 		foreach($push as $p){
-			if(!isset($obj[$p])){
-				$obj[$p] = array();
-			}
-			if(!isset($obj[$p]['v'])){
-				$obj[$p]['v'] = '';
-				$obj[$p]['u'] = '';
+			$_obj[$p] = (!isset($obj[$p])) ? array() : $obj[$p];
+			if(!isset($_obj[$p]['v'])){
+				$_obj[$p]['v'] = '';
+				$_obj[$p]['u'] = '';
 			}
 		}
 		
-		return $obj;
+		return $_obj;
 	}
-	
-	
+
 	/**
-	 * add missing px/% to value, do also for object and array
-	 * @since: 5.0
+	 * get the values for the given transition
 	 **/
-	public function add_missing_val($obj, $set_to = 'px'){
-		if(is_array($obj)){
-			foreach($obj as $key => $value){
-				if(strpos($value, $set_to) === false){
-					$obj[$key] = $value.$set_to;
+	public function get_slide_transition_values($transition, $base_transitions = array()){
+		if(empty($base_transitions)) $base_transitions = $this->get_base_transitions();
+		foreach($base_transitions as $t){
+			if(!is_array($t)) continue;
+			foreach($t as $_t){
+				if(!is_array($_t)) continue;
+				foreach($_t as $name => $values){
+					if($name !== $transition) continue;
+					
+					return $values;
 				}
-			}
-		}elseif(is_object($obj)){
-			foreach($obj as $key => $value){
-				if(is_object($value)){
-					if(isset($value->v)){
-						if(strpos($value->v, $set_to) === false){
-							$obj->$key->v = $value->v.$set_to;
-						}
-					}
-				}else{
-					if(strpos($value, $set_to) === false){
-						$obj->$key = $value.$set_to;
-					}
-				}
-			}
-		}else{
-			if(strpos($obj, $set_to) === false){
-				$obj .= $set_to;
 			}
 		}
-		
-		return $obj;
+		return array();
 	}
 	
-	/**
-	 * strip suffixes from number values for accurate comparisons
-	 * @since: 6.0
-	 */  
-	 public function strip_suffix_val($val){
-		if(!is_string($val)) return $val;
-		
-		$val = trim($val);
-		$len = strlen($val);
-		if($len < 2) return $val;
-		
-		$suffix = false;
-		$strips = array('ms', 'px', '%', 'deg');
-		
-		foreach($strips as $px){
-			$chars = strlen($px);
-			if($chars > $len) continue;
-			if(strpos($val, $px, $len - $chars) !== false){
-				$suffix = $chars;
-				break;
-			}
-		}
-		
-		if($suffix !== false){
-			$num = substr($val, 0, -$suffix);
-			if(is_numeric($num)) $val = $num;
-		}
-		
-		return $val;
-		
-	 }
 	
 	/**
-	 * strip suffixes from number values for accurate comparisons
-	 * @since: 6.0
-	 */  
-	public function strip_suffix($val){
-		if(is_object($val)) $val = (array)$val;
+	 * get a random slide transition for the given main and grp
+	 **/
+	public function get_random_slide_transition($main, $grp, $base_transitions = array()){
+		if(empty($base_transitions)) $base_transitions = $this->get_base_transitions();
 		
-		if(is_array($val)){
-			foreach($val as $key => $v){
-				if(is_array($v) || is_object($v)){
-					$val[$key] = $this->strip_suffix($v);
-				}else{
-					$val[$key] = $this->strip_suffix_val($v);
+		if(!is_array($grp) && !empty($grp)) $grp = explode(',', $grp);
+		if($grp === '') $grp = array();
+		
+		$items = array();
+		foreach($base_transitions as $m => $bt){
+			if(!is_string($m) || $m === 'random' || $m === 'custom' || ($main !== 'all' && $main !== $m)) continue;
+			foreach($bt as $g => $_bt){
+				if(is_array($_bt) && $g !== 'icon' && (empty($grp) || in_array($g, $grp))){
+					foreach($_bt as $e => $__bt){
+						$items[] = $e;
+					}
 				}
 			}
-		}else{
-			$val = $this->strip_suffix_val($val);
 		}
 		
-		return $val;
-	
+		$num = (!empty($items)) ? array_rand($items, 1) : false;
+		return ($num !== false) ? $items[$num] : '';
 	}
 	
+	
 	/**
-	 * Check if shortcodes exists in the content
-	 * @since: 5.0
-	 */  
-	public static function check_for_shortcodes($mid_content){
-		if($mid_content !== null){ 
-			if(has_shortcode($mid_content, 'gallery')){
-				
-				preg_match('/\[gallery.*ids=.(.*).\]/', $mid_content, $img_ids);
-				
-				if(isset($img_ids[1])){
-					if($img_ids[1] !== '') return explode(',', $img_ids[1]);
-				}
-			}
+	 * set the tp_google_font to current date, so that it will be redownloaded
+	 * @before: RevSliderOperations::deleteGoogleFonts();
+	 */
+	public function delete_google_fonts(){
+		update_option('tp_google_font', time());
+		update_option('tp_font_css', array());
+		update_option('tp-google-fonts-collect', array());
+	}
+	
+	
+	/**
+	 * Remove http:// and https://
+	 * @since: 6.0.0
+	 **/
+	public function remove_http($url, $special = 'auto'){
+		switch($special){
+			case 'http':
+				$url = str_replace('https://', 'http://', $url);
+				if(strpos($url, 'http://') === false) $url = 'http://'.$url;
+			break;
+			case 'https':
+				$url = str_replace('http://', 'https://', $url);
+				if(strpos($url, 'https://') === false) $url = 'https://'.$url;
+			break;
+			case 'keep': //do nothing
+			break;
+			case 'auto':
+			default:
+				$url = str_replace(array('http://', 'https://'), '//' , $url);
+			break;
 		}
+		return $url;
+	}
+
+	/**
+	 * set the memory limit to at least 256MB if possible
+	 * @since: 6.1.6
+	 **/
+	public static function set_memory_limit(){
+		wp_raise_memory_limit('revslider');
+	}
+	
+	
+	/**
+	 * Check if page is edited in Gutenberg
+	 */
+	public function _is_gutenberg_page(){
+		if(isset($_GET['action']) && $_GET['action'] == 'elementor') return false; // Elementor Page Edit
+		if(isset($_GET['vc_action']) && $_GET['vc_action'] == 'vc_inline') return false; // WP Bakery Front Edit
+		if(function_exists('is_gutenberg_page') && is_gutenberg_page()) return true; // Gutenberg Edit with WP < 5
+		$current_screen = get_current_screen();
+		if(!empty($current_screen) && method_exists($current_screen, 'is_block_editor') && $current_screen->is_block_editor()) return true; //Gutenberg Edit with WP >= 5
+		
 		return false;
 	}
 	
 	
+	
 	/**
-	 * return the responsive sizes
-	 * @since: 5.0
+	 * get custom transitions
 	 **/
-	 public function get_responsive_size($slider){
-		$global = $this->get_global_settings();
+	public function get_custom_slidetransitions(){
+		$custom = get_option('revslider_template_slidetransitions', array());
 		
-		$csn = $slider->slider->get_param(array('size', 'custom', 'n'), false);
-		$cst = $slider->slider->get_param(array('size', 'custom', 't'), false);
-		$csi = $slider->slider->get_param(array('size', 'custom', 'm'), false);
-		
-		$w = $slider->slider->get_param(array('size', 'width', 'd'), 1240);
-		$h = $slider->slider->get_param(array('size', 'height', 'd'), 1240);
-		$r = $this->get_val($global, array('size', 'desktop'), 1240);
-		$c = $this->slider->get_param(array('size', 'editorCache', 'd'), false);
-		
-		if($csn == true || $cst == true || $csi == true){
-			$d = $w;
-			$w .= ',';
-			$w .= ($csn == true) ? $slider->slider->get_param(array('size', 'width', 'n'), 1024) : $d;
-			$d = ($csn == true) ? $slider->slider->get_param(array('size', 'width', 'n'), 1024) : $d;
-			$w .= ',';
-			$w .= ($cst == true) ? $slider->slider->get_param(array('size', 'width', 't'), 778) : $d;
-			$d = ($cst == true) ? $slider->slider->get_param(array('size', 'width', 't'), 778) : $d;
-			$w .= ',';
-			$w .= ($csi == true) ? $slider->slider->get_param(array('size', 'width', 'm'), 480) : $d;
-			$d = ($csi == true) ? $slider->slider->get_param(array('size', 'width', 'm'), 480) : $d;
-			
-			$d = $h;
-			$h .= ',';
-			$h .= ($csn == true) ? $slider->slider->get_param(array('size', 'height', 'n'), 1024) : $d;
-			$d = ($csn == true) ? $slider->slider->get_param(array('size', 'height', 'n'), 1024) : $d;
-			$h .= ',';
-			$h .= ($cst == true) ? $slider->slider->get_param(array('size', 'height', 't'), 778) : $d;
-			$d = ($cst == true) ? $slider->slider->get_param(array('size', 'height', 't'), 778) : $d;
-			$h .= ',';
-			$h .= ($csi == true) ? $slider->slider->get_param(array('size', 'height', 'm'), 480) : $d;
-			$d = ($csi == true) ? $slider->slider->get_param(array('size', 'height', 'm'), 480) : $d;
-			
-			$d = $r;
-			$r .= ',';
-			$r .= ($csn == true) ? $this->get_val($global, array('size', 'notebook'), 1024) : $d;
-			$d = ($csn == true) ? $this->get_val($global, array('size', 'notebook'), 1024) : $d;
-			$r.= ',';
-			$r .= ($cst == true) ? $this->get_val($global, array('size', 'tablet'), 778) : $d;
-			$d = ($cst == true) ? $this->get_val($global, array('size', 'tablet'), 778) : $d;
-			$r.= ',';
-			$r .= ($csi == true) ? $this->get_val($global, array('size', 'mobile'), 480) : $d;
-			$d = ($csi == true) ? $this->get_val($global, array('size', 'mobile'), 480) : $d;
-			
-			if($c !== false){
-				$d = $c;
-				$c .= ',';
-				$c .= ($csn == true) ? $slider->slider->get_param(array('size', 'editorCache', 'n'), 1024) : $d;
-				$d = ($csn == true) ? $slider->slider->get_param(array('size', 'editorCache', 'n'), 1024) : $d;
-				$c .= ',';
-				$c .= ($cst == true) ? $slider->slider->get_param(array('size', 'editorCache', 't'), 778) : $d;
-				$d = ($cst == true) ? $slider->slider->get_param(array('size', 'editorCache', 't'), 778) : $d;
-				$c .= ',';
-				$c .= ($csi == true) ? $slider->slider->get_param(array('size', 'editorCache', 'm'), 480) : $d;
-				$d = ($csi == true) ? $slider->slider->get_param(array('size', 'editorCache', 'm'), 480) : $d;
-			}
-		}else{
-			$r .= ',';
-			$r .= $this->get_val($global, array('size', 'notebook'), 1024);
-			$r .= ',';
-			$r .= $this->get_val($global, array('size', 'tablet'), 778);
-			$r .= ',';
-			$r .= $this->get_val($global, array('size', 'mobile'), 480);
-		}
-		
-		return array(
-			'level' => str_replace('px', '', $r),
-			'height' => str_replace('px', '', $h),
-			'width' => str_replace('px', '', $w),
-			'cacheSize' => str_replace('px', '', $c)
-		);
+		return apply_filters('rs_get_custom_slidetransitions', $custom);
 	}
 	
+	
+	/**
+	 * get custom transitions
+	 **/
+	public function save_custom_slidetransitions($template){
+		$custom = $this->get_custom_slidetransitions();
+		
+		//empty custom templates?
+		if(empty($custom)){
+			$custom = array();
+			$new_id = 1;
+		}else{
+			$id = $this->get_val($template, 'id', 0);
+			//custom templates exist
+			$new_id = ($id > 0) ? $id : max(array_keys($custom)) + 1;
+		}
+		
+		//update or insert template
+		$custom[$new_id]['title']	= $template['obj']['title'];
+		$custom[$new_id]['preset']	= $template['obj']['preset'];
+		//return the ID the template was saved with
+		return (update_option('revslider_template_slidetransitions', $custom)) ? $new_id : false;
+	}
+	
+	
+	/**
+	 * get custom transitions
+	 **/
+	public function delete_custom_slidetransitions($template){
+		//load templates array
+		$custom = $this->get_custom_slidetransitions();
+		
+		$id = intval($this->get_val($template, 'id', 0));
+		//custom template exist
+		if($id > 0 && isset($custom[$id])){
+			//delete given ID
+			unset($custom[$id]);
+			//save the resulting templates array again
+			if(update_option('revslider_template_slidetransitions', $custom)) return true;	
+		}
+		
+		return false;
+	}
+	/**
+	 * push the matieral icons css into the global variable
+	 **/
+	public function add_material_icons(){
+		global $SR_GLOBALS;
+		if($this->get_val($SR_GLOBALS, array('icon_sets', 'Materialicons', 'css'), false) !== false) return '';
+
+		$gs = $this->get_global_settings();
+
+		if($this->get_val($gs, 'fontdownload', 'off') === 'off'){
+			$font_face = "@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;  
+  src: url(//fonts.gstatic.com/s/materialicons/v41/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2) format('woff2');
+}";
+		}else{
+			$font_face = "@font-face {
+font-family: 'Material Icons';
+font-style: normal;
+font-weight: 400;  
+
+src: local('Material Icons'),
+local('MaterialIcons-Regular'),
+  url(".RS_PLUGIN_URL_CLEAN."sr6/assets/fonts/material/MaterialIcons-Regular.woff2) format('woff2'),
+  url(".RS_PLUGIN_URL_CLEAN."sr6/assets/fonts/material/MaterialIcons-Regular.woff) format('woff'),  
+url(".RS_PLUGIN_URL_CLEAN."sr6/assets/fonts/material/MaterialIcons-Regular.ttf) format('truetype');
+}";
+		}
+
+		$this->set_val($SR_GLOBALS, array('icon_sets', 'Materialicons', 'css'), "/* 
+ICON SET 
+*/
+".$font_face."
+
+rs-module .material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+	font-size: inherit;
+  display: inline-block;  
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  vertical-align: top;
+  line-height: inherit;
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+}");
+	}
 	
 	/**
 	 * get the current page id
@@ -2104,417 +1968,560 @@ class RevSliderFunctions extends RevSliderData {
 		
 		return $id;
 	}
-	
-	
+
 	/**
-	 * parse animation params
-	 * 5.0.5: added (R) for reverse
-	 * @before: RevSliderOperations::parseCustomAnimationByArray();
-	 */
-	public function parse_custom_animation_by_array($layer, $frame_nr = 0, $type = 'chars'){
-		$ret = '';
-		
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rx'), false) == true)						? '(R)' : ''; //movex reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'x'), ''), array('', 'inherit')))	? 'x:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'x'), '').$reverse.';' : ''; //movex
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'ry'), false) == true)						? '(R)' : ''; //movey reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'y')), array('', 'inherit')))		? 'y:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'y')).$reverse.';' : ''; //movey
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rz'), false) == true)						? '(R)' : ''; //movey reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'z')), array('', 'inherit')))		? 'z:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'z')).$reverse.';' : ''; //movez
-
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rrotationX')) == true)							? '(R)' : ''; //rotationx reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rotationX')), array('', 'inherit')))	? 'rX:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rotationX')).$reverse.';' : ''; //rotationx
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rrotationY')) == true)							? '(R)' : ''; //rotationy reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rotationY')), array('', 'inherit')))	? 'rY:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rotationY')).$reverse.';' : ''; //rotationy
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rrotationZ')) == true)							? '(R)' : ''; //rotationz reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rotationZ')), array('', 'inherit')))	? 'rZ:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rotationZ')).$reverse.';' : ''; //rotationz
-
-		if(!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'scaleX', '')), array('', 'inherit'))){ //scalex
-			$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rscaleX')) == true) ? '(R)' : ''; //scalex reverse
-			$ret	.= 'sX:';
-			$ret	.= ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'scaleX')) == 0) ? 0 : $this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'scaleX'));
-			$ret	.= $reverse.';';
-		}
-		if(!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'scaleY')), array('', 'inherit'))){ //scaley
-			$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rscaleY')) == true) ? '(R)' : ''; //scaley reverse
-			$ret	.= 'sY:';
-			$ret	.= ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'scaleY')) == 0) ? 0 : $this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'scaleY'));
-			$ret	.= $reverse.';';
-		}
-		
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rskewX', false)) == true)					? '(R)' : ''; //skewx reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'skewX')), array('', 'inherit')))	? 'skX:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'skewX')).$reverse.';' : ''; //skewx
-		$reverse = ($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'rskewY', false)) == true)					? '(R)' : ''; //skewy reverse
-		$ret	.= (!in_array($this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'skewY')), array('', 'inherit')))	? 'skY:'.$this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'skewY')).$reverse.';' : ''; //skewy
-
-		$opacity = $this->get_val($layer, array('timeline', 'frames', 'frame_'.$frame_nr, $type, 'opacity'));
-		if(!in_array($opacity, array('', 'inherit'))){ //captionopacity
-			$ret .= 'opacity:';
-			$opa  = (intval($opacity) > 1) ? $opacity / 100 : $opacity;
-			$ret .= $opa.';';
-		}
-		
-		return $ret;
-	}
-	
-	
-	/**
-	 * change hex to rgba
-	 */
-    public function hex2rgba($hex, $transparency = false, $raw = false, $do_rgb = false){
-        if($transparency !== false){
-			$transparency = ($transparency > 0) ? number_format(($transparency / 100), 2, '.', '') : 0;
-        }else{
-            $transparency = 1;
-        }
-
-        $hex = str_replace('#', '', $hex);
-		
-        if(strlen($hex) == 3){
-            $r = hexdec(substr($hex,0,1).substr($hex,0,1));
-            $g = hexdec(substr($hex,1,1).substr($hex,1,1));
-            $b = hexdec(substr($hex,2,1).substr($hex,2,1));
-        }elseif($this->is_rgb($hex)){
-			return $hex;
-		}else{
-            $r = hexdec(substr($hex,0,2));
-            $g = hexdec(substr($hex,2,2));
-            $b = hexdec(substr($hex,4,2));
-        }
-		
-		$ret = ($do_rgb) ? $r.', '.$g.', '.$b : $r.', '.$g.', '.$b.', '.$transparency;
-		
-		return ($raw) ? $ret : 'rgba('.$ret.')';
-    }
-	
-	
-	/**
-	 * Activate the Plugin through the ThemePunch Servers
-	 * @before: RevSliderOperations::checkPurchaseVerification();
+	 * this will return the exact alias of the rev_slider modules on given posts/pages
 	 **/
-	public function activate_plugin($code){
-		$rslb = new RevSliderLoadBalancer();
-		$data = array(
-			'code'		=> urlencode($code),
-			'version'	=> urlencode(RS_REVISION),
-			'product'	=> urlencode(RS_PLUGIN_SLUG)
-		);
-		
-		$response	  = $rslb->call_url('activate.php', $data, 'updates');
-		$version_info = wp_remote_retrieve_body($response);
-		
-		if(is_wp_error($version_info)){
-			return false;
-		}
-		
-		if($version_info == 'valid'){
-			update_option('revslider-valid', 'true');
-			update_option('revslider-code', $code);
-			return true;
-		}elseif($version_info == 'exist'){
-			return 'exist';
-		}elseif($version_info == 'banned'){
-			return 'banned';
-		}
-		
-		return false;
-	}
-	
-	
-	/**
-	 * Deactivate the Plugin through the ThemePunch Servers
-	 * @before: RevSliderOperations::doPurchaseDeactivation();
-	 **/
-	public function deactivate_plugin(){
-		$rslb = new RevSliderLoadBalancer();
-		$code = get_option('revslider-code', '');
-		$data = array(
-			'code'		=> urlencode($code),
-			'product'	=> urlencode(RS_PLUGIN_SLUG)
-		);
-		$res = $rslb->call_url('deactivate.php', $data, 'updates');
-		$vi	 = wp_remote_retrieve_body($res);
-		
-		if(is_wp_error($vi)){
-			return false;
-		}
+	public function get_shortcode_from_page($ids){
+		$_shortcodes = array();
+		$ids		 = (!is_array($ids)) ? (array)$ids : $ids;
 
-		if($vi == 'valid'){
-			update_option('revslider-valid', 'false');
-			update_option('revslider-code', '');
-			return true;
+		foreach($ids as $id){
+			$post = get_post($id);
+			$sc = array();
+			if(is_a($post, 'WP_Post') && (has_shortcode($post->post_content, 'rev_slider') || has_shortcode($post->post_content, 'sr7'))){
+				preg_match_all('/\[sr7.*alias=.(.*)"\]/', $post->post_content, $shortcodes);
+				preg_match_all('/\[rev_slider.*alias=.(.*)"\]/', $post->post_content, $shortcodesold);
+				if(isset($shortcodes[1]) && $shortcodes[1] !== '') $sc = $shortcodes[1];
+				if(isset($shortcodesold[1]) && $shortcodesold[1] !== '') $sc = array_merge($sc, $shortcodesold[1]);
+				
+				if(!empty($sc)){
+					foreach($sc as $k => $s){
+						if(strpos($s, '"') !== false) $s = $this->get_val(explode('"', $s), 0);
+						if(!in_array($s, $_shortcodes)) $_shortcodes[] = $s;
+					}
+				}
+			}
 		}
 		
-		return false;
+		return $_shortcodes;
+	}
+
+	/**
+	 * open and checks a zip file for filetypes
+	 **/
+	public function check_bad_files($zip_file, $extensions_allowed = false){
+		global $SR_GLOBALS;
+		if(class_exists('ZipArchive')){
+			$zip = new ZipArchive;
+			$success = $zip->open($zip_file);
+			
+			if($success !== true) $this->throw_error(__("Can't open zip file", 'revslider'));
+
+			for($i = 0; $i < $zip->numFiles; $i++){
+				$path_info = pathinfo($zip->getNameIndex($i));
+				if(!isset($path_info['extension'])) continue;
+			
+				$pi = strtolower($path_info['extension']);
+				if($extensions_allowed !== false){
+					if(!in_array($pi, $extensions_allowed)) $this->throw_error(__("zip file contains illegal files", 'revslider'));
+				}else{
+					if(in_array($pi, $SR_GLOBALS['bad_extensions'])) $this->throw_error(__("zip file contains illegal files", 'revslider'));
+				}
+			}
+		}else{ //fallback to pclzip
+			require_once(ABSPATH . 'wp-admin/includes/class-pclzip.php');
+			
+			$pclzip = new PclZip($zip_file);
+			
+			$content = $pclzip->listContent();
+			if(is_array($content) && !empty($content)){
+				foreach($content as $file){
+					if(!isset($file['filename'])) continue;
+
+					$path_info = pathinfo($file['filename']);
+					if(!isset($path_info['extension'])) continue;
+
+					$pi = strtolower($path_info['extension']);
+					if($extensions_allowed !== false){
+						if(!in_array($pi, $extensions_allowed)) $this->throw_error(__("zip file contains illegal files", 'revslider'));
+					}else{
+						if(in_array($pi, $SR_GLOBALS['bad_extensions'])) $this->throw_error(__("zip file contains illegal files", 'revslider'));
+					}
+				}
+			}
+		}
 	}
 	
-	
 	/**
-	 * Create a temporary fake page/post
+	 * generate missing attachement metadata for images
 	 * @since: 6.0
 	 **/
-	public function create_fake_post($content, $title = 'Slider Revolution'){
-		$post				 = new stdClass();
-		$post->ID			 = -1;
-		$post->post_author	 = get_current_user_id();
-		$post->post_date	 = current_time('mysql');
-		$post->post_date_gmt = current_time('mysql', 1);
-		$post->post_title	 = $title;
-		$post->post_content	 = $content;
-		$post->post_status	 = 'publish';
-		$post->comment_status = 'closed';
-		$post->ping_status	 = 'closed';
-		$post->post_name	 = 'rs-fake-page-' . rand(1, 99999); //append random number to avoid clash
-		$post->post_type	 = 'page';
-		$post->filter		 = 'raw'; //important
+	public function generate_attachment_metadata(){
+		$rs_meta_create = get_option('rs_image_meta_todo', array());
 		
-		//$post->post_meta		= new stdClass();
-		//$post->post_meta->_wp_page_template= '../public/views/revslider-page-template.php';
-		
-		//Convert to WP_Post object
-		$wp_post = new WP_Post($post);
-		//Add the fake post to the cache
-		wp_cache_add(-1, $wp_post, 'posts');
-		
-		global $wp, $wp_query;
+		if(!empty($rs_meta_create)){
+			foreach($rs_meta_create as $attach_id => $save_dir){
+				unset($rs_meta_create[$attach_id]);
+				update_option('rs_image_meta_todo', $rs_meta_create);
 
-		// Update the main query
-		$wp_query->queried_object_id = -1;
-		$wp_query->post				 = $wp_post;
-		$wp_query->posts			 = array($wp_post);
-		$wp_query->queried_object	 = $wp_post;
-		$wp_query->found_posts		 = 1;
-		$wp_query->post_count		 = 1;
-		$wp_query->max_num_pages	 = 1;
-		$wp_query->is_page			 = true;
-		$wp_query->is_singular		 = true;
-		$wp_query->is_single		 = false;
-		$wp_query->is_attachment	 = false;
-		$wp_query->is_archive		 = false;
-		$wp_query->is_category		 = false;
-		$wp_query->is_tag			 = false;
-		$wp_query->is_tax			 = false;
-		$wp_query->is_author		 = false;
-		$wp_query->is_date			 = false;
-		$wp_query->is_year			 = false;
-		$wp_query->is_month			 = false;
-		$wp_query->is_day			 = false;
-		$wp_query->is_time			 = false;
-		$wp_query->is_search		 = false;
-		$wp_query->is_feed			 = false;
-		$wp_query->is_comment_feed	 = false;
-		$wp_query->is_trackback		 = false;
-		$wp_query->is_home			 = false;
-		$wp_query->is_embed			 = false;
-		$wp_query->is_404			 = false;
-		$wp_query->is_paged			 = false;
-		$wp_query->is_admin			 = false;
-		$wp_query->is_preview		 = false;
-		$wp_query->is_robots		 = false; 
-		$wp_query->is_posts_page	 = false;
-		$wp_query->is_post_type_archive	= false;
-		
-		//Update globals
-		$GLOBALS['wp_query'] = $wp_query;
-		$wp->register_globals();
-		
-		return $wp_post;
-	}
-	
-	
-	/**
-	 * returns an object of current system values
-	 **/
-	public function get_system_requirements(){
-		$dir	= wp_upload_dir();
-		$basedir = $this->get_val($dir, 'basedir').'/';
-		$ml		= ini_get('memory_limit');
-		$mlb	= wp_convert_hr_to_bytes($ml);
-		$umf	= ini_get('upload_max_filesize');
-		$umfb	= wp_convert_hr_to_bytes($umf);
-		$pms	= ini_get('post_max_size');
-		$pmsb	= wp_convert_hr_to_bytes($pms);
-		
-		
-		$mlg  = ($mlb >= 268435456) ? true : false;
-		$umfg = ($umfb >= 33554432) ? true : false;
-		$pmsg = ($pmsb >= 33554432) ? true : false;
-		
-		return array(
-			'memory_limit' => array(
-				'has' => size_format($mlb),
-				'min' => size_format(268435456),
-				'good'=> $mlg
-			),
-			'upload_max_filesize' => array(
-				'has' => size_format($umfb),
-				'min' => size_format(33554432),
-				'good'=> $umfg
-			),
-			'post_max_size' => array(
-				'has' => size_format($pmsb),
-				'min' => size_format(33554432),
-				'good'=> $pmsg
-			),
-			'upload_folder_writable'	=> wp_is_writable($basedir),
-			'object_library_writable'	=> wp_image_editor_supports(array('methods' => array('resize', 'save'))),
-			'server_connect'			=> get_option('revslider-connection', false),
-		);
+				if($attach_data = @wp_generate_attachment_metadata($attach_id, $save_dir)){
+					@wp_update_attachment_metadata($attach_id, $attach_data);
+				}
+			}
+		}
 	}
 	
 	/**
-	 * set the rs_google_font to current date, so that it will be redownloaded
-	 * @before: RevSliderOperations::deleteGoogleFonts();
+	 * set the font clean for import
+	 * @before: RevSliderOperations::setCleanFontImport()
 	 */
-	public function delete_google_fonts(){
-		update_option('rs_google_font', time());
+	public function set_clean_font_import($font, $class = '', $url = '', $variants = array(), $subsets = array()){
+		global $SR_GLOBALS;
+		
+		if(!isset($SR_GLOBALS['fonts'])) $SR_GLOBALS['fonts'] = array('queue' => array(), 'loaded' => array()); //if this is called without revslider.php beeing loaded
+		
+		if(!empty($variants) || !empty($subsets)){
+			if(!isset($SR_GLOBALS['fonts']['queue'][$font])) $SR_GLOBALS['fonts']['queue'][$font] = array();
+			if(!isset($SR_GLOBALS['fonts']['queue'][$font]['variants'])) $SR_GLOBALS['fonts']['queue'][$font]['variants'] = array();
+			if(!isset($SR_GLOBALS['fonts']['queue'][$font]['subsets'])) $SR_GLOBALS['fonts']['queue'][$font]['subsets'] = array();
+			
+			if(!empty($variants)){
+				foreach($variants as $k => $v){
+					//check if the variant is already in loaded
+					if(!in_array($v, $SR_GLOBALS['fonts']['queue'][$font]['variants'], true)){
+						$SR_GLOBALS['fonts']['queue'][$font]['variants'][] = $v;
+					}else{ //already included somewhere, so do not call it anymore
+						unset($variants[$k]);
+					}
+				}
+			}
+			if(!empty($subsets)){
+				foreach($subsets as $k => $v){
+					if(!in_array($v, $SR_GLOBALS['fonts']['queue'][$font]['subsets'], true)){
+						$SR_GLOBALS['fonts']['queue'][$font]['subsets'][] = $v;
+					}else{ //already included somewhere, so do not call it anymore
+						unset($subsets[$k]);
+					}
+				}
+			}
+			if($url !== ''){
+				$SR_GLOBALS['fonts']['queue'][$font]['url'] = $url;
+			}
+		}
 	}
-	
+
 	
 	/**
-	 * Check if it is an empty array or object
-	 * @since: 6.0.0
+	 * get categories list, copy the code from default wp functions
+	 * @before: RevSliderFunctionsWP::getCategoriesHtmlList();
+	 */
+	public function get_categories_html($cat_ids, $tax = null, $post_id = '', $full = false){
+		global $wp_rewrite;
+
+		if(!empty($post_id) && $full === false) return get_the_category_list(', ', null, $post_id);
+		
+		$categories	= ($full === true && !empty($cat_ids)) ? $cat_ids :  $this->get_categories_by_id($cat_ids, $tax);
+		$errors		= $this->get_val($categories, 'errors');
+		$list		= array();
+		$err		= '';
+		$rel 		= (is_object($wp_rewrite) && $wp_rewrite->using_permalinks()) ? 'rel="category tag"' : 'rel="category"';
+		
+		if(!empty($errors)){
+			foreach($errors as $error){
+				$err .= implode(',', $error);
+			}
+			$this->throw_error(__('retrieving categories error: '.esc_html($err)));
+		}
+		
+		foreach($categories as $category){
+			$link = get_category_link($this->get_val($category, 'term_id'));
+			$name = $this->get_val($category, 'name');
+
+			$list[] = (!empty($link)) ? '<a href="' . esc_url($link) . '" title="' . esc_attr(sprintf(__('View all posts in %s', 'revslider'), $name)) .'" '. $rel .'>'. $name .'</a>' : $name;
+		}
+
+		return (!empty($list)) ? implode(', ', $list) : '';
+	}
+
+	/**
+	 * get text intro, limit by number of words
+	 * @before: RevSliderFunctionsWP::getTextIntro();
+	 */
+	public function get_text_intro($text, $limit){
+		$limit++;
+		$array = explode(' ', $text, $limit);
+		
+		if(count($array) >= $limit){
+			array_pop($array);
+			$intro = implode(' ', $array);
+			$intro = trim($intro);
+			$intro .= (!empty($intro)) ? '...' : '';
+		}else{
+			$intro = $text;
+		}
+		
+		return preg_replace('`\[[^\]]*\]`', '', $intro);
+	}
+	
+	/**
+	 * get text intro, limit by number of words
+	 * @before: RevSliderFunctionsWP::getTextIntro();
+	 */
+	public function get_text_intro_chars($text, $limit){
+		$intro = substr($text, 0, $limit);
+		return preg_replace('`\[[^\]]*\]`', '', $intro);
+	}
+
+	/**
+	 * convert assoc array to array
+	 */
+	public static function assoc_to_array($assoc){
+		return array_values($assoc ?? []);
+	}
+
+	/**
+	 * filter non-allowed chars for html classes / IDs
+	 * 
+	 * @param array|string $classes
+	 * @return array|string
+	 */
+	public function filter_class_name($classes)
+	{
+		$single = false;
+		if(!is_array($classes)) {
+			$classes = [$classes];
+			$single = true;
+		}
+
+		$classes = array_map(function($className) {
+			return preg_replace('/[^a-zA-Z \d_-]/', '', $className);
+		}, $classes);
+
+		return $single ? $classes[0] : $classes;
+	}
+
+	public function truncate_v7(){
+		global $wpdb;
+		$wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . RevSliderFront::TABLE_SLIDER."7");
+		$wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . RevSliderFront::TABLE_SLIDES."7");
+		$this->reset_v7_slide_id_map();
+		$this->reset_v7_migration_failed_map();
+		$upd = new RevSliderPluginUpdate();
+		$upd->move_folder();
+		//$wpdb->query("TRUNCATE TABLE " . $wpdb->prefix . RevSliderFront::TABLE_STATIC_SLIDES."7");
+	}
+
+	
+	/**
+	 * get a map of slide ids for v7 slides
+	 * we need this in the process to migrate v7 slides
+	 * as we merge normal and static slides here
 	 **/
-	public function isEmptyObject($vars){ //object	
-		//$vars = get_object_vars($object);
-		if(empty($vars) && $vars !== 0){ // && $vars !== false
-		//if(!is_array($vars) && !is_object($vars) && trim($vars) === '' && $vars !== 0){
+	public function get_v7_slider_map($v6_slider_id = false, $v6_slide_id = false){
+		$slide_map 	= get_option('sliderrevolution-v7-slide-map', array());
+		$update		= false;
+
+		if(empty($slide_map)) $update = true;
+		//if($v6_slider_id !== false && intval($v6_slider_id) === 0) return;
+		if($v6_slider_id !== false && !isset($slide_map[$v6_slider_id])) $update = true;
+		if($v6_slide_id !== false){
+			if($this->get_v7_slide_map($v6_slide_id) === false) $update = true;
+		}
+
+		if($update === true) $slide_map = $this->update_v7_slide_id_map();
+
+		if($v6_slider_id === false && $v6_slide_id === false) return $slide_map;
+		if(empty($slide_map)) return false;
+
+		if($v6_slider_id !== false){
+			return (!isset($slide_map[$v6_slider_id])) ? false : $slide_map[$v6_slider_id];
+		}else{
+			$v7_slide_id = $this->get_v7_slide_map($v6_slide_id);
+			if($v7_slide_id !== false) return $v7_slide_id;
+		}
+
+		return false;
+	}
+
+	/**
+	 * retrieves the v7 slide id by a v6 slide id from the slide map
+	 **/
+	public function get_v7_slide_map($v6_slide_id){
+		$slide_map 	= get_option('sliderrevolution-v7-slide-map', array());
+		if(empty($slide_map)) return false;
+
+		$_type = (strpos($v6_slide_id, 'static_') !== false) ? 's' : 'n';
+		$v6_slide_id = str_replace('static_', '', $v6_slide_id);
+		foreach($slide_map as $v6_sid => $type){
+			foreach($type as $t => $v){
+				if($t !== $_type) continue;
+				if(isset($v[$v6_slide_id])) return $v[$v6_slide_id];
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * this will remove a v6 slider in total or a v6 slide id from the map
+	 **/
+	public function remove_v7_slider_from_map($v6_slider_id = false, $v6_slide_id = false){
+		$slide_map = get_option('sliderrevolution-v7-slide-map', array());
+		if(empty($slide_map)) return true;
+
+		if($v6_slider_id !== false){
+			if(!isset($slide_map[$v6_slider_id])) return true;
+
+			unset($slide_map[$v6_slider_id]);
+			update_option('sliderrevolution-v7-slide-map', $slide_map);
+
 			return true;
 		}else{
-			$vars = (array)$vars;
-			foreach($vars as $var){
-				if(!is_array($var)){ //!is_object($var) && 
-					return false;
-				}else{
-					return $this->isEmptyObject($var);
+			$_type = (strpos('static_', $v6_slide_id) !== false) ? 's' : 'n';
+			$v6_slide_id = str_replace('static_', '', $v6_slide_id);
+			foreach($slide_map as $v6_sid => $type){
+				foreach($type as $t => $v){
+					if($t !== $_type) continue;
+					if(!isset($v[$v6_slide_id])) continue;
+
+					unset($slide_map[$v6_sid][$_type][$v6_slide_id]);
+					update_option('sliderrevolution-v7-slide-map', $slide_map);
+
+					return true;
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Remove http:// and https://
-	 * @since: 6.0.0
-	 **/
-	public function remove_http($url){
-		return str_replace(array('http://', 'https://'), '//' , $url);
-	}
-	
-	/**
-	 * check the current post for the existence of a short code
-	 * @before: hasShortcode()
-	 */  
-	public function has_shortcode($shortcode = ''){  
-		$found = false; 
-		
-		if(empty($shortcode)) return false;
-		if(!is_singular()) return false;
-		
-		$post = get_post(get_the_ID());  
-		if(stripos($post->post_content, '[' . $shortcode) !== false) $found = true;  
-		
-		return $found;  
+
+		return false;
 	}
 
-	
 	/**
-	 * shortden values for output
-	 * @since: 6.0.0
+	 * reset the slide map, by deleting all entries in it
 	 **/
-	public function shorten($s, $f, $t){
-		return str_replace($f, $t, $s);
+	public function reset_v7_slide_id_map(){
+		$slide_map = array();
+		update_option('sliderrevolution-v7-slide-map', $slide_map);
 	}
-	
-	
+
 	/**
-	 * perform checks to see how to write a JavaScript variable
+	 * get the migration failed map
 	 **/
-	public function write_js_var($v, $pp = '"'){
-		if(is_bool($v)) $v = ($v) ? 'true' : 'false';
-		return (is_numeric($v) || substr($v, 0, 1) === '[' || in_array($v, array('true', 'false'))) ? $v : $pp.$v.$pp;
+	public function get_v7_migration_failed_map(){
+		return get_option('sliderrevolution-v7-migration-failed-map', array());
 	}
 	
 	/**
-	 * add "a" tags to links within a text
-	 * @since: 5.0
-	 * @before: RevSliderBase::add_wrap_around_url()
-	 */
-	public function add_wrap_around_url($text){
-		$reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
-		// Check if there is a url in the text
-		if(preg_match($reg_exUrl, $text, $url)){
-			// make the urls hyper links
-			return preg_replace($reg_exUrl, '<a href="'.$url[0].'" rel="nofollow" target="_blank">'.$url[0].'</a>', $text);
+	 * create/update the map of slide ids for v7 slides
+	 **/
+	public function update_v7_migration_failed_map($sid, $text){
+		$sid = intval($sid);
+		if($sid === 0) return;
+
+		$mig_failed = $this->get_v7_migration_failed_map();
+		$mig_failed[$sid] = substr($text, 0, 300);
+
+		update_option('sliderrevolution-v7-migration-failed-map', $mig_failed);
+	}
+
+	/**
+	 * reset the migration failed map, by deleting all entries in it
+	 **/
+	public function reset_v7_migration_failed_map(){
+		$failed_map = array();
+		update_option('sliderrevolution-v7-migration-failed-map', $failed_map);
+	}
+
+	/**
+	 * create/update the map of slide ids for v7 slides
+	 **/
+	public function update_v7_slide_id_map(){
+		global $wpdb;
+
+		$slide_map = get_option('sliderrevolution-v7-slide-map', array());
+		
+		$v6 = array();
+		$v6[] = array('static' => false, 'slides' => $wpdb->get_results("SELECT `id`, `slider_id` FROM ".$wpdb->prefix . RevSliderFront::TABLE_SLIDES." ORDER BY id, slider_id, slide_order ASC", ARRAY_A));
+		if(empty($v6[0]['slides'])) return $slide_map;
+		$v6[] = array('static' => true, 'slides' => $wpdb->get_results("SELECT `id`, `slider_id` FROM ".$wpdb->prefix . RevSliderFront::TABLE_STATIC_SLIDES." ORDER BY id, slider_id ASC", ARRAY_A));
+
+		//$v7 = $wpdb->get_results("SELECT `id`, `slider_id`, `slide_order` FROM ".$wpdb->prefix . RevSliderFront::TABLE_SLIDES."7 ORDER BY id, slider_id, slide_order ASC", ARRAY_A);
+		//$all_v7_static_slides	= $wpdb->get_results($wpdb->prepare("SELECT `id`, `slider_id` FROM ".$wpdb->prefix . RevSliderFront::TABLE_STATIC_SLIDES."7 ORDER BY id, slider_id ASC"), ARRAY_A);
+
+		if(empty($slide_map)){
+			$this->truncate_v7();
+			$result = $wpdb->get_row("SHOW TABLE STATUS LIKE '".$wpdb->prefix . RevSliderFront::TABLE_SLIDES."7'");
+			$v7_next_increment = intval($this->get_val($result, 'Auto_increment', 1));
 		}else{
-			// if no urls in the text just return the text
-			return $text;
+			$v7_next_increment = 0;
+			foreach($slide_map as $sid => $slides){
+				foreach($slides as $slide){
+					if(empty($slide)) continue;
+					foreach($slide as $v7id){
+						if($v7id > $v7_next_increment) $v7_next_increment = $v7id;
+					}
+				}
+			}
+			$v7_next_increment++;
 		}
+
+		foreach($v6 as $v6_slides){
+			foreach($v6_slides['slides'] as $v6_slide){
+				$found = false;
+				//search if $v6_slide['id'] exists in oid already
+				if(!empty($slide_map)){
+					foreach($slide_map as $map){
+						foreach($map as $type => $slides){
+							if(empty($slides)) continue;
+							if(!isset($slides[$v6_slide['id']])) continue;
+							if($v6_slides['static'] === true && $type !== 's') continue;
+							if($v6_slides['static'] === false && $type !== 'n') continue;
+							$found = true;
+							break;
+						}
+						if($found === true) break;
+					}
+				}
+				if($found !== false) continue; //already registered
+				
+				if(!isset($slide_map[$v6_slide['slider_id']])) $slide_map[$v6_slide['slider_id']] = array('s' => array(), 'n' => array());
+
+				$k = ($v6_slides['static'] === true) ? 's' : 'n';
+				$slide_map[$v6_slide['slider_id']][$k][$v6_slide['id']] = $v7_next_increment;
+
+				$v7_next_increment++;
+			}
+		}
+		
+		//create/update a mapping of v7
+		update_option('sliderrevolution-v7-slide-map', $slide_map);
+
+		return $slide_map;
+	}
+
+	public function add_deprecation_message($old_func, $new_func){
+		global $SR_GLOBALS;
+
+		if(isset($SR_GLOBALS['deprecated'][$old_func])) return;
+		//_deprecated_function($old_func, '7.0', $new_func);
+		$SR_GLOBALS['deprecated'][$old_func] = $new_func;
 	}
 	
 	/**
-	 * Encode the flickr ID for URL (base58)
-	 * @since    1.0.0
-	 * @param    string    $num 	flickr photo id
+	 * Add Meta Generator Tag in FrontEnd
+	 * @since: 5.4.3
+	 * @before: add_setREVStartSize()
+		//NOT COMPRESSED VERSION
+		function setREVStartSize(e){	
+			//window.requestAnimationFrame(function() {	
+				window.RSIW = window.RSIW===undefined ? window.innerWidth : window.RSIW;	
+				window.RSIH = window.RSIH===undefined ? window.innerHeight : window.RSIH;	
+				try {								
+					var pw = document.getElementById(e.c).parentNode.offsetWidth,
+						newh;
+					pw = pw===0 || isNaN(pw) || (e.l=="fullwidth" || e.layout=="fullwidth") ? window.RSIW : pw;
+					e.tabw = e.tabw===undefined ? 0 : parseInt(e.tabw);
+					e.thumbw = e.thumbw===undefined ? 0 : parseInt(e.thumbw);
+					e.tabh = e.tabh===undefined ? 0 : parseInt(e.tabh);
+					e.thumbh = e.thumbh===undefined ? 0 : parseInt(e.thumbh);
+					e.tabhide = e.tabhide===undefined ? 0 : parseInt(e.tabhide);
+					e.thumbhide = e.thumbhide===undefined ? 0 : parseInt(e.thumbhide);
+					e.mh = e.mh===undefined || e.mh=="" || e.mh==="auto" ? 0 : parseInt(e.mh,0);
+					if(e.layout==="fullscreen" || e.l==="fullscreen")
+						newh = Math.max(e.mh,window.RSIH);
+					else{					
+						e.gw = Array.isArray(e.gw) ? e.gw : [e.gw];
+						for (var i in e.rl) if (e.gw[i]===undefined || e.gw[i]===0) e.gw[i] = e.gw[i-1];
+						e.gh = e.el===undefined || e.el==="" || (Array.isArray(e.el) && e.el.length==0)? e.gh : e.el;
+						e.gh = Array.isArray(e.gh) ? e.gh : [e.gh];
+						for (var i in e.rl) if (e.gh[i]===undefined || e.gh[i]===0) e.gh[i] = e.gh[i-1];
+											
+						var nl = new Array(e.rl.length),
+							ix = 0,
+							sl;
+						e.tabw = e.tabhide>=pw ? 0 : e.tabw;
+						e.thumbw = e.thumbhide>=pw ? 0 : e.thumbw;
+						e.tabh = e.tabhide>=pw ? 0 : e.tabh;
+						e.thumbh = e.thumbhide>=pw ? 0 : e.thumbh;
+						for (var i in e.rl) nl[i] = e.rl[i]<window.RSIW ? 0 : e.rl[i];
+						sl = nl[0];									
+						for (var i in nl) if (sl>nl[i] && nl[i]>0) { sl = nl[i]; ix=i;}
+						var m = pw>(e.gw[ix]+e.tabw+e.thumbw) ? 1 : (pw-(e.tabw+e.thumbw)) / (e.gw[ix]);
+						newh =  (e.gh[ix] * m) + (e.tabh + e.thumbh);
+					}				
+					var el = document.getElementById(e.c);
+					if (el!==null && el) el.style.height = newh+"px";
+					el = document.getElementById(e.c+"_wrapper");
+					if (el!==null && el) el.style.height = newh+"px";
+				} catch(e){
+					console.log("Failure at Presize of Slider:" + e)
+				}
+			//}
+		  };
 	 */
-	public function base_encode($num, $alphabet = '123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'){
-		$base_count = strlen($alphabet);
-		$encoded = '';
-		while ($num >= $base_count){
-			$div = $num / $base_count;
-			$mod = ($num - ($base_count * intval($div)));
-			$encoded = $alphabet[$mod] . $encoded;
-			$num = intval($div);
-		}
-		if($num) $encoded = $alphabet[$num] . $encoded;
-		return $encoded;
-	}
-	
-	
-	/**
-	 * depending on PHP version, use optional parameter of unserialize
-	 * @since: 6.0.0
-	 **/
-	public function rs_unserialize($string){
-		if(version_compare(phpversion(), '7.0.0', '<')){
-			return @unserialize($string);
-		}
+	public static function js_set_start_size(){
+		global $revslider_rev_start_size_loaded;
+		if($revslider_rev_start_size_loaded === true) return false;
 		
-		//return @unserialize($string, false);
-		return @unserialize($string);
-	}
-	
-	/**
-	 * go through folders and return all files, $only checking for certain file types
-	 **/
-	/*public function get_all_files($dir, &$results = array(), $only = false){
-		$files = scandir($dir);
+		$script = '<script>';
+		$script .= 'function setREVStartSize(e){
+			//window.requestAnimationFrame(function() {
+				window.RSIW = window.RSIW===undefined ? window.innerWidth : window.RSIW;
+				window.RSIH = window.RSIH===undefined ? window.innerHeight : window.RSIH;
+				try {
+					var pw = document.getElementById(e.c).parentNode.offsetWidth,
+						newh;
+					pw = pw===0 || isNaN(pw) || (e.l=="fullwidth" || e.layout=="fullwidth") ? window.RSIW : pw;
+					e.tabw = e.tabw===undefined ? 0 : parseInt(e.tabw);
+					e.thumbw = e.thumbw===undefined ? 0 : parseInt(e.thumbw);
+					e.tabh = e.tabh===undefined ? 0 : parseInt(e.tabh);
+					e.thumbh = e.thumbh===undefined ? 0 : parseInt(e.thumbh);
+					e.tabhide = e.tabhide===undefined ? 0 : parseInt(e.tabhide);
+					e.thumbhide = e.thumbhide===undefined ? 0 : parseInt(e.thumbhide);
+					e.mh = e.mh===undefined || e.mh=="" || e.mh==="auto" ? 0 : parseInt(e.mh,0);
+					if(e.layout==="fullscreen" || e.l==="fullscreen")
+						newh = Math.max(e.mh,window.RSIH);
+					else{
+						e.gw = Array.isArray(e.gw) ? e.gw : [e.gw];
+						for (var i in e.rl) if (e.gw[i]===undefined || e.gw[i]===0) e.gw[i] = e.gw[i-1];
+						e.gh = e.el===undefined || e.el==="" || (Array.isArray(e.el) && e.el.length==0)? e.gh : e.el;
+						e.gh = Array.isArray(e.gh) ? e.gh : [e.gh];
+						for (var i in e.rl) if (e.gh[i]===undefined || e.gh[i]===0) e.gh[i] = e.gh[i-1];
+											
+						var nl = new Array(e.rl.length),
+							ix = 0,
+							sl;
+						e.tabw = e.tabhide>=pw ? 0 : e.tabw;
+						e.thumbw = e.thumbhide>=pw ? 0 : e.thumbw;
+						e.tabh = e.tabhide>=pw ? 0 : e.tabh;
+						e.thumbh = e.thumbhide>=pw ? 0 : e.thumbh;
+						for (var i in e.rl) nl[i] = e.rl[i]<window.RSIW ? 0 : e.rl[i];
+						sl = nl[0];
+						for (var i in nl) if (sl>nl[i] && nl[i]>0) { sl = nl[i]; ix=i;}
+						var m = pw>(e.gw[ix]+e.tabw+e.thumbw) ? 1 : (pw-(e.tabw+e.thumbw)) / (e.gw[ix]);
+						newh =  (e.gh[ix] * m) + (e.tabh + e.thumbh);
+					}
+					var el = document.getElementById(e.c);
+					if (el!==null && el) el.style.height = newh+"px";
+					el = document.getElementById(e.c+"_wrapper");
+					if (el!==null && el) {
+						el.style.height = newh+"px";
+						el.style.display = "block";
+					}
+				} catch(e){
+					console.log("Failure at Presize of Slider:" + e)
+				}
+			//});
+		  };';
+		$script .= '</script>' . "\n";
+		echo apply_filters('revslider_add_setREVStartSize', $script);
 		
-		foreach($files as $key => $value){
-			$add	= true;
-			$path	= realpath($dir.DIRECTORY_SEPARATOR.$value);
-			if($only !== false){
-				$path_parts = pathinfo($path);
-				if($this->get_val($path_parts, 'extension') != $only){
-					$add = false;
-				}
-			}
-			
-			if(!is_dir($path)){
-				if($add){
-					$results[] = $path;
-				}
-			}elseif($value != '.' && $value != '..'){
-				$this->get_all_files($path, $results, $only);
-				if($add){
-					$results[] = $path;
-				}
+		$revslider_rev_start_size_loaded = true;
+	}
+
+	public function set_html_id_v7($html_id, $check_for_duplication){
+		global $SR_GLOBALS;
+
+		if($check_for_duplication){ //check if it already exists, if yes change it and add attribute for console output
+			$ids = $this->get_val($SR_GLOBALS, array('collections', 'ids'));
+			if(in_array($html_id, $ids, true)){
+				$i = 0;
+				do{$i++; }while(in_array($html_id.'_'.$i, $ids, true));
+				$html_id .= '_'.$i;
 			}
 		}
+		if(!in_array($html_id, $SR_GLOBALS['collections']['ids'])) $SR_GLOBALS['collections']['ids'][] = $html_id;
 
-		return $results;
-	}*/
-
+		return $html_id;
+	}
 }
-
-//class RevSliderFunctions extends rs_functions {}
-//logConsole( $tpmissiotheme_nav_background_main, "Background" );
-?>

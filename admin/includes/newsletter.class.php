@@ -2,7 +2,7 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  * @version   1.0.0
  */
  
@@ -28,7 +28,7 @@ if(!class_exists('ThemePunch_Newsletter')) {
 		public static function subscribe($email){
 			global $wp_version;
 			
-			$request = wp_remote_post(self::$remote_url.self::$subscribe, array(
+			$request = wp_safe_remote_post(self::$remote_url.self::$subscribe, array(
 				'user-agent' => 'WordPress/'.$wp_version.'; '.get_bloginfo('url'),
 				'timeout' => 15,
 				'body' => array(
@@ -57,7 +57,7 @@ if(!class_exists('ThemePunch_Newsletter')) {
 		public static function unsubscribe($email){
 			global $wp_version;
 			
-			$request = wp_remote_post(self::$remote_url.self::$unsubscribe, array(
+			$request = wp_safe_remote_post(self::$remote_url.self::$unsubscribe, array(
 				'user-agent' => 'WordPress/'.$wp_version.'; '.get_bloginfo('url'),
 				'timeout' => 15,
 				'body' => array(
@@ -80,5 +80,3 @@ if(!class_exists('ThemePunch_Newsletter')) {
 		
 	}
 }
-
-?>

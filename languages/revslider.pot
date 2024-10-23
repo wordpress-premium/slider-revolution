@@ -1868,7 +1868,7 @@ msgid "Audio Wave Library is Loading..."
 msgstr ""
 
 #: admin/revslider-admin.class.php:2056
-msgid "Loading CodeMirror Library..."
+msgid "Loading RevMirror Library..."
 msgstr ""
 
 #: admin/revslider-admin.class.php:2057
@@ -2518,7 +2518,7 @@ msgid "Dribbble"
 msgstr ""
 
 #: admin/views/overview.php:186
-msgid "Signup to our Newsletter"
+msgid "Sign up to our Newsletter"
 msgstr ""
 
 #: admin/views/overview.php:187
@@ -3921,7 +3921,7 @@ msgid "HTML5 Autoplay"
 msgstr ""
 
 #: admin/views/builder-slider-forms.php:961
-msgid "Option is depricated and will be removed in upcoming updates !"
+msgid "Option is deprecated and will be removed in upcoming updates !"
 msgstr ""
 
 #: admin/views/builder-slider-forms.php:970
@@ -4492,7 +4492,7 @@ msgstr ""
 #: admin/views/builder-nav-forms.php:291 admin/views/builder-nav-forms.php:447
 #: admin/views/builder-nav-forms.php:630
 #: admin/views/builder-layer-forms.php:442
-msgid "Aligment"
+msgid "Alignment"
 msgstr ""
 
 #: admin/views/builder-nav-forms.php:124 admin/views/builder-nav-forms.php:177
@@ -5182,7 +5182,7 @@ msgid "Layer as jQuery Object"
 msgstr ""
 
 #: admin/views/modals-builder.php:520
-msgid "Meta Datas"
+msgid "Metadata"
 msgstr ""
 
 #: admin/views/modals-builder.php:522
@@ -7167,7 +7167,7 @@ msgstr ""
 
 #: admin/views/builder-layer-forms.php:909
 msgid ""
-"Depricated Function !<br>Only visible by Rendering. Limited influence on "
+"Deprecated Function !<br>Only visible by Rendering. Limited influence on "
 "Styled Layers. Custom CSS Inline will be removed in Version 6.2"
 msgstr ""
 
@@ -7521,7 +7521,7 @@ msgid "Slider Revolution - Premium responsive slider"
 msgstr ""
 
 #. URI of the plugin
-msgid "https://revolution.themepunch.com/"
+msgid "https://www.sliderrevolution.com/"
 msgstr ""
 
 #. Author URI of the plugin

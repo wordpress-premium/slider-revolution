@@ -5,19 +5,40 @@
  * This file is used to markup the admin-facing aspects of the plugin.
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
- 
+
 if(!defined('ABSPATH')) exit();
 ?>
 
+<!--QUICK GUIDE MODAL-->
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_colorskins">
+	<div class="rb-modal-inner">
+		<div class="rb-modal-content">
+			<div id="rbm_colorskins" class="rb_modal form_inner">
+				<div class="rbm_header"><i class="rbm_symbol material-icons">format_paint</i><span class="rbm_title"><?php _e('Global Color Skin', 'revslider');?></span><i class="rbm_close material-icons">close</i></div>
+				<div class="rbm_content">
+					<div class="modal_fields_title" style="width:170px;margin-right:10px;"><?php _e('SKIN TITLE', 'revslider');?></div><div class="modal_fields_title"><?php _e('SKIN COLOR', 'revslider');?></div>
+					<div id="module_color_skins"></div>
+					<div class="div20"></div>
+					<div id="add_skin_color" class="basic_action_button layerinput autosize rightbutton"><i class="material-icons">color_lens</i><?php _e('Add Skin', 'revslider');?></div><div class="tp-clearfix"></div>
+					<div class="div40"></div>
+					<div class="global_sas_wrap">
+						<label_a style="max-width:none; width:auto;"><?php _e('Show this Modal on Editor launch', 'revslider');?></label_a><input type="checkbox" id="sr_show_glob_skins" class="sliderinput easyinit" data-r="skins.colorsAtStart">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 
 <!--QUICK GUIDE MODAL-->
-<div class="rb-modal-wrapper" data-modal="rbm_quickguide">
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_quickguide">
 	<div class="rb-modal-inner">
 		<div class="rb-modal-content">
 			<div id="rbm_quickguide" class="rb_modal form_inner">
-				<div class="rbm_header"><i class="rbm_symbol material-icons">new_releases</i><span class="rbm_title"><?php _e('Module Creation Guide', 'revslider');?></span><i class="rbm_close material-icons">close</i></div>	
+				<div class="rbm_header"><i class="rbm_symbol material-icons">new_releases</i><span class="rbm_title"><?php _e('Module Creation Guide', 'revslider');?></span><i class="rbm_close material-icons">close</i></div>
 				<div class="rbm_content">
 					<!-- PAGE 0 -->
 					<div id="mcg_page_0"  class="mcg_page mcg_selected">
@@ -44,24 +65,24 @@ if(!defined('ABSPATH')) exit();
 					<div id="mcg_page_1"  class="mcg_page">
 						<div class="dcenter">
 							<div class="div30"></div>
-							<div class="mcg_page_title"><?php _e('What type of module would you like to create?');?></div>				
+							<div class="mcg_page_title"><?php _e('What type of module would you like to create?');?></div>
 							<div class="div35"></div>
-						</div>			
+						</div>
 						<div class="mcg_option_third_wraps">
 							<div class="st_slider mcg_guide_optionwrap mcg_option_third">
-								<input data-unavailable=".standardunavailable" data-available=".standardavailable" data-disable=".standarddisable" data-enable=".standardenable" data-select=".st_slider" data-unselect=".st_scene, .st_carousel" data-r="type" data-evt="updatesliderlayout"  data-evtparam="slidertype" type="radio" value="standard" name="slidertype_guide" class="sliderinput" data-show="" data-hide="">
+								<input data-unavailable=".standardunavailable" data-available=".standardavailable" data-disable=".standarddisable" data-enable=".standardenable" data-select=".st_slider" data-unselect=".st_scene, .st_carousel" data-r="type" data-evt="updatesliderlayout"  data-evtparam="slidertype" type="radio" value="standard" id="slidertype_guide_standard" name="slidertype_guide" class="sliderinput easyinit" data-show="" data-hide="">
 								<mcg_guide_image class="guide_slider"></mcg_guide_image>
 								<div class="mcg_o_title"><?php _e('Slider');?></div>
 								<div class="mcg_o_descp"><?php _e('A Slider consists of multiple Slides.<br>Each Slide has its own content and can be<br>navigated to with various optional<br>navigation elements.');?></div>
 							</div>
 							<div class="st_scene mcg_guide_optionwrap mcg_option_third">
-								<input data-unavailable=".sceneunavailable" data-available=".sceneavailable" data-disable=".herodisable" data-enable=".heroenable" data-select=".st_scene" data-unselect=".st_slider, .st_carousel" data-r="type" data-evt="updatesliderlayout" data-evtparam="slidertype" type="radio" value="hero" name="slidertype_guide" class="sliderinput" data-show="" data-hide="">
+								<input data-unavailable=".sceneunavailable" data-available=".sceneavailable" data-disable=".herodisable" data-enable=".heroenable" data-select=".st_scene" data-unselect=".st_slider, .st_carousel" data-r="type" data-evt="updatesliderlayout" data-evtparam="slidertype" type="radio" value="hero" id="slidertype_guide_hero"  name="slidertype_guide" class="sliderinput easyinit" data-show="" data-hide="">
 								<mcg_guide_image class="guide_scene"></mcg_guide_image>
 								<div class="mcg_o_title"><?php _e('Scene');?></div>
 								<div class="mcg_o_descp"><?php _e('A Scene is essentially a Slider with a single<br>Slide and no navigation elements.<br>Best used for content modules that require<br>no additional depth.');?></div>
 							</div>
 							<div class="st_carousel mcg_guide_optionwrap mcg_option_third last">
-								<input data-unavailable=".carouselunavailable" data-available=".carouselavailable" data-disable=".carouseldisable" data-enable=".carouselenable" data-select=".st_carousel" data-unselect=".st_slider, .st_scene" data-r="type" data-evt="updatesliderlayout"  data-evtparam="slidertype" type="radio" value="carousel" name="slidertype_guide" class="sliderinput" data-show="" data-hide="">
+								<input data-unavailable=".carouselunavailable" data-available=".carouselavailable" data-disable=".carouseldisable" data-enable=".carouselenable" data-select=".st_carousel" data-unselect=".st_slider, .st_scene" data-r="type" data-evt="updatesliderlayout"  data-evtparam="slidertype" type="radio" value="carousel" id="slidertype_guide_carousel"  name="slidertype_guide" class="sliderinput easyinit" data-show="" data-hide="">
 								<mcg_guide_image class="guide_carousel"></mcg_guide_image>
 								<div class="mcg_o_title"><?php _e('Carousel');?></div>
 								<div class="mcg_o_descp"><?php _e('A Carousel is a Slider with multiple Slides<br>visible at the same time.<br>There are lots of options to customize the Carousel.');?></div>
@@ -71,50 +92,50 @@ if(!defined('ABSPATH')) exit();
 						<div class="mcg_footer_btns">
 							<div class="mcg_page_minititle"><?php _e('Module Type', 'revslider');?></div>
 							<div class="mcg_page_pagination">1/3</div>
-							<bluebutton class="minimal mcg_next_page"><?php _e('Next Step', 'revslider');?></bluebutton>				
-						</div>			
+							<bluebutton class="minimal mcg_next_page"><?php _e('Next Step', 'revslider');?></bluebutton>
+						</div>
 					</div>
 
 					<!-- PAGE 2 -->
 					<div id="mcg_page_2"  class="mcg_page">
 						<div class="dcenter">
 							<div class="div30"></div>
-							<div class="mcg_page_title"><?php _e('What size should the module have?');?></div>				
+							<div class="mcg_page_title"><?php _e('What size should the module have?');?></div>
 							<div class="div35"></div>
 						</div>
-						<div class="mcg_option_third_wraps">				
+						<div class="mcg_option_third_wraps">
 							<div class="sl_auto mcg_guide_optionwrap mcg_option_third">
-								<input data-select=".sl_auto" data-unselect=".sl_fullwidth, .sl_fullscreen" data-r="layouttype" data-evt="updatesliderlayout" type="radio" value="auto" name="sliderlayouttype_guide" class="sliderinput" data-show="#sr_size_minheight" data-hide=".sliderminheights,.decreaseheights">
+								<input data-select=".sl_auto" data-unselect=".sl_fullwidth, .sl_fullscreen" data-r="layouttype" data-evt="updatesliderlayout" type="radio" value="auto" id="sliderlayouttype_guide_auto" name="sliderlayouttype_guide" class="sliderinput easyinit" data-show="#sr_size_minheight" data-hide=".sliderminheights,.decreaseheights">
 								<mcg_guide_image class="guide_auto"></mcg_guide_image>
 								<div class="mcg_o_title"><?php _e('Auto');?></div>
 								<div class="mcg_o_descp"><?php _e('The module dimensions will automatically<br>adjust to the surrounding container width,<br>keeping its aspect ratio.');?></div>
 							</div>
 							<div class="sl_fullwidth mcg_guide_optionwrap mcg_option_third">
-								<input data-select=".sl_fullwidth" data-unselect=".sl_auto, .sl_fullscreen" data-r="layouttype" data-evt="updatesliderlayout" type="radio" value="fullwidth" name="sliderlayouttype_guide" class="sliderinput" data-show="#sr_size_minheight" data-hide=".sliderminheights,.decreaseheights">
+								<input data-select=".sl_fullwidth" data-unselect=".sl_auto, .sl_fullscreen" data-r="layouttype" data-evt="updatesliderlayout" type="radio" value="fullwidth" id="sliderlayouttype_guide_fullwidth" name="sliderlayouttype_guide" class="sliderinput easyinit" data-show="#sr_size_minheight" data-hide=".sliderminheights,.decreaseheights">
 								<mcg_guide_image class="guide_fullwidth"></mcg_guide_image>
 								<div class="mcg_o_title"><?php _e('Full-Width');?></div>
 								<div class="mcg_o_descp"><?php _e('The module will always span across the<br>full-width of the web-page. The height can<br>be flexible depending on other settings.');?></div>
 							</div>
 							<div class="sl_fullscreen mcg_guide_optionwrap mcg_option_third last">
-								<input data-select=".sl_fullscreen" data-unselect=".sl_auto, .sl_fullwidth" data-r="layouttype" data-evt="updatesliderlayout" type="radio" value="fullscreen" name="sliderlayouttype_guide" class="sliderinput" data-show="#sr_size_minheight_fs, .decreaseheights" data-hide=".sliderminheights">
+								<input data-select=".sl_fullscreen" data-unselect=".sl_auto, .sl_fullwidth" data-r="layouttype" data-evt="updatesliderlayout" type="radio" value="fullscreen" id="sliderlayouttype_guide_fullscreen" name="sliderlayouttype_guide" class="sliderinput easyinit" data-show="#sr_size_minheight_fs, .decreaseheights" data-hide=".sliderminheights">
 								<mcg_guide_image class="guide_fullscreen"></mcg_guide_image>
 								<div class="mcg_o_title"><?php _e('Full-Screen');?></div>
-								<div class="mcg_o_descp"><?php _e('The module will always fit the full area<br>withing the web-page.');?></div>
+								<div class="mcg_o_descp"><?php _e('The module will always fit the full area<br>within the web-page.');?></div>
 							</div>
 						</div>
 						<div class="mcg_footer_btns_right"><graybutton class="minimal mcg_prev_page"><?php _e('Previous Step', 'revslider');?></graybutton></div>
 						<div class="mcg_footer_btns">
 							<div class="mcg_page_minititle"><?php _e('Module Dimensions', 'revslider');?></div>
 							<div class="mcg_page_pagination">2/3</div>
-							<bluebutton class="minimal mcg_next_page"><?php _e('Next Step', 'revslider');?></bluebutton>				
-						</div>			
+							<bluebutton class="minimal mcg_next_page"><?php _e('Next Step', 'revslider');?></bluebutton>
+						</div>
 					</div>
 
 					<!-- PAGE 3 -->
 					<div id="mcg_page_3"  class="mcg_page">
 						<div class="dcenter">
 							<div class="div30"></div>
-							<div class="mcg_page_title"><?php _e('How would you like your content to resize?');?></div>				
+							<div class="mcg_page_title"><?php _e('How would you like your content to resize?');?></div>
 							<div class="div35"></div>
 						</div>
 						<div class="mcg_option_third_wraps">
@@ -140,13 +161,13 @@ if(!defined('ABSPATH')) exit();
 							<div class="mcg_page_pagination">3/3</div>
 							<!--<bluebutton class="minimal mcg_next_page"><?php _e('Next Step', 'revslider');?></bluebutton>-->
 							<bluebutton class="minimal mcg_quit_page"><?php _e('Go to Editor', 'revslider');?></bluebutton>
-						</div>			
+						</div>
 					</div>
 
 					<!-- PAGE 4 -->
 					<!--<div id="mcg_page_4"  class="mcg_page">
 						<div class="dcenter">
-							<div class="mcg_page_title"><?php _e('Further module customization');?></div>				
+							<div class="mcg_page_title"><?php _e('Further module customization');?></div>
 							<div class="div10"></div>
 						</div>
 						<div class="mcg_option_third_wraps">
@@ -183,7 +204,7 @@ if(!defined('ABSPATH')) exit();
 							<div class="mcg_page_minititle"><?php _e('Customization', 'revslider');?></div>
 							<div class="mcg_page_pagination">4/4</div>
 							<bluebutton class="minimal mcg_quit_page"><?php _e('Go to Editor', 'revslider');?></bluebutton>
-						</div>			
+						</div>
 					</div>-->
 
 				</div>
@@ -192,9 +213,162 @@ if(!defined('ABSPATH')) exit();
 	</div>
 </div><!-- END OF QUICK GUIDE MODAL -->
 
+<!--QUICK TEMPLATE HELP MODAL-->
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_template_guide" >
+	<div class="rb-modal-inner">
+		<div class="rb-modal-content">
+			<div id="rbm_template_guide" class="rbm_helpguide rb_modal form_inner">
+				<div class="rbm_header"><span class="rbm_title"><?php _e('Template Editing Guide', 'revslider');?></span><i class="rbm_close material-icons">close</i></div>
+				<div class="rbm_content gm_content">
+
+					<div class="gm_left">
+						<div class="gm_top_left">
+							<div class="gm_tl_title gm_title"><?php _e('Thank You For Installing The', 'revslider');?><br/><span id="gm_tl_title"></span></div>
+							<div class="gm_tl_desc"><?php _e('The guide will teach you how to use all the editor features necessary, to customize the template', 'revslider');?></div>
+							<div class="gm_tl_thumb">
+								<img class="gm_tl_thumb1" src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/guide_temp_thumb.jpg" alt="">
+								<img class="gm_tl_thumb2" src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/guide_temp_thumb.jpg" alt="">
+							</div>
+						</div>
+						<div class="gm_bottom_left">
+							<div class="gm_bl_title gm_title"><?php _e('Tutorial Videos To Watch Now', 'revslider');?></div>
+							<ul class="gm_bl_list">
+								<li><a class="gm_blue_highlight" href="https://www.youtube.com/watch?v=LRNTFu-MFgw" target="_blank"><div class="gm_bl_play"><i class="rbm_symbol material-icons">play_circle</i><div class="gm_playicon_bg"></div></div><span>Rapid Fire Overview</span></a></li>
+								<li><a class="gm_blue_highlight" href="https://www.youtube.com/watch?v=hP4oV8SWgKY" target="_blank"><div class="gm_bl_play"><i class="rbm_symbol material-icons">play_circle</i><div class="gm_playicon_bg"></div></div><span>Responsiveness in Edited Templates</span></a></li>
+								<li><a class="gm_blue_highlight" href="https://www.youtube.com/watch?v=nn3azizwpbs" target="_blank"><div class="gm_bl_play"><i class="rbm_symbol material-icons">play_circle</i><div class="gm_playicon_bg"></div></div><span>Animation Basics</span></a></li>
+							</ul>
+							<div class="gm_bl_links"><a href="https://www.sliderrevolution.com/video-tutorials/?utm_source=admin&utm_medium=button&utm_campaign=editorguide&utm_content=videotutorials" target="_blank"><i class="rbm_symbol material-icons">north_east</i><span><?php _e('View All Tutorial Videos', 'revslider');?></span></a></div>
+						</div>
+					</div>
+					<div class="gm_right">
+						<div class="gm_top_right">
+							<div class="gm_tr_title gm_title"><?php _e('Learn How To Edit This Template', 'revslider');?></div>
+							<div class="gm_tr_list">
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideEditContent">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">edit</i></div>
+									<div class="gm_guide_title"><?php _e('Edit Content', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_content.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideTemplateFeatures">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">settings</i></div>
+									<div class="gm_guide_title"><?php _e('Template Features', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_gen.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideUserInteractions">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">touch_app</i></div>
+									<div class="gm_guide_title"><?php _e('User Interactions', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_inter.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideAnimations">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">play_arrow</i></div>
+									<div class="gm_guide_title"><?php _e('Animations', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_anim.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideOptPublish">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">display_settings</i></div>
+									<div class="gm_guide_title"><?php _e('Optimizing & Publishing', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_opti.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideAddons">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">extension</i></div>
+									<div class="gm_guide_title"><?php _e('AddOns', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_addons.png" alt=""></div>
+								</div>
+
+								<a id="gm_temp_tut" href="#" target="_blank" class="gm_bottom_right gm_blue_highlight">
+									<div class="gm_br_banner"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/guide_temp_banner.jpg" alt=""></div>
+									<div class="gm_br_icon"><i class="rbm_symbol material-icons">chat</i></div>
+									<div class="gm_br_desc">How to Create an Awesome Product Slider with a Built-in Variant Switcher[Tutorial]</div>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="gm_guide_collection gm_template_collection"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div><!-- END OF TEMPLATE HELP GUIDE MODAL -->
+
+<!--QUICK MODULE HELP MODAL-->
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_module_guide" >
+	<div class="rb-modal-inner">
+		<div class="rb-modal-content">
+			<div id="rbm_module_guide" class="rbm_helpguide rb_modal form_inner">
+				<div class="rbm_header"><span class="rbm_title"><?php _e('Module Editing Guide', 'revslider');?></span><i class="rbm_close material-icons">close</i></div>
+				<div class="rbm_content gm_content">
+					<div class="gm_left">
+						<div class="gm_top_left">
+							<div class="gm_tl_title gm_title"><?php _e('Welcome To The Slider Revolution Visual Editor', 'revslider');?></div>
+							<div class="gm_tl_desc"><?php _e('The guide will teach you the basics of using the editor to build a new module from scratch.', 'revslider');?></div>
+							<div class="gm_tl_thumb">
+								<img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/guide_mod_thumb.png" alt="">
+							</div>
+						</div>
+						<div class="gm_bottom_left">
+							<div class="gm_bl_title gm_title"><?php _e('Tutorial Videos To Watch Now', 'revslider');?></div>
+							<ul class="gm_bl_list">
+								<li><a class="gm_blue_highlight" href="https://www.youtube.com/watch?v=LRNTFu-MFgw" target="_blank"><div class="gm_bl_play"><i class="rbm_symbol material-icons">play_circle</i><div class="gm_playicon_bg"></div></div><span>Rapid Fire Overview</span></a></li>
+								<li><a class="gm_blue_highlight" href="https://www.youtube.com/watch?v=U4gRsALKdzo" target="_blank"><div class="gm_bl_play"><i class="rbm_symbol material-icons">play_circle</i><div class="gm_playicon_bg"></div></div><span>Creating Modules</span></a></li>
+								<li><a class="gm_blue_highlight" href="https://www.youtube.com/watch?v=kUgZAYRlJrA" target="_blank"><div class="gm_bl_play"><i class="rbm_symbol material-icons">play_circle</i><div class="gm_playicon_bg"></div></div><span>Module Editor, Slides & Layers</span></a></li>
+							</ul>
+							<div class="gm_bl_links"><a href="https://www.sliderrevolution.com/video-tutorials/?utm_source=admin&utm_medium=button&utm_campaign=editorguide&utm_content=videotutorials" target="_blank"><i class="rbm_symbol material-icons">north_east</i><span><?php _e('View All Tutorial Videos', 'revslider');?></span></a></div>
+						</div>
+					</div>
+					<div class="gm_right">
+						<div class="gm_top_right">
+							<div class="gm_tr_title gm_title"><?php _e('What Would You Like To Learn About?', 'revslider');?></div>
+							<div class="gm_tr_list">
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideModuleAddingContent">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">edit</i></div>
+									<div class="gm_guide_title"><?php _e('Adding Content', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_content.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideModuleGeneralOptions">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">settings</i></div>
+									<div class="gm_guide_title"><?php _e('Module General Options', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_gen.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideModuleUserInteractions">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">touch_app</i></div>
+									<div class="gm_guide_title"><?php _e('User Interactions', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_inter.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideModuleAnimations">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">play_arrow</i></div>
+									<div class="gm_guide_title"><?php _e('Animations', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_anim.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideModuleOptiPublish">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">display_settings</i></div>
+									<div class="gm_guide_title"><?php _e('Optimizing & Publishing', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_opti.png" alt=""></div>
+								</div>
+								<div class="gm_blue_highlight gm_guide_tile" data-guide="guideModuleAddons">
+									<div class="gm_guide_icon"><i class="rbm_symbol material-icons">extension</i></div>
+									<div class="gm_guide_title"><?php _e('AddOns', 'revslider');?></div>
+									<div class="gm_guide_thumb"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/mod_addons.png" alt=""></div>
+								</div>
+
+								<div id="gm_load_tmplib" class="gm_bottom_right gm_blue_highlight">
+									<div class="gm_br_banner gm_temp_banner"><img src="<?php echo RS_PLUGIN_URL;?>admin/assets/images/guide/guide_mod_banner.png" alt=""></div>
+									<div class="gm_br_icon"><i class="rbm_symbol material-icons">download</i></div>
+									<div class="gm_br_desc">Load A Template From The Library</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="gm_guide_collection gm_module_collection"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div><!-- END OF MODULE HELP GUIDE MODAL -->
 
 <!--LAYER IMPORT/EXPORT MODAL-->
-<div class="rb-modal-wrapper" data-modal="rbm_layerimport">
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_layerimport">
 	<div class="rb-modal-inner">
 		<div class="rb-modal-content">
 			<div id="rbm_layerimport" class="rb_modal form_inner">
@@ -215,7 +389,7 @@ if(!defined('ABSPATH')) exit();
 
 
 <!-- NAVIGATION EDITOR -->
-<div class="rb-modal-wrapper" data-modal="rbm_navigation_editor">
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_navigation_editor">
 	<div class="rb-modal-inner">
 		<div class="rb-modal-content">
 			<div id="rbm_navigation_editor" class="rb_modal form_inner">
@@ -226,7 +400,8 @@ if(!defined('ABSPATH')) exit();
 						<div id="rs_ne_selector_arrows" class="rs_ne_selector selected" data-type="arrows"><i class="material-icons">swap_horiz</i><?php _e('Arrows', 'revslider');?></div><!--
 						--><div id="rs_ne_selector_bullets" class="rs_ne_selector" data-type="bullets"><i class="material-icons">more_horiz</i><?php _e('Bullets', 'revslider');?></div><!--
 						--><div id="rs_ne_selector_tabs" class="rs_ne_selector" data-type="tabs"><i class="material-icons">view_column</i><?php _e('Tabs', 'revslider');?></div><!--
-						--><div id="rs_ne_selector_thumbs" class="rs_ne_selector" data-type="thumbs"><i class="material-icons">filter_frames</i><?php _e('Thumbs', 'revslider');?></div>
+						--><div id="rs_ne_selector_thumbs" class="rs_ne_selector" data-type="thumbs"><i class="material-icons">filter_frames</i><?php _e('Thumbs', 'revslider');?></div><!--
+						--><div id="rs_ne_selector_scrubber" class="rs_ne_selector" data-type="scrubber"><i class="material-icons">settings_ethernet</i><?php _e('Scrubber', 'revslider');?></div>
 						<div id="rs_ne_navlist_wrap">
 							<div id="rs_ne_navlist">
 								<div class="rs_ne_navlist_header"><?php _e('Factory Skins', 'revslider');?></div>
@@ -365,11 +540,11 @@ if(!defined('ABSPATH')) exit();
 
 
 <!-- SLIDER API MODAL -->
-<div class="rb-modal-wrapper" data-modal="rbm_slider_api" data-centerineditor="true">
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_slider_api" data-centerineditor="true">
 	<div class="rb-modal-inner">
 		<div class="rb-modal-content">
 			<div id="rbm_slider_api" class="rb_modal form_inner">
-				<div class="rbm_header"><i class="rbm_symbol material-icons">code</i><span class="rbm_title"><?php _e('CSS/JS Editor', 'revslider');?></span><div class="modal_header_functions"><div data-mode="css" class="selected js_css_editor_tabs"><?php _e('CUSTOM CSS', 'revslider');?></div><div data-mode="javascript" class="js_css_editor_tabs"><?php _e('CUSTOM JS', 'revslider');?></div></div></div>
+				<div class="rbm_header"><i class="rbm_symbol material-icons">code</i><span class="rbm_title"><?php _e('CSS/JS Editor', 'revslider');?></span><div class="modal_header_functions"><div data-mode="css" class="selected js_css_editor_tabs"><?php _e('CUSTOM CSS', 'revslider');?></div><div data-mode="javascript" class="js_css_editor_tabs"><?php _e('CUSTOM JS SR6', 'revslider');?></div><div data-mode="javascript7" class="js_css_editor_tabs"><?php _e('CUSTOM JS SR7', 'revslider');?></div></div></div>
 				<div class="emc_toggle_wrap"><div class="emc_toggle_info">A<br>P<br>I</div><i id="emc_toggle" class="material-icons">keyboard_arrow_right</i><i class="rbm_close material-icons">close</i>
 					<div class="emc_toggle_inner">
 						<!-- MODULE API -->
@@ -379,127 +554,295 @@ if(!defined('ABSPATH')) exit();
 								<div id="form_slidergeneral_advanced_api" class="form_inner">
 									<div class="form_inner_header"><i class="material-icons">code</i><?php _e('Methods', 'revslider');?></div>
 									<div class="collapsable" style="display:block !important">
-										<label_a origtitle="<?php _e("Call this function to start the slider.", 'revslider');?>"><?php _e("Start Slider", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly  class="api-input withlabel" id="apiapi0" value="revapi.revstart();">
-											<div class="basic_action_button insertineditor mini_action_button onlyicon buttonextension" data-insertfrom="#apiapi0"><i class="material-icons">add</i></div>
+
+										<div class="advanced_api_content" data-version="6">
+
+											<label_a origtitle="<?php _e("Call this function to start the slider.", 'revslider');?>"><?php _e("Start Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" id="apiapi0" value="revapi.revstart();">
+												<div class="basic_action_button insertineditor mini_action_button onlyicon buttonextension" data-insertfrom="#apiapi0"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Call this function to pause the slider.", 'revslider');?>"><?php _e("Pause Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" id="apiapi1" value="revapi.revpause();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi1"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Call this function to play the slider if it is paused.", 'revslider');?>"><?php _e("Resume Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi2" value="revapi.revresume();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi2"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Switch slider to previous slide.", 'revslider');?>"><?php _e("Previous Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi3" value="revapi.revprev();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi3"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Switch slider to next slide.", 'revslider');?>"><?php _e("Next Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi4" value="revapi.revnext();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi4"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Scroll page under the slider.", 'revslider');?>"><?php _e("External Scroll", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi9" value="revapi.revscroll(offset);">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi9"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Remove One Slide with Slide Index from the Slider. Index starts with 0 which will remove the first slide.", 'revslider');?>"><?php _e("Remove Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" id="apiapi12" value="revapi.revremoveslide(slideindex);">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi12"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Switch to the slide which is defined as parameter.", 'revslider');?>"><?php _e("Go To Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi5" value="revapi.revshowslide(2);">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi5"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Switch to the slide which is defined as parameter.", 'revslider');?>"><?php _e("Go To Slide with ID", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi15" value="revapi.revcallslidewithid('rs-1007');">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi15"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Get the amount of existing slides in the slider.", 'revslider');?>"><?php _e("Max Slides", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi6" value="revapi.revmaxslide();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi6"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Get the current focused slide index.", 'revslider');?>"><?php _e("Current Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi7" value="revapi.revcurrentslide();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi7"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Get the previously played slide.", 'revslider');?>"><?php _e("Last Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" id="apiapi8" value="revapi.revlastslide();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi8"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Recalculate all positions, sizing etc in the slider.  This should be called i.e. if Slider was invisible and becomes visible without any window resize event.", 'revslider');?>"><?php _e("Redraw Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" id="apiapi10" value="revapi.revredraw();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi10"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Unbind all listeners, remove current animations and delete containers. Ready for Garbage collection.", 'revslider');?>"><?php _e("Kill Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" id="apiapi11" value="revapi.revkill();">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi11"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Animate a Layer to a predefined Frame", 'revslider');?>"><?php _e("Go To Frame", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" id="apiapi16" value="revapi.revGoToFrame({layerid:'',frame:'',children:true})">
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi16"><i class="material-icons">add</i></div>
+											</div>
+
+										</div>
+										<div class="advanced_api_content" data-version="7">
+
+											<label_a origtitle="<?php _e("Start Manual Module if waitApi set to true", 'revslider');?>"><?php _e("Start Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.start();">
+												<textarea id="apimeth70" class="hidden">revapi.start(); // Start Manual Module if waitApi set to true</textarea>
+												<div class="basic_action_button insertineditor mini_action_button onlyicon buttonextension" data-insertfrom="#apimeth70"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Pause Progress", 'revslider');?>"><?php _e("Pause Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.pause();">
+												<textarea id="apimeth71" class="hidden">revapi.pause(); // Pause Progress</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth71"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Forced Pause Progress", 'revslider');?>"><?php _e("Forced Pause", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.forcedPause();">
+												<textarea id="apimeth711" class="hidden">revapi.forcedPause(); // Forced Pause Progress (will not auto resume in viewport until resume() method call)</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth711"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Resume Progress", 'revslider');?>"><?php _e("Resume Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.resume();">
+												<textarea id="apimeth72" class="hidden">revapi.resume(); // Resume Progress</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth72"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Call Next Slide", 'revslider');?>"><?php _e("Previous Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.prevSlide();">
+												<textarea id="apimeth73" class="hidden">revapi.prevSlide(); // Call Next Slide</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth73"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Call Previous Slide", 'revslider');?>"><?php _e("Next Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.nextSlide();">
+												<textarea id="apimeth74" class="hidden">revapi.nextSlide(); // Call Previous Slide</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth74"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Scroll to \"y\" position", 'revslider');?>"><?php _e("External Scroll", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.scroll(offset);">
+												<textarea id="apimeth75" class="hidden">revapi.scroll(offset); //Scroll to "y" position</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth75"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Amount of Slides (Not only through navigation available slides)", 'revslider');?>"><?php _e("Max Slides", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.maxSlide();">
+												<textarea id="apimeth76" class="hidden">revapi.maxSlide(); // Amount of Slides (Not only through navigation available slides)</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth76"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("The last available Slide due Navigation", 'revslider');?>"><?php _e("Last Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.revlastslide();">
+												<textarea id="apimeth77" class="hidden">revapi.lastSlide(); // The last available Slide due Navigation</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth77"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Show Slide. Possible Values:", 'revslider');?>"><?php _e("Go To Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.showSlide(2);">
+												<textarea id="apimeth78" class="hidden">revapi.showSlide(2); // Show Slide. Possible Values:&#013;            /*"last" - Last Slide&#013;            "first" - First Slide&#013;            "random" - Random Slide&#013;            "id" - Slide with ID&#013;            "+2" - 2 Slide furthet&#013;            "-1" - 1 Slide back&#013;            0-100 - Slide with Index (0 - xx)  */</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth78"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Get Current Slide => {index: 2, key: '281', order: 3} ", 'revslider');?>"><?php _e("Current Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly class="api-input withlabel" value="revapi.currentSlide();">
+												<textarea id="apimeth79" class="hidden">revapi.currentSlide(); // Get Current Slide => {index: 2, key: '281', order: 3}</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth79"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Redraw the Module", 'revslider');?>"><?php _e("Redraw Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.revredraw();">
+												<textarea id="apimeth710" class="hidden">revapi.redraw(); //Redraw the Module</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth710"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Kill and Remove Module", 'revslider');?>"><?php _e("Kill Slider", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.kill();">
+												<textarea id="apimeth711" class="hidden">revapi.kill(); // Kill and Remove Module</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth711"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Play Layer with Scene (Scene i.e. \"in\" , \"out\", \"scene_1\" \"scene_2\" etc)", 'revslider');?>"><?php _e("Go To Frame", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.playScene(##layerid##,##scene##);">
+												<textarea id="apimeth712" class="hidden">revapi.playScene(layerid,scene); // Play Layer with Scene (Scene i.e. "in" , "out", "scene_1" "scene_2" etc)</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth712"><i class="material-icons">add</i></div>
+											</div>
+
+											<label_a origtitle="<?php _e("Remove Single Slide from Loop", 'revslider');?>"><?php _e("Remove Slide", 'revslider')?></label_a><!--
+											--><div class="input_with_buttonextenstion">
+												<input type="text" readonly  class="api-input withlabel" value="revapi.removeSlide(slidekey);">
+												<textarea id="apimeth713" class="hidden">revapi.removeSlide(slidekey); // Remove Single Slide from Loop</textarea>
+												<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apimeth713"><i class="material-icons">add</i></div>
+											</div>
+
 										</div>
 
-										<label_a origtitle="<?php _e("Call this function to pause the slider.", 'revslider');?>"><?php _e("Pause Slider", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly  class="api-input withlabel" id="apiapi1" value="revapi.revpause();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi1"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Call this function to play the slider if it is paused.", 'revslider');?>"><?php _e("Resume Slider", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi2" value="revapi.revresume();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi2"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Switch slider to previous slide.", 'revslider');?>"><?php _e("Previous Slide", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi3" value="revapi.revprev();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi3"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Switch slider to next slide.", 'revslider');?>"><?php _e("Next Slide", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi4" value="revapi.revnext();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi4"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Scroll page under the slider.", 'revslider');?>"><?php _e("External Scroll", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi9" value="revapi.revscroll(offset);">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi9"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Remove One Slide with Slide Index from the Slider. Index starts with 0 which will remove the first slide.", 'revslider');?>"><?php _e("Remove Slide", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly  class="api-input withlabel" id="apiapi12" value="revapi.revremoveslide(slideindex);">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi12"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Switch to the slide which is defined as parameter.", 'revslider');?>"><?php _e("Go To Slide", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi5" value="revapi.revshowslide(2);">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi5"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Switch to the slide which is defined as parameter.", 'revslider');?>"><?php _e("Go To Slide with ID", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi15" value="revapi.revcallslidewithid('rs-1007');">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi15"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Get the amount of existing slides in the slider.", 'revslider');?>"><?php _e("Max Slides", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi6" value="revapi.revmaxslide();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi6"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Get the current focused slide index.", 'revslider');?>"><?php _e("Current Slide", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi7" value="revapi.revcurrentslide();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi7"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Get the previously played slide.", 'revslider');?>"><?php _e("Last Slide", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly class="api-input withlabel" id="apiapi8" value="revapi.revlastslide();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi8"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Recalculate all positions, sizing etc in the slider.  This should be called i.e. if Slider was invisible and becomes visible without any window resize event.", 'revslider');?>"><?php _e("Redraw Slider", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly  class="api-input withlabel" id="apiapi10" value="revapi.revredraw();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi10"><i class="material-icons">add</i></div>
-										</div>
-
-										<label_a origtitle="<?php _e("Unbind all listeners, remove current animations and delete containers. Ready for Garbage collection.", 'revslider');?>"><?php _e("Kill Slider", 'revslider')?></label_a><!--
-										--><div class="input_with_buttonextenstion">
-											<input type="text" readonly  class="api-input withlabel" id="apiapi11" value="revapi.revkill();">
-											<div class="buttonextension basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apiapi11"><i class="material-icons">add</i></div>
-										</div>
 									</div>
 
 								<!-- API EVENTS-->
 
 									<div class="form_inner_header"><i class="material-icons">av_timer</i><?php _e('Events', 'revslider');?></div>
 									<div class="collapsable" style="display:block !important">
-										<label_full><?php _e("Slider Loaded", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent1"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent1" class="api_area" readonly style="height:50px">revapi.bind("revolution.slide.onloaded",function (e) {});</textarea>
 
-										<label_full><?php _e("Slider swapped to an other slide", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent2"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent2"  class="api_area" readonly style="height:135px">revapi.bind("revolution.slide.onchange",function (e,data){&#013;   //data.slideIndex => <?php _e('Index of Current Slide', 'revslider');?>&#013;   //data.slideLIIndex => <?php _e('Current <li> Index', 'revslider');?>&#013;   //data.currentslide => <?php _e('Current Slide as jQuery Object', 'revslider');?>&#013;   //data.prevslide => <?php _e('Prev. Slide as jQuery Object', 'revslider');?>&#013;});</textarea>
+										<div class="advanced_api_content" data-version="6">
 
-										<label_full><?php _e("Slider paused", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent3"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent3"  class="api_area"  readonly style="height:85px">revapi.bind("revolution.slide.onpause",function (e,data) {&#013;   //<?php _e('Timer Paused', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Slider Loaded", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent1"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent1" class="api_area" readonly style="height:50px">revapi.bind("revolution.slide.onloaded",function (e) {});</textarea>
 
-										<label_full><?php _e("Slider is Playing after pause", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent4"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent4" class="api_area" readonly style="height:85px">revapi.bind("revolution.slide.onresume",function (e,data) {&#013;   //<?php _e('Timer Resumed', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Slider swapped to an other slide", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent2"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent2"  class="api_area" readonly style="height:135px">revapi.bind("revolution.slide.onchange",function (e,data){&#013;   //data.slideIndex => <?php _e('Index of Current Slide', 'revslider');?>&#013;   //data.slideLIIndex => <?php _e('Current <li> Index', 'revslider');?>&#013;   //data.currentslide => <?php _e('Current Slide as jQuery Object', 'revslider');?>&#013;   //data.prevslide => <?php _e('Prev. Slide as jQuery Object', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Video is playing in slider", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent5"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent5" class="api_area" readonly style="height:135px">revapi.bind("revolution.slide.onvideoplay",function (e,data) {&#013;  //<?php _e('Video is playing', 'revslider');?>&#013;  //data.video => <?php _e('Video API', 'revslider');?>&#013;   //data.videotype => <?php _e('youtube, vimeo, html5', 'revslider');?>&#013;   //data.settings => <?php _e('Video Settings', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Slider paused", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent3"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent3"  class="api_area"  readonly style="height:85px">revapi.bind("revolution.slide.onpause",function (e,data) {&#013;   //<?php _e('Timer Paused', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Video stopped in slider", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent6"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent6" class="api_area" readonly style="height:135px">revapi.bind("revolution.slide.onvideostop",function (e,data) {&#013;  //<?php _e('Video is stopped', 'revslider');?>&#013;  //data.video => <?php _e('Video API', 'revslider');?>&#013;   //data.videotype => <?php _e('youtube, vimeo, html5', 'revslider');?>&#013;   //data.settings => <?php _e('Video Settings', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Slider is Playing after pause", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent4"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent4" class="api_area" readonly style="height:85px">revapi.bind("revolution.slide.onresume",function (e,data) {&#013;   //<?php _e('Timer Resumed', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Slider reached the 'stop at' slide", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent7"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent7" class="api_area" readonly style="height:85px">revapi.bind("revolution.slide.onstop",function (e,data) {&#013;   //<?php _e('Slider Stopped', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Video is playing in slider", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent5"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent5" class="api_area" readonly style="height:135px">revapi.bind("revolution.slide.onvideoplay",function (e,data) {&#013;  //<?php _e('Video is playing', 'revslider');?>&#013;  //data.video => <?php _e('Video API', 'revslider');?>&#013;   //data.videotype => <?php _e('youtube, vimeo, html5', 'revslider');?>&#013;   //data.settings => <?php _e('Video Settings', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Prepared for slide change", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent8"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent8" class="api_area" readonly style="height:120px">revapi.bind("revolution.slide.onbeforeswap",function (e,data) {&#013;   //<?php _e('Slider Before Swap', 'revslider');?>&#013;   //data.currentslide => <?php _e('Current Slide as jQuery Object', 'revslider');?>&#013;   //data.nextslide => <?php _e('Coming Slide as jQuery Object', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Video stopped in slider", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent6"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent6" class="api_area" readonly style="height:135px">revapi.bind("revolution.slide.onvideostop",function (e,data) {&#013;  //<?php _e('Video is stopped', 'revslider');?>&#013;  //data.video => <?php _e('Video API', 'revslider');?>&#013;   //data.videotype => <?php _e('youtube, vimeo, html5', 'revslider');?>&#013;   //data.settings => <?php _e('Video Settings', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Finnished with slide change", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent9"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent9" class="api_area" readonly style="height:120px">revapi.bind("revolution.slide.onafterswap",function (e,data) {&#013;   //<?php _e('Slider After Swap', 'revslider');?>&#013;   //data.currentslide => <?php _e('Current Slide as jQuery Object', 'revslider');?>&#013;   //data.prevslide => <?php _e('Previous Slide as jQuery Object', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Slider reached the 'stop at' slide", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent7"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent7" class="api_area" readonly style="height:85px">revapi.bind("revolution.slide.onstop",function (e,data) {&#013;   //<?php _e('Slider Stopped', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Last slide starts", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent10"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent10" class="api_area" readonly style="height:65px">revapi.bind("revolution.slide.slideatend",function (e) {&#013;   //<?php _e('Last Slide Started, Slider is at the end', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Prepared for slide change", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent8"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent8" class="api_area" readonly style="height:120px">revapi.bind("revolution.slide.onbeforeswap",function (e,data) {&#013;   //<?php _e('Slider Before Swap', 'revslider');?>&#013;   //data.currentslide => <?php _e('Current Slide as jQuery Object', 'revslider');?>&#013;   //data.nextslide => <?php _e('Coming Slide as jQuery Object', 'revslider');?>&#013;});</textarea>
 
-										<label_full><?php _e("Layer Events", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent11"><i class="material-icons">add</i></div><span class="linebreak"></span>
-										<textarea id="apievent11" class="api_area"  readonly style="height:150px">revapi.bind("revolution.slide.layeraction",function (e,data) {&#013;   //data.eventtype - <?php _e('Layer Action (enterstage, enteredstage, leavestage,leftstage)', 'revslider');?>&#013;   //data.layertype - <?php _e('Layer Type (image,video,html)', 'revslider');?>&#013;   //data.layersettings - <?php _e('Default Settings for Layer', 'revslider');?>&#013;   //data.layer - <?php _e('Layer as jQuery Object', 'revslider');?>&#013;});</textarea>
+											<label_full><?php _e("Finnished with slide change", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent9"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent9" class="api_area" readonly style="height:120px">revapi.bind("revolution.slide.onafterswap",function (e,data) {&#013;   //<?php _e('Slider After Swap', 'revslider');?>&#013;   //data.currentslide => <?php _e('Current Slide as jQuery Object', 'revslider');?>&#013;   //data.prevslide => <?php _e('Previous Slide as jQuery Object', 'revslider');?>&#013;});</textarea>
+
+											<label_full><?php _e("Last slide starts", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent10"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent10" class="api_area" readonly style="height:65px">revapi.bind("revolution.slide.slideatend",function (e) {&#013;   //<?php _e('Last Slide Started, Slider is at the end', 'revslider');?>&#013;});</textarea>
+
+											<label_full><?php _e("Layer Events", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent11"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent11" class="api_area"  readonly style="height:150px">revapi.bind("revolution.slide.layeraction",function (e,data) {&#013;   //data.eventtype - <?php _e('Layer Action (enterstage, enteredstage, leavestage,leftstage)', 'revslider');?>&#013;   //data.layertype - <?php _e('Layer Type (image,video,html)', 'revslider');?>&#013;   //data.layersettings - <?php _e('Default Settings for Layer', 'revslider');?>&#013;   //data.layer - <?php _e('Layer as jQuery Object', 'revslider');?>&#013;});</textarea>
+
+											<label_full><?php _e("Any Modal Opens", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent12"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent12"  class="api_area" readonly style="height:135px">jQuery.fn.revolution.document.on('RS_MODALOPENED', function() {&#013;});</textarea>
+
+										</div>
+										<div class="advanced_api_content" data-version="7">
+
+											<label_full><?php _e("Modal Loaded", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent71"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent71" class="api_area" readonly style="height:50px">document.addEventListener("sr.modal.loaded", function (e) {&#013;    console.log("sr.modal.loaded",e.id,e.alias);&#013;});</textarea>
+
+											<label_full><?php _e("Modal Open", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent72"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent72" class="api_area" readonly style="height:50px">document.addEventListener("sr.modal.open", function (e) {&#013;    console.log("sr.modal.open",e.id,e.alias);&#013;});</textarea>
+
+											<label_full><?php _e("Modal Close", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent73"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent73" class="api_area" readonly style="height:50px">document.addEventListener("sr.modal.close", function (e) {&#013;    console.log(e.id);&#013;    console.log("sr.modal.close",e.id,e.alias);&#013;});</textarea>
+
+											<label_full><?php _e("Module Ready", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent74"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent74" class="api_area" readonly style="height:50px">document.addEventListener("sr.module.ready", function (e,id) {&#013;    console.group("sr.module.ready",e.id);&#013;    console.log("This Id:",revapi.id);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Slide After Change", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent75"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent75" class="api_area" readonly style="height:50px">document.addEventListener("sr.slide.afterChange", function (e) {&#013;    console.group("sr.slide.afterChange",e.id);&#013;    console.log("This Id:",revapi.id);&#013;    console.log("Current:",e.current);&#013;    console.log("Previous:",e.previous);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Slide Ended", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent76"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent76" class="api_area" readonly style="height:50px">document.addEventListener("sr.slide.ended", function (e) {&#013;    console.group("sr.slide.ended",e.id);&#013;    console.log("This Id:",revapi.id);&#013;    console.log("Current:",e.current);&#013;    console.log("Next:",e.next);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Slide Before Change", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent77"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent77" class="api_area" readonly style="height:50px">document.addEventListener("sr.slide.beforeChange", function (e) {&#013;    console.group("sr.slide.beforeChange",e.id);&#013;    console.log("This Id:",revapi.id);&#013;    console.log("Current:",e.current);&#013;    console.log("Next:",e.next);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Slide Pause", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent78"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent78" class="api_area" readonly style="height:50px">document.addEventListener("sr.slide.pause", function (e) {&#013;    console.group("sr.slide.pause",e.id);&#013;    console.log("This Id:",revapi.id);&#013;    console.log(e);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Slide Resume", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent79"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent79" class="api_area" readonly style="height:50px">document.addEventListener("sr.slide.resume", function (e) {&#013;    console.group("sr.slide.resume",e.id);&#013;    console.log("This Id:",revapi.id);&#013;    console.log(e);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Media Update", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent710"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent710" class="api_area" readonly style="height:50px">document.addEventListener("sr.media.update", function(e) {&#013;    console.group("sr.media.update",e.id, e.skey, e.layerid);&#013;    console.log("player",e.player);&#013;    console.log("layer",e.layer);&#013;    console.log("options" ,  e.options);&#013;    console.log("type" ,  e.mediatype);&#013;    console.log("id" ,  e.id);&#013;    console.log("layerid" ,  e.layerid);&#013;    console.log("skey" ,  e.skey);&#013;    console.log("state" , e.state);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Layer Action", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent711"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent711" class="api_area" readonly style="height:50px">document.addEventListener("sr.layer.action", function (e) {&#013;    console.group("sr.layer.action",e.id, e.layerid);&#013;    console.log("eventtype",e.eventtype);&#013;    console.log("caller",e.caller);&#013;    console.log("scene",e.scene);&#013;    console.log("frame",e.frame);&#013;    console.log("c",e.c);&#013;    console.log("layer",e.layer);&#013;    console.log("layertype",e.layertype);&#013;    console.log("layersettings", e.layersettings);&#013;    console.groupEnd();&#013;});</textarea>
+
+											<label_full><?php _e("Module Finished", 'revslider')?></label_full><div class="basic_action_button insertineditor mini_action_button onlyicon" data-insertfrom="#apievent712"><i class="material-icons">add</i></div><span class="linebreak"></span>
+											<textarea id="apievent712" class="api_area" readonly style="height:50px">document.addEventListener("sr.module.finished", function(e) {&#013;    console.log("sr.module.finished",e.id);&#013;});</textarea>
+
+										</div>
+
 									</div><!-- COLLAPSED -->
 
 							</div>
@@ -513,11 +856,11 @@ if(!defined('ABSPATH')) exit();
 </div>
 
 <!--LAYER META MODAL-->
-<div class="rb-modal-wrapper" data-modal="rbm_layer_metas">
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_layer_metas">
 	<div class="rb-modal-inner">
 		<div class="rb-modal-content">
 			<div id="rbm_layer_metas" class="rb_modal form_inner">
-				<div class="rbm_header"><i class="rbm_symbol material-icons">local_offer</i><span class="rbm_title"><?php _e('Meta Datas', 'revslider');?></span>
+				<div class="rbm_header"><i class="rbm_symbol material-icons">local_offer</i><span class="rbm_title"><?php _e('Metadata', 'revslider');?></span>
 					<div id="mdl_group_wrap_menu"><!--
 						--><div data-show="mdl_group_basic" class="mdl_group_wrap_menuitem selected"><?php _e('Basic', 'revslider');?></div><!--
 						--><div data-show="mdl_group_post" class="mdl_group_wrap_menuitem"><?php _e('Post', 'revslider');?></div><!--
@@ -533,26 +876,32 @@ if(!defined('ABSPATH')) exit();
 							<!-- Basics -->
 							<div class="mdl_group">
 								<div class="mdl_group_header"><i class="material-icons">copyright</i><?php _e('Basic Metas', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
+								<div data-val="{{current_slide_index}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">bookmark</i><?php _e("Current Slide Index", 'revslider');?></div><div class="mdl_right_content">{{current_slide_index}}</div><div class="mdl_placeholder_content"><?php _e('03', 'revslider');?></div></div>
+								<div data-val="{{total_slide_count}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">bookmark</i><?php _e("Number of Slides in Module", 'revslider');?></div><div class="mdl_right_content">{{total_slide_count}}</div><div class="mdl_placeholder_content"><?php _e('21', 'revslider');?></div></div>
 								<div data-val="{{current_page_link}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">bookmark</i><?php _e("Link to current page", 'revslider');?></div><div class="mdl_right_content">{{current_page_link}}</div><div class="mdl_placeholder_content"><?php _e('http://yoursite.com/page', 'revslider');?></div></div>
 								<div data-val="{{home_url}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">bookmark</i><?php _e("Link to WP Home Page", 'revslider');?></div><div class="mdl_right_content">{{home_url}}</div><div class="mdl_placeholder_content"><?php _e('http://yoursite.com/home', 'revslider');?></div></div>
 							</div>
 						</div>
 
 						<div id="mdl_group_post" class="mdl_group_wrap" data-title="<?php _e('Post', 'revslider');?>">
-							<!-- POST BASICS META DATAS -->
+							<!-- POST BASICS Metadata -->
 							<div class="mdl_group">
 								<div class="mdl_group_header"><i class="material-icons">description</i><?php _e('Post Basics', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
 								<div data-val="{{id}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post ID", 'revslider');?></div><div class="mdl_right_content">{{id}}</div><div class="mdl_placeholder_content"><?php _e('Post ID', 'revslider');?></div></div>
 								<div data-val="{{meta:somemegatag}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Any custom meta tag", 'revslider');?></div><div class="mdl_right_content">{{meta:somemegatag}}</div><div class="mdl_placeholder_content"><?php _e('Custom Meta', 'revslider');?></div></div>
 								<div data-val="{{title}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post Title", 'revslider');?></div><div class="mdl_right_content">{{title}}</div><div class="mdl_placeholder_content"><?php _e('Title', 'revslider');?></div></div>
+								<div data-val="{{title:words:5}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post title limit by words", 'revslider');?></div><div class="mdl_right_content">{{title:words:5}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit amet', 'revslider');?></div></div>
+								<div data-val="{{title:chars:5}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post title limit by chars", 'revslider');?></div><div class="mdl_right_content">{{title:chars:5}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit amet', 'revslider');?></div></div>
 								<div data-val="{{excerpt}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post Excerpt", 'revslider');?></div><div class="mdl_right_content">{{excerpt}}</div><div class="mdl_placeholder_content"><?php _e('Excerpt ipsum dolor sit amet, consetetur sadipscing elitr sed diam nonumy.', 'revslider');?></div></div>
+								<div data-val="{{excerpt:words:10}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post excerpt limit by words", 'revslider');?></div><div class="mdl_right_content">{{excerpt:words:10}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit', 'revslider');?></div></div>
+								<div data-val="{{excerpt:chars:10}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post excerpt limit by chars", 'revslider');?></div><div class="mdl_right_content">{{excerpt:chars:10}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit', 'revslider');?></div></div>
 								<div data-val="{{alias}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post Alias", 'revslider');?></div><div class="mdl_right_content">{{alias}}</div><div class="mdl_placeholder_content"><?php _e('Post Alias', 'revslider');?></div></div>
 								<div data-val="{{content}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post Content", 'revslider');?></div><div class="mdl_right_content">{{content}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.', 'revslider');?></div></div>
 								<div data-val="{{content:words:10}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post content limit by words", 'revslider');?></div><div class="mdl_right_content">{{content:words:10}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.', 'revslider');?></div></div>
 								<div data-val="{{content:chars:10}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">description</i><?php _e("Post content limit by chars", 'revslider');?></div><div class="mdl_right_content">{{content:chars:10}}</div><div class="mdl_placeholder_content"><?php _e('Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt.', 'revslider');?></div></div>
 							</div>
 
-							<!-- POST DETAILS META DATAS -->
+							<!-- POST DETAILS Metadata -->
 							<div class="mdl_group">
 								<div class="mdl_group_header"><i class="material-icons">info</i><?php _e('Post Details', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
 								<div data-val="{{link}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">info</i><?php _e("The link to the post", 'revslider');?></div><div class="mdl_right_content">{{link}}</div><div class="mdl_placeholder_content"><?php _e('http://yoursite.com/post', 'revslider');?></div></div>
@@ -564,7 +913,7 @@ if(!defined('ABSPATH')) exit();
 								<div data-val="{{author_posts}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">info</i><?php _e("Author Posts Page", 'revslider');?></div><div class="mdl_right_content">{{author_posts}}</div><div class="mdl_placeholder_content"><?php _e('http://yoursite/user/post', 'revslider');?></div></div>
 							</div>
 
-							<!-- POST DETAILS II META DATAS -->
+							<!-- POST DETAILS II Metadata -->
 							<div class="mdl_group">
 								<div class="mdl_group_header"><i class="material-icons">category</i><?php _e('Post Categories, Tags and Comments', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
 								<div data-val="{{num_comments}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">category</i><?php _e("Number of comments", 'revslider');?></div><div class="mdl_right_content">{{num_comments}}</div><div class="mdl_placeholder_content"><?php _e('20', 'revslider');?></div></div>
@@ -593,7 +942,7 @@ if(!defined('ABSPATH')) exit();
 								<div class="mdl_group_header"><i class="material-icons">shopping_cart</i><?php _e('WooCommerce Stock', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
 								<div data-val="{{wc_sku}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">dashboard</i><?php _e("SKU", 'revslider');?></div><div class="mdl_right_content">{{wc_sku}}</div><div class="mdl_placeholder_content"><?php _e('457819', 'revslider');?></div></div>
 								<div data-val="{{wc_stock}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">dashboard</i><?php _e("In Stock", 'revslider');?></div><div class="mdl_right_content">{{wc_stock}}</div><div class="mdl_placeholder_content"><?php _e('5', 'revslider');?></div></div>
-								<div data-val="{{wc_stock_quantity}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">dashboard</i><?php _e("Stock Quantity", 'revslider');?></div><div class="mdl_right_content">{{wc_stock_quantity}}</div><div class="mdl_placeholder_content"><?php _e('Package', 'revslider');?></div></div>
+								<div data-val="{{wc_stock_quantity}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">dashboard</i><?php _e("Stock Quantity", 'revslider');?></div><div class="mdl_right_content">{{wc_stock_quantity}}</div><div class="mdl_placeholder_content"><?php _e('5', 'revslider');?></div></div>
 							</div>
 							<div class="mdl_group">
 								<div class="mdl_group_header"><i class="material-icons">shopping_cart</i><?php _e('WooCommerce Ratings', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
@@ -612,7 +961,7 @@ if(!defined('ABSPATH')) exit();
 								<div data-val="{{event_end_date}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">event</i><?php _e("Event end date", 'revslider');?></div><div class="mdl_right_content">{{event_end_date}}</div><div class="mdl_placeholder_content"><?php _e('17.09.2019', 'revslider');?></div></div>
 								<div data-val="{{event_start_time}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">event</i><?php _e("Event start time", 'revslider');?></div><div class="mdl_right_content">{{event_start_time}}</div><div class="mdl_placeholder_content"><?php _e('21:00', 'revslider');?></div></div>
 								<div data-val="{{event_end_time}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">event</i><?php _e("Event end time", 'revslider');?></div><div class="mdl_right_content">{{event_end_time}}</div><div class="mdl_placeholder_content"><?php _e('14:00', 'revslider');?></div></div>
-								<div data-val="{{event_event_id}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">event</i><?php _e("Event ID", 'revslider');?></div><div class="mdl_right_content">{{event_event_id}}</div><div class="mdl_placeholder_content"><?php _e('EQH-1879', 'revslider');?></div></div>
+								<div data-val="{{event_id}}" class="mdl_group_member"><div class="mdl_left_content"><i class="material-icons">event</i><?php _e("Event ID", 'revslider');?></div><div class="mdl_right_content">{{event_id}}</div><div class="mdl_placeholder_content"><?php _e('EQH-1879', 'revslider');?></div></div>
 							</div>
 							<div class="mdl_group">
 								<div class="mdl_group_header"><i class="material-icons">my_location</i><?php _e('Event Location', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
@@ -647,13 +996,15 @@ if(!defined('ABSPATH')) exit();
 								<div data-val="{{views}}" class="mdl_group_member"><div class="mdl_left_content"><i class="fa__icons fa-flickr"></i><?php _e("Views", 'revslider');?></div><div class="mdl_right_content">{{views}}</div><div class="mdl_placeholder_content"><?php _e('24', 'revslider');?></div></div>
 							</div>
 
-							<!-- INSTAGRAMM -->
+							<!-- INSTAGRAM -->
+							<!--
 							<div class="mdl_group">
-								<div class="mdl_group_header"><i class="fa__icons fa-instagram"></i><?php _e('Instagramm Extras', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
+								<div class="mdl_group_header"><i class="fa__icons fa-instagram"></i><?php _e('Instagram Extras', 'revslider');?><i class="material-icons accordiondrop">arrow_drop_down</i></div>
 								<div data-val="{{date}}" class="mdl_group_member"><div class="mdl_left_content"><i class="fa__icons fa-instagram"></i><?php _e("Date created", 'revslider');?></div><div class="mdl_right_content">{{date}}</div><div class="mdl_placeholder_content"><?php _e('08.03.2018', 'revslider');?></div></div>
 								<div data-val="{{likes}}" class="mdl_group_member"><div class="mdl_left_content"><i class="fa__icons fa-instagram"></i><?php _e("Number of Likes", 'revslider');?></div><div class="mdl_right_content">{{likes}}</div><div class="mdl_placeholder_content"><?php _e('12', 'revslider');?></div></div>
 								<div data-val="{{num_comments}}" class="mdl_group_member"><div class="mdl_left_content"><i class="fa__icons fa-instagram"></i><?php _e("Number of Comments", 'revslider');?></div><div class="mdl_right_content">{{num_comments}}</div><div class="mdl_placeholder_content"><?php _e('19', 'revslider');?></div></div>
 							</div>
+							-->
 
 							<!-- TWITTER -->
 							<div class="mdl_group">
@@ -696,7 +1047,7 @@ if(!defined('ABSPATH')) exit();
 </div>
 
 <!--LAYER ACTION MODAL-->
-<div class="rb-modal-wrapper" data-modal="rbm_layer_action">
+<div class="_TPRB_ rb-modal-wrapper" data-modal="rbm_layer_action">
 	<div class="rb-modal-inner">
 		<div class="rb-modal-content">
 			<div id="rbm_layer_action" class="rb_modal form_inner">
@@ -712,7 +1063,7 @@ if(!defined('ABSPATH')) exit();
 									<div id="layer_with_action"></div>
 									<div id="layer_width_action_inner_wrap">
 										<ul id="layer_depending_wrap" class="layer_depending_wrap"></ul>
-										<div id="layer_depending_frames"></div>													
+										<div id="layer_depending_frames"></div>
 										<label_a style="width:175px"><?php _e('Trigger Memory', 'revslider');?></label_a><select data-r="actions.triggerMemory" class="easyinit layerinput nosearchbox tos2"><option value="reset"><?php _e('Reset before each Loop', 'revslider');?></option><option value="keep"><?php _e('Keep Last State', 'revslider');?></option></select>
 									</div>
 								</div>
@@ -733,28 +1084,43 @@ if(!defined('ABSPATH')) exit();
 						<!-- INPUT FIELD LIST OF THE SELECTED ACTION -->
 						<div id="action_inputs">
 							<div id="action_interaction_wrap">
-								<select style="display:none !important" id="action_interaction" data-unselect=".layer_action_interaction_selector" data-select="#action_interaction*val*" class="easyinit" data-r="actions.action.#actionindex#.tooltip_event"><option value="click"><?php _e('Click', 'revslider');?></option><option value="mouseenter"><?php _e('Mouse Enter', 'revslider');?></option><option value="mouseleave"><?php _e('Mouse Leave', 'revslider');?></option></select>
-								<label_a><?php _e('Interaction', 'revslider');?></label_a><select id="action_interaction" class="easyinit actioninput tos2 nosearchbox" data-r="actions.action.#actionindex#.tooltip_event"><option value="click"><?php _e('Click', 'revslider');?></option><option value="mouseenter"><?php _e('Mouse Enter', 'revslider');?></option><option value="mouseleave"><?php _e('Mouse Leave', 'revslider');?></option></select>				
+								<!--<select style="display:none !important" id="action_interaction" data-unselect=".layer_action_interaction_selector" data-select="#action_interaction*val*" class="easyinit" data-r="actions.action.#actionindex#.tooltip_event"><option value="click">Click</option><option value="mouseenter">Mouse Enter</option><option value="mouseleave">Mouse Leave</option></select>-->
+								<label_a><?php _e('Interaction', 'revslider');?></label_a><select id="action_interaction" class="easyinit actioninput tos2 nosearchbox" data-r="actions.action.#actionindex#.tooltip_event"><option value="click"><?php _e('Click', 'revslider');?></option><option value="mouseenter"><?php _e('Mouse Enter', 'revslider');?></option><option value="mouseleave"><?php _e('Mouse Leave', 'revslider');?></option></select>
 							</div>
 							<!--<label_icon class="triggerselect layer_action_interaction_selector twostatetrigger material-icons selected mirrorhorizontal" data-select="#action_interaction" data-val="click" id="action_interaction_click">near_me</label_icon>
 							<label_icon class="triggerselect layer_action_interaction_selector twostatetrigger material-icons" data-select="#action_interaction" data-val="mouseenter" id="action_interaction_mouseenter">file_download</label_icon>
 							<label_icon class="triggerselect layer_action_interaction_selector twostatetrigger material-icons" data-select="#action_interaction" data-val="mouseleave" id="action_interaction_mouseleave">file_upload</label_icon>-->
 							<!-- TYPE OF ACTION -->
 							<label_a><?php _e('Action Type', 'revslider');?></label_a><div class="input_presets_wrap" id="layer_action_type"><div id="layer_action_fake"></div><input type="text" readonly  class="easyinit actioninput" data-r="actions.action.#actionindex#.action" value=""><i class="material-icons input_presets_dropdown">more_vert</i></div>
-							
+
+							<div id="actions_extension_area"></div>
 							<div class="div20"></div>
+							<div id="actions_extension_settings_area"></div>
+
 							<!-- SIMPLE LINK SETTINGS -->
-							<div id="la_settings_link" class="la_settings">
+							<div id="la_settings_link_menu" class="la_settings" style="margin-bottom:20px !important">
+								<label_a><?php _e('Link to URL', 'revslider');?></label_a><input type="text" class="easyinit actioninput" id="la_menu_link" data-r="actions.action.#actionindex#.menu_link" placeholder="<?php _e('Enter Link', 'revslider');?>" ><span class="linebreak"></span>
+								<label_a><?php _e('Anchor #id at URL', 'revslider');?></label_a><input type="text" class="easyinit actioninput" id="la_menu_link" data-r="actions.action.#actionindex#.menu_anchor" placeholder="<?php _e('Enter Anchor ID', 'revslider');?>" ><span class="linebreak"></span>
+							</div>
+
+							<!-- SIMPLE LINK SETTINGS -->
+							<div id="la_settings_link_url" class="la_settings">
 								<label_a><?php _e('Link URL', 'revslider');?></label_a><input type="text" class="easyinit actioninput" id="la_image_link" data-r="actions.action.#actionindex#.image_link" placeholder="<?php _e('Enter Link', 'revslider');?>" ><span class="linebreak"></span>
-								<label_a><?php _e('Link Target', 'revslider');?></label_a><select id="la_link_open_in" data-r="actions.action.#actionindex#.link_open_in" class="easyinit actioninput nosearchbox tos2"><option value="_self"><?php _e('Same Window', 'revslider');?></option><option value="_blank"><?php _e('New Window', 'revslider');?></option></select>
-								<label_a><?php _e('Link Type', 'revslider');?></label_a><select id="la_link_type" data-r="actions.action.#actionindex#.link_type" class="easyinit actioninput nosearchbox tos2"></select>
+							</div>
+							<div id="la_settings_link" class="la_settings">
+								<label_a><?php _e('Protocol', 'revslider');?></label_a><select id="la_link_help_in" data-r="actions.action.#actionindex#.link_help_in" class="easyinit actioninput nosearchbox tos2"><option value="http"><?php _e('http://', 'revslider');?></option><option value="https"><?php _e('https://', 'revslider');?></option><option value="auto"><?php _e('Auto http / https', 'revslider');?></option><option value="keep"><?php _e('Keep as it is', 'revslider');?></option></select>
+								<label_a><?php _e('Target', 'revslider');?></label_a><select id="la_link_open_in" data-r="actions.action.#actionindex#.link_open_in" class="easyinit actioninput nosearchbox tos2"><option value="_self"><?php _e('Same Window', 'revslider');?></option><option value="_blank"><?php _e('New Window', 'revslider');?></option></select>
 								<label_a><?php _e('Follow', 'revslider');?></label_a><select id="la_link_follow" data-r="actions.action.#actionindex#.link_follow" class="easyinit actioninput nosearchbox tos2"><option value="follow"><?php _e('Follow Link', 'revslider');?></option><option value="nofollow"><?php _e('No Follow', 'revslider');?></option></select>
+								<span class="linebreak"></span>
+							</div>
+							<div id="la_settings_link_type" class="la_settings">
+								<label_a><?php _e('Type', 'revslider');?></label_a><select id="la_link_type" data-r="actions.action.#actionindex#.link_type" class="easyinit actioninput nosearchbox tos2"></select>
 								<span class="linebreak"></span>
 							</div>
 
 							<div id="la_settings_modal" class="la_settings">
 								<label_a><?php _e('Open Modal', 'revslider');?></label_a><select id="la_open_modal" data-r="actions.action.#actionindex#.openmodal" data-evt="refreshSlideLists" class="selectsliderlist easyinit actioninput searchbox tos2"></select>
-								<label_a><?php _e('Open Slide', 'revslider');?></label_a><select id="la_open_modalslide" data-r="actions.action.#actionindex#.modalslide" class="selectsliderlist easyinit actioninput searchbox tos2"></select>					
+								<label_a><?php _e('Open Slide', 'revslider');?></label_a><select id="la_open_modalslide" data-r="actions.action.#actionindex#.modalslide" class="selectsliderlist easyinit actioninput searchbox tos2"></select>
 							</div>
 
 							<!-- CALL BACK SETTINGS -->
@@ -765,9 +1131,9 @@ if(!defined('ABSPATH')) exit();
 
 							<!-- SCROLL TO ID -->
 							<div id="la_settings_scroll_to" class="la_settings">
-								<label_a><?php _e('Scroll to ID', 'revslider');?></label_a><input class="easyinit actioninput" type="text" id="la_scrolltoid" data-r="actions.action.#actionindex#.scrollto_id" placeholder="<?php _e('ID of Element', 'revslider');?>" ><span class="linebreak"></span>					
+								<label_a><?php _e('Scroll to ID', 'revslider');?></label_a><input class="easyinit actioninput" type="text" id="la_scrolltoid" data-r="actions.action.#actionindex#.scrollto_id" placeholder="<?php _e('ID of Element', 'revslider');?>" ><span class="linebreak"></span>
 								<span class="linebreak"></span>
-							</div>							
+							</div>
 
 							<!-- SCROLL BELOW SETTINGS -->
 							<div id="la_settings_scroll_under" class="la_settings">
@@ -783,11 +1149,16 @@ if(!defined('ABSPATH')) exit();
 								<span class="linebreak"></span>
 							</div>
 
+							<!-- SCROLL BELOW SETTINGS -->
+							<div id="la_settings_getAccelerationPermissionk" class="la_settings">
+								<span class="linebreak"></span>
+							</div>
+
 							<!-- LAYER TARGET -->
 							<div id="la_settings_layertarget" class="la_settings">
-								<label_a><?php _e('Target Layer', 'revslider');?></label_a><select id="la_layer_target" data-evt="refreshActionView" data-theme="layer_selector_drop_down" data-r="actions.action.#actionindex#.layer_target" class="easyinit actioninput nosearchbox tos2"></select>					
+								<label_a><?php _e('Target Layer', 'revslider');?></label_a><select id="la_layer_target" data-evt="refreshActionView" data-theme="layer_selector_drop_down" data-r="actions.action.#actionindex#.layer_target" class="easyinit actioninput searchbox tos2"></select>
 							</div>
-							
+
 
 							<!-- LAYER TOGGLE -->
 							<div id="la_settings_layer_toggle_actions" class="la_settings">
@@ -796,19 +1167,19 @@ if(!defined('ABSPATH')) exit();
 
 							<!-- LAYER ANIMATION IN/OUT -->
 							<div id="la_settings_layer_actions_in" class="la_settings">
-								<label_a><?php _e('Frame wait\'s on Action', 'revslider');?></label_a><input id="overtake_frame_1_control" type="checkbox" class="targetlayeractioninput" data-r="timeline.frames.frame_1.timeline.actionTriggered"><span class="linebreak"></span>					
+								<label_a><?php _e('Frame wait\'s on Action', 'revslider');?></label_a><input id="overtake_frame_1_control" type="checkbox" class="targetlayeractioninput" data-r="timeline.frames.frame_1.timeline.actionTriggered"><span class="linebreak"></span>
 							</div>
-							
+
 							<!-- LAYER ANIMATION IN/OUT -->
 							<div id="la_settings_layer_actions_out" class="la_settings">
-								<label_a><?php _e('Frame wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frame_999_control" class="targetlayeractioninput" data-r="timeline.frames.frame_999.timeline.actionTriggered"><span class="linebreak"></span>	
+								<label_a><?php _e('Frame wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frame_999_control" class="targetlayeractioninput" data-r="timeline.frames.frame_999.timeline.actionTriggered"><span class="linebreak"></span>
 							</div>
 
 							<!-- LAYER ANIMATION FRAME -->
 							<div id="la_settings_layer_actions_frame" class="la_settings">
 								<label_a><?php _e('GoTo Frame', 'revslider');?></label_a><select id="la_gotoframeX"  data-evt="updatePlayFrameXOnlyOnAction" data-evtparam="X" data-r="actions.action.#actionindex#.gotoframe" class="callEvent easyinit actioninput nosearchbox tos2"></select>
 								<span class="linebreak"></span>
-								<label_a><?php _e('Frame wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frameX_control" class="targetlayeractioninput " data-r="timeline.frames.frame_2.timeline.actionTriggered"><span class="linebreak"></span>					
+								<label_a><?php _e('Frame wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frameX_control" class="targetlayeractioninput " data-r="timeline.frames.frame_2.timeline.actionTriggered"><span class="linebreak"></span>
 							</div>
 
 							<!-- LAYER ANIMATION FRAME -->
@@ -817,8 +1188,8 @@ if(!defined('ABSPATH')) exit();
 								<label_a><?php _e('Frame N', 'revslider');?></label_a><select id="la_gotoframeN"  data-evt="updatePlayFrameXOnlyOnAction" data-evtparam="N" data-r="actions.action.#actionindex#.gotoframeN" class="callEvent easyinit actioninput nosearchbox tos2"></select>
 								<label_a><?php _e('Frame M', 'revslider');?></label_a><select id="la_gotoframeM"  data-evt="updatePlayFrameXOnlyOnAction" data-evtparam="M" data-r="actions.action.#actionindex#.gotoframeM" class="callEvent easyinit actioninput nosearchbox tos2"></select>
 								<span class="linebreak"></span>
-								<label_a><?php _e('"N" wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frameN_control" class="targetlayeractioninput " data-r="timeline.frames.frame_88.timeline.actionTriggered"><span class="linebreak"></span>					
-								<label_a><?php _e('"M" wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frameM_control" class="targetlayeractioninput " data-r="timeline.frames.frame_77.timeline.actionTriggered"><span class="linebreak"></span>					
+								<label_a><?php _e('"N" wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frameN_control" class="targetlayeractioninput " data-r="timeline.frames.frame_88.timeline.actionTriggered"><span class="linebreak"></span>
+								<label_a><?php _e('"M" wait\'s on Action', 'revslider');?></label_a><input type="checkbox" id="overtake_frameM_control" class="targetlayeractioninput " data-r="timeline.frames.frame_77.timeline.actionTriggered"><span class="linebreak"></span>
 								<div class="div20"></div>
 							</div>
 
@@ -843,6 +1214,9 @@ if(!defined('ABSPATH')) exit();
 
 							<!-- DELAY -->
 							<div id="laction_delay"><label_a><?php _e('Action Delay', 'revslider');?></label_a><input class="easyinit actioninput" data-numeric="true" data-allowed="ms" type="text" id="layer_action_delay" data-r="actions.action.#actionindex#.action_delay" placeholder="0"></div>
+
+							<!-- REPEAT DELAY -->
+							<div id="lraction_delay"><label_a><?php _e('Trigger Repeat Delay', 'revslider');?></label_a><input class="easyinit actioninput" data-numeric="true" data-allowed="ms" type="text" id="layer_action_repeat" data-r="actions.action.#actionindex#.action_repeats" placeholder="0"></div>
 						</div><!-- END OF INPUT FIELD LIST OF THE SELECTED ACTION -->
 					</div>
 				</div>

@@ -1,0 +1,44 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+       local('MaterialIcons-Regular'),
+       url(MaterialIcons-Regular.woff2) format('woff2'),
+       url(MaterialIcons-Regular.woff) format('woff'),
+       url(MaterialIcons-Regular.ttf) format('truetype');
+}
+
+/* IMPORTANT EXTENSION FOR FONT LOADING !! SR7 KRISZTIAN HORVATH*/
+.material-icons:not(.testloadedicon) {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: inherit;  /* Preferred icon size */
+  display: inline-block;
+  line-height: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+
+sr7-module .material-icons {    
+  font-size: inherit;
+  vertical-align: top;
+  line-height: inherit;    
+}

@@ -2,29 +2,20 @@
 /**
  * @author    ThemePunch <info@themepunch.com>
  * @link      https://www.themepunch.com/
- * @copyright 2019 ThemePunch
+ * @copyright 2024 ThemePunch
  */
  
 if(!defined('ABSPATH')) exit();
 
 /**
- * backwards compatibility code
+ * backwards compatibility prior 6.0.0 code
  * @START
  **/
-//mostly needed for RevSlider AddOns
-class RevSliderGlobals {
-	const SLIDER_REVISION = RS_REVISION;
-	public static $table_slides;
-	public static $table_static_slides;
-}
-global $wpdb;
 
-RevSliderGlobals::$table_slides = $wpdb->prefix.'revslider_slides';
-RevSliderGlobals::$table_static_slides = $wpdb->prefix.'revslider_static_slides';
 class RevSliderBase {
 	
 	public static function check_file_in_zip($d_path, $image, $alias, $alreadyImported = false){
-		$f = new RevSliderFunctions();
+		$f = RevSliderGlobals::instance()->get('RevSliderFunctions');
 		
 		return $f->check_file_in_zip($d_path, $image, $alias, $alreadyImported, $add_path = false);
 	}
@@ -32,19 +23,19 @@ class RevSliderBase {
 
 class RevSliderFunctionsWP {
 	public static function getImageUrlFromPath($url){
-		$f = new RevSliderFunctions();
+		$f = RevSliderGlobals::instance()->get('RevSliderFunctions');
 		return $f->get_image_url_from_path($url);
 	}
 	
 	public static function get_image_id_by_url($image_url){
-		$f = new RevSliderFunctions();
+		$f = RevSliderGlobals::instance()->get('RevSliderFunctions');
 		return $f->get_image_id_by_url($image_url);
 	}
 }
 
 class RevSliderOperations {
 	public function getGeneralSettingsValues(){
-		$f = new RevSliderFunctions();
+		$f = RevSliderGlobals::instance()->get('RevSliderFunctions');
 		return $f->get_global_settings();
 	}
 }
@@ -63,8 +54,6 @@ if(!function_exists('set_revslider_as_theme')){
 }
 
 /**
- * backwards compatibility code
+ * backwards compatibility prior 6.0.0 code
  * @END
  **/
- 
- ?>

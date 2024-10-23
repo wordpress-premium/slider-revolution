@@ -1,0 +1,19 @@
+{
+  "name": "wordpress-premium/rank-math-seo-pro",
+  "type": "wordpress-plugin",
+  "description": "Rank Math SEO Pro",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Rank Math SEO",
+      "email": "support@rankmath.com",
+      "homepage": "https://rankmath.com"
+    },
+    {
+      "name": "WordPress Premium",
+      "email": "info@wordpress-premium.org",
+      "homepage": "https://www.wordpress-premium.org"
+    }
+  ],
+  "require": {}
+}

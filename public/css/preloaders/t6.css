@@ -1,0 +1,100 @@
+sr7-prl.prlt6 {
+	width: 40px;
+	height: 40px;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%)
+}
+
+sr7-prl.prlt6 .sr7-prl-inner {
+	width: 100%;
+	height: 100%;
+	display: inline-block;
+	-webkit-animation: rs-revealer-6 1.4s linear infinite;
+	animation: rs-revealer-6 1.4s linear infinite
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span {
+	position: absolute;
+	vertical-align: top;
+	border-radius: 100%;
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	margin-left: 16px;
+	transform-origin: center 20px;
+	-webkit-transform-origin: center 20px
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(2) {
+	transform: rotate(36deg);
+	-webkit-transform: rotate(36deg);
+	opacity: .1
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(3) {
+	transform: rotate(72deg);
+	-webkit-transform: rotate(72deg);
+	opacity: .2
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(4) {
+	transform: rotate(108deg);
+	-webkit-transform: rotate(108deg);
+	opacity: .3
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(5) {
+	transform: rotate(144deg);
+	-webkit-transform: rotate(144deg);
+	opacity: .4
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(6) {
+	transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	opacity: .5
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(7) {
+	transform: rotate(216deg);
+	-webkit-transform: rotate(216deg);
+	opacity: .6
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(8) {
+	transform: rotate(252deg);
+	-webkit-transform: rotate(252deg);
+	opacity: .7
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(9) {
+	transform: rotate(288deg);
+	-webkit-transform: rotate(288deg);
+	opacity: .8
+}
+
+sr7-prl.prlt6 .sr7-prl-inner span:nth-child(10) {
+	transform: rotate(324deg);
+	-webkit-transform: rotate(324deg);
+	opacity: .9
+}
+
+@keyframes rs-revealer-6 {
+	from {
+		transform: rotate(0)
+	}
+
+	to {
+		transform: rotate(360deg)
+	}
+}
+
+@-webkit-keyframes rs-revealer-6 {
+	from {
+		-webkit-transform: rotate(0)
+	}
+
+	to {
+		-webkit-transform: rotate(360deg)
+	}
+}

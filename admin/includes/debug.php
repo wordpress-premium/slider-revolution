@@ -32,7 +32,7 @@ class RevSliderMemoryUsageInformation
     public function setMemoryUsage($info = '')
     {
         $this->statistics[] = array(
-			'time' => microtime(), //time(),
+			'time' => time(), //microtime(),
             'info' => $info,
             'memory_usage' => $this->getCurrentMemoryUsage());
     }
@@ -100,5 +100,3 @@ class RevSliderMemoryUsageInformation
     }
 
 }
-
-?>
